@@ -12,13 +12,20 @@ namespace ProyectoArqui
     class Procesador
     {
         //Atributos
-        short programCounter;
-        int* registros;
-        int** cacheDatos;
-        int** memoriaPrincipal;
+        private short programCounter;
+        private int* registros;
+        private int** cacheDatos;
+        private int** memoriaPrincipal;
         //sem semaforoCache;
         //int** directorio;
         //sem semaforoDirectorio
         Boolean atrasado;
+
+        public Procesador()
+        {
+            programCounter = -1;
+            //registros = new int[32];
+
+        }
     }
 }

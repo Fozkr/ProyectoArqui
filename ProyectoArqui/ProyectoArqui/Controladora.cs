@@ -12,10 +12,16 @@ namespace ProyectoArqui
     class Controladora
     {
         //Atributos
-        List<int> memoriaInstrucciones;
-        Controladora()
-        {
+        private List<int> memoriaInstrucciones;
+        private int ticsReloj;
 
+        /*
+         * Constructor,
+         */
+        public Controladora()
+        {
+            memoriaInstrucciones = new List<int>();
+            ticsReloj = 1;
         }
     }
 }
