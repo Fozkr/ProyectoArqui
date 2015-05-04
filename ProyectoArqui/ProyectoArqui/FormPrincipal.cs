@@ -44,7 +44,8 @@ namespace ProyectoArqui
          */
         private void TextBoxCantidadProgramas_TextChanged(object sender, EventArgs e)
         {
-            hiloMaestro.CantidadProgramas = Convert.ToInt32(TextBoxCantidadProgramas.Text);
+            if(TextBoxCantidadProgramas.TextLength != 0)
+                hiloMaestro.CantidadProgramas = Convert.ToInt32(TextBoxCantidadProgramas.Text);
         }
 
         /*
@@ -57,13 +58,14 @@ namespace ProyectoArqui
         }
 
         /*
-         * Al escogerse un archivo, se agrega el path del mismo al grid.
+         * Al escogerse un archivo, se agrega el path del mismo al grid. También, cuando haya escogido la misma cantidad de archivos
+         * que especificó en el textbox, se habilita el botón de iniciar la simulación.
          */
         private void FileChooser_FileOk(object sender, CancelEventArgs e)
         {
             String pathNuevoArchivo = FileChooser.FileName;
             GridPaths.Rows.Add(pathNuevoArchivo);
-            if(TextBoxCantidadProgramas.TextLength != 0)
+            if(TextBoxCantidadProgramas.TextLength == GridPaths.Rows.Count)
                 BotonIniciarSimulacion.Enabled = true;
         }
     }
