@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.FileChooser = new System.Windows.Forms.OpenFileDialog();
             this.BotonNuevaSimulacion = new System.Windows.Forms.Button();
             this.TextBoxCantidadProgramas = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -42,9 +42,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.GridPaths)).BeginInit();
             this.SuspendLayout();
             // 
-            // openFileDialog1
+            // FileChooser
             // 
-            this.openFileDialog1.FileName = "openFileDialog";
+            this.FileChooser.FileName = "openFileDialog";
+            this.FileChooser.FileOk += new System.ComponentModel.CancelEventHandler(this.FileChooser_FileOk);
             // 
             // BotonNuevaSimulacion
             // 
@@ -89,6 +90,7 @@
             this.BotonAgregarArchivo.TabIndex = 4;
             this.BotonAgregarArchivo.Text = "Agregar";
             this.BotonAgregarArchivo.UseVisualStyleBackColor = true;
+            this.BotonAgregarArchivo.Click += new System.EventHandler(this.BotonAgregarArchivo_Click);
             // 
             // PanelIniciar
             // 
@@ -146,7 +148,7 @@
 
         #endregion
 
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.OpenFileDialog FileChooser;
         private System.Windows.Forms.Button BotonNuevaSimulacion;
         private System.Windows.Forms.TextBox TextBoxCantidadProgramas;
         private System.Windows.Forms.Label label1;

@@ -31,8 +31,8 @@ namespace ProyectoArqui
          */
         public int CantidadProgramas
         {
-            get {return cantidadProgramas}
-            set {cantidadProgramas = value;}
+            get { return cantidadProgramas; }
+            set { cantidadProgramas = value; }
         }
     }
 }

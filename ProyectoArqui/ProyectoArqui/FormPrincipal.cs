@@ -32,5 +32,17 @@ namespace ProyectoArqui
         {
             hiloMaestro.CantidadProgramas = Convert.ToInt32(TextBoxCantidadProgramas.Text);
         }
+
+        private void BotonAgregarArchivo_Click(object sender, EventArgs e)
+        {
+            FileChooser.ShowDialog();
+        }
+
+        private void FileChooser_FileOk(object sender, CancelEventArgs e)
+        {
+
+        }
+
+       
     }
 }
