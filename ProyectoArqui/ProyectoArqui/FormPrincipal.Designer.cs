@@ -55,9 +55,11 @@
             this.BotonNuevaSimulacion.TabIndex = 0;
             this.BotonNuevaSimulacion.Text = "Nueva simulación";
             this.BotonNuevaSimulacion.UseVisualStyleBackColor = true;
+            this.BotonNuevaSimulacion.Click += new System.EventHandler(this.BotonNuevaSimulacion_Click);
             // 
             // TextBoxCantidadProgramas
             // 
+            this.TextBoxCantidadProgramas.Enabled = false;
             this.TextBoxCantidadProgramas.Location = new System.Drawing.Point(128, 3);
             this.TextBoxCantidadProgramas.Name = "TextBoxCantidadProgramas";
             this.TextBoxCantidadProgramas.Size = new System.Drawing.Size(100, 20);
@@ -84,6 +86,7 @@
             // 
             // BotonAgregarArchivo
             // 
+            this.BotonAgregarArchivo.Enabled = false;
             this.BotonAgregarArchivo.Location = new System.Drawing.Point(368, 1);
             this.BotonAgregarArchivo.Name = "BotonAgregarArchivo";
             this.BotonAgregarArchivo.Size = new System.Drawing.Size(75, 23);
@@ -107,11 +110,13 @@
             // 
             // GridPaths
             // 
+            this.GridPaths.AllowUserToAddRows = false;
             this.GridPaths.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.GridPaths.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Path});
             this.GridPaths.Location = new System.Drawing.Point(469, 0);
             this.GridPaths.Name = "GridPaths";
+            this.GridPaths.ReadOnly = true;
             this.GridPaths.Size = new System.Drawing.Size(661, 106);
             this.GridPaths.TabIndex = 5;
             // 
@@ -123,6 +128,7 @@
             // 
             // BotonIniciarSimulacion
             // 
+            this.BotonIniciarSimulacion.Enabled = false;
             this.BotonIniciarSimulacion.Location = new System.Drawing.Point(179, 54);
             this.BotonIniciarSimulacion.Name = "BotonIniciarSimulacion";
             this.BotonIniciarSimulacion.Size = new System.Drawing.Size(100, 23);

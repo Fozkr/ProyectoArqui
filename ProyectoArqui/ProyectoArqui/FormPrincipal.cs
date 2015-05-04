@@ -18,10 +18,24 @@ namespace ProyectoArqui
         //Atributos
         Controladora hiloMaestro;
 
+        /*
+         * Constructor,
+         */
         public FormPrincipal()
         {
             InitializeComponent();
             hiloMaestro = new Controladora();
+        }
+
+        /*
+         * Limpia los campos para comenzar una nueva simulación.
+         */
+        private void BotonNuevaSimulacion_Click(object sender, EventArgs e)
+        {
+            TextBoxCantidadProgramas.Text = "";
+            GridPaths.Rows.Clear();
+            TextBoxCantidadProgramas.Enabled = true;
+            BotonAgregarArchivo.Enabled = true;
         }
 
         /*
@@ -33,16 +47,24 @@ namespace ProyectoArqui
             hiloMaestro.CantidadProgramas = Convert.ToInt32(TextBoxCantidadProgramas.Text);
         }
 
+        /*
+         * Abre el FileChooser para poder escoger un archivo que será agregado al grid.
+         */
         private void BotonAgregarArchivo_Click(object sender, EventArgs e)
         {
+            FileChooser.Reset();
             FileChooser.ShowDialog();
         }
 
+        /*
+         * Al escogerse un archivo, se agrega el path del mismo al grid.
+         */
         private void FileChooser_FileOk(object sender, CancelEventArgs e)
         {
-
+            String pathNuevoArchivo = FileChooser.FileName;
+            GridPaths.Rows.Add(pathNuevoArchivo);
+            if(TextBoxCantidadProgramas.TextLength != 0)
+                BotonIniciarSimulacion.Enabled = true;
         }
-
-       
     }
 }
