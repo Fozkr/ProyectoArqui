@@ -44,17 +44,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controladora.cs" />
-    <Compile Include="FormPrincipal.cs">
+    <Compile Include="simulador\Bloque.cs" />
+    <Compile Include="simulador\Bloqueable.cs" />
+    <Compile Include="simulador\Bus.cs" />
+    <Compile Include="simulador\CacheDatos.cs" />
+    <Compile Include="simulador\Directorio.cs" />
+    <Compile Include="simulador\Instruccion.cs" />
+    <Compile Include="simulador\MemoriaPrincipal.cs" />
+    <Compile Include="simulador\Simulador.cs" />
+    <Compile Include="ui\FormPrincipal.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormPrincipal.Designer.cs">
+    <Compile Include="ui\FormPrincipal.Designer.cs">
       <DependentUpon>FormPrincipal.cs</DependentUpon>
     </Compile>
-    <Compile Include="Procesador.cs" />
+    <Compile Include="simulador\CacheInstrucciones.cs" />
+    <Compile Include="simulador\Procesador.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FormPrincipal.resx">
+    <Compile Include="simulador\Controlador.cs" />
+    <EmbeddedResource Include="ui\FormPrincipal.resx">
       <DependentUpon>FormPrincipal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
