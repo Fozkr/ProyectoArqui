@@ -18,7 +18,8 @@ namespace ProyectoArqui.simulador
 
         public Instruccion obtenerInstruccion(int dirMem)
         {
-            return instrucciones[dirMem / 4];
+            return new Instruccion(63, 0, 0, 0);
+            // return instrucciones[dirMem / 4];
         }
 
     }

@@ -9,6 +9,8 @@ namespace ProyectoArqui.simulador
     class CacheDatos
     {
 
+        Controlador reloj;
+
         MemoriaPrincipal memoriaPrincipal;
 
         // Contiene los 4 bloques actuales en cache
@@ -26,9 +28,10 @@ namespace ProyectoArqui.simulador
         // NumBloque = dirMem / 16
         // NumPalabra = (dirMem % 16) / 4
 
-        public CacheDatos(MemoriaPrincipal memoriaPrincipal)
+        public CacheDatos(MemoriaPrincipal memoriaPrincipal, Controlador reloj)
         {
             this.memoriaPrincipal = memoriaPrincipal;
+            this.reloj = reloj;
             for (int i = 0; i < estados.Length; ++i)
             {
                 estados[i] = 'I';
@@ -74,11 +77,13 @@ namespace ProyectoArqui.simulador
 
         private void enviarAMemoria(int indiceDeCache) 
         {
+            reloj.esperar(16);
             memoriaPrincipal.set(numBloque[indiceDeCache], cache[indiceDeCache]);
         }
 
         private int traerDeMemoria(int numBloque)
         {
+            reloj.esperar(16);
             int indiceEnCache = mapeoDirecto(numBloque);
             cache[indiceEnCache] = memoriaPrincipal.get(numBloque);
             this.numBloque[indiceEnCache] = numBloque;

@@ -11,9 +11,11 @@ namespace ProyectoArqui.simulador
 
         private bool finalizado = false;
 
+        private Controlador controlador;
+
         private int programCounter;
         private int[] registros =  new int[32];
-        private CacheDatos cache = new CacheDatos(new MemoriaPrincipal());
+        private CacheDatos cache;
         private CacheInstrucciones cacheInst;
 
         // FIXME Usar un mapa <int, inst>
@@ -23,16 +25,29 @@ namespace ProyectoArqui.simulador
 
         public Procesador(CacheInstrucciones cacheInst)
         {
-            metodos[0] = daddi;
-            metodos[1] = dadd;
-            metodos[2] = dsub;
-            metodos[3] = lw;
-            metodos[4] = sw;
-            metodos[5] = beqz;
-            metodos[6] = bnez;
-            metodos[7] = fin;
+            this.metodos[0] = daddi;
+            this.metodos[1] = dadd;
+            this.metodos[2] = dsub;
+            this.metodos[3] = lw;
+            this.metodos[4] = sw;
+            this.metodos[5] = beqz;
+            this.metodos[6] = bnez;
+            this.metodos[7] = fin;
 
+            this.programCounter = 0;
+            this.cache = new CacheDatos(new MemoriaPrincipal(), controlador);
             this.cacheInst = cacheInst;
+
+        }
+
+        public void setProgramCounter(int programCounter)
+        {
+            this.programCounter = programCounter;
+        }
+
+        public void setControlador(Controlador controlador)
+        {
+            this.controlador = controlador;
         }
 
         public void procesar()
@@ -56,6 +71,7 @@ namespace ProyectoArqui.simulador
                 }
             }
             programCounter += 4;
+            controlador.esperar(1);
         }
 
         public void daddi(Instruccion i)
