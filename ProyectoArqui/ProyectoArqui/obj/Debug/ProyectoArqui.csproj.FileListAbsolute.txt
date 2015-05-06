@@ -1,2 +1,0 @@
-C:\Users\b22410\Desktop\ProyectoArqui\ProyectoArqui\bin\Debug\ProyectoArqui.exe.config
-C:\Users\Oscar\Desktop\Repositories\ProyectoArqui\ProyectoArqui\ProyectoArqui\bin\Debug\ProyectoArqui.exe.config
