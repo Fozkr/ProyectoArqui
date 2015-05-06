@@ -6,21 +6,34 @@ using System.Threading.Tasks;
 
 namespace ProyectoArqui.simulador
 {
+    /// <summary>
+    /// Representa una memoria principal para un procesador.
+    /// Se compone de 8 bloques.
+    /// </summary>
     class MemoriaPrincipal
     {
+        private Bloque[] bloquesDeMemoria = new Bloque[8];
 
-        private Bloque[] memoria = new Bloque[8];
-
-        public Bloque get(int index)
+        /// <summary>
+        /// Devuelve un bloque de la memoria
+        /// </summary>
+        /// <param name="i">Indice del bloque a modificar</param>
+        /// <returns>Devuelve el bloque i de la memoria</returns>
+        public Bloque GetBloque(int i)
         {
-            // Considerar devolver una copia del bloque
-            return memoria[index];
+            // TODO Verificar si este metodo devuelve una copia del bloque
+            return bloquesDeMemoria[i];
         }
 
-        public void set(int index, Bloque element)
+        /// <summary>
+        /// Asigna un bloque nuevo en una posicion de la memoria
+        /// Este bloque deberia venir de la cache de datos
+        /// </summary>
+        /// <param name="i">Indice donde se coloca el bloque nuevo</param>
+        /// <param name="bloqueNuevo">Nuevo bloque a colocar</param>
+        public void SetBloque(int i, Bloque bloqueNuevo)
         {
-            // Considerar copiar cada palabra del bloque
-            memoria[index] = element; 
+            bloquesDeMemoria[i] = bloqueNuevo;
         }
 
     }

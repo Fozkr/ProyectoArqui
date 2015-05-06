@@ -8,7 +8,5 @@ namespace ProyectoArqui
 {
     class Bus
     {
-
-
     }
 }

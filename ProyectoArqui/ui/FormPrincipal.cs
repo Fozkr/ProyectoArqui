@@ -84,7 +84,7 @@ namespace ProyectoArqui
             {
                 pathArchivo = fila.Cells[0].Value.ToString();
                 iniciosProgramas.Add(instrucciones.Count);
-                System.IO.TextReader lector = System.IO.File.OpenText(pathArchivo); //abre el archivo para leer sus líneas una por una
+                System.IO.TextReader lector = System.IO.File.OpenText(pathArchivo); //abre el archivo para Leer sus líneas una por una
                 while ((instruccionIndividual = lector.ReadLine()) != null)
                 {
                     string[] partes = instruccionIndividual.Split(' '); //divide cada línea en partes, usando los espacios como token separador

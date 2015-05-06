@@ -29,7 +29,7 @@ namespace ProyectoArqui.simulador
 
         public void entreCiclosDeReloj(Barrier b)
         {
-            // Este metodo se ejecuta entre ciclos de reloj
+            // Este metodo se ejecuta entre ciclos de controlador
             // Aqui se pueden procesar mensajes de caches, etc
         }
 

@@ -6,26 +6,44 @@ using System.Threading.Tasks;
 
 namespace ProyectoArqui.simulador
 {
+    /// <summary>
+    /// Esta clase representa un bloque de memoria para la bloquesDeCache o memoria principal.
+    /// Contiene 4 palabras.
+    /// Cada palabra es un int.
+    /// </summary>
     class Bloque
     {
-        private int[] palabras = new int[4];
+        private int[] palabrasDelBloque = new int[4];
 
+        /// <summary>
+        /// Crea un nuevo bloque inicializado en ceros.
+        /// </summary>
         Bloque()
         {
-            for (int i = 0; i < palabras.Length; ++i)
+            for (int i = 0; i < palabrasDelBloque.Length; ++i)
             {
-                palabras[i] = 0;
+                palabrasDelBloque[i] = 0;
             }
         }
 
-        public int get(int index)
+        /// <summary>
+        /// Devuelve una palabra del bloque.
+        /// </summary>
+        /// <param name="i">Indice de la palabra</param>
+        /// <returns>Devuelve la palabra i del bloque</returns>
+        public int GetPalabra(int i)
         {
-            return palabras[index];
+            return palabrasDelBloque[i];
         }
 
-        public void set(int index, int element)
+        /// <summary>
+        /// Asigna una palabra nueva en una posicion del bloque
+        /// </summary>
+        /// <param name="i">Indice donde se coloca la palabra nueva</param>
+        /// <param name="nuevaPalabra">Nueva palabra a colocar</param>
+        public void SetPalabra(int i, int nuevaPalabra)
         {
-            palabras[index] = element;
+            palabrasDelBloque[i] = nuevaPalabra;
         }
 
     }

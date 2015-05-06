@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ProyectoArqui.simulador
 {
+    /// <summary>
+    /// Representa un procesador simulado. Ejecuta instrucciones hasta que llega a una instruccion fin.
+    /// </summary>
     class Procesador
     {
 
@@ -59,12 +62,19 @@ namespace ProyectoArqui.simulador
             }
         }
 
-        public void procesarInstruccion(Instruccion inst)
+
+        /// <summary>
+        /// Metodo que procesa una instruccion.
+        /// Se encarga de hacer la decodificacion de la instruccion y llamar al metodo de procesamiento correcto.
+        /// </summary>
+        /// <param name="i">Instruccion cuyo codigo se decodifica</param>
+        private void procesarInstruccion(Instruccion inst)
         {
+            // 
             bool ejecutado = false;
             for (int i = 0; i < codigos.Length && !ejecutado; ++i)
             {
-                if (codigos[i] == inst.getCodigo())
+                if (codigos[i] == inst.GetCodigo())
                 {
                     metodos[i](inst);
                     ejecutado = true;
@@ -74,39 +84,63 @@ namespace ProyectoArqui.simulador
             controlador.esperar(1);
         }
 
-        public void daddi(Instruccion i)
+        /// <summary>
+        /// Metodo que ejecuta la instruccion de daddi
+        /// </summary>
+        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        private void daddi(Instruccion i)
         {
-            int y = i.getParametro(1), x = i.getParametro(2), n = i.getParametro(3);
+            int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
             registros[x] = registros[y] + n;
         }
 
-        public void dadd(Instruccion i)
+        /// <summary>
+        /// Metodo que ejecuta la instruccion de dadd
+        /// </summary>
+        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        private void dadd(Instruccion i)
         {
-            int y = i.getParametro(1), z = i.getParametro(2), x = i.getParametro(3);
+            int y = i.GetParametro(1), z = i.GetParametro(2), x = i.GetParametro(3);
             registros[x] = registros[y] + registros[z];
         }
 
-        public void dsub(Instruccion i)
+        /// <summary>
+        /// Metodo que ejecuta la instruccion de dsub
+        /// </summary>
+        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        private void dsub(Instruccion i)
         {
-            int y = i.getParametro(1), z = i.getParametro(2), x = i.getParametro(3);
+            int y = i.GetParametro(1), z = i.GetParametro(2), x = i.GetParametro(3);
             registros[x] = registros[y] - registros[z];
         }
 
-        public void lw(Instruccion i)
+        /// <summary>
+        /// Metodo que ejecuta la instruccion de lw
+        /// </summary>
+        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param
+        private void lw(Instruccion i)
         {
-            int y = i.getParametro(1), x = i.getParametro(2), n = i.getParametro(3);
-            registros[x] = cache.leer(n + registros[y]);
+            int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
+            registros[x] = cache.Leer(n + registros[y]);
         }
 
-        public void sw(Instruccion i)
+        /// <summary>
+        /// Metodo que ejecuta la instruccion de sw
+        /// </summary>
+        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        private void sw(Instruccion i)
         {
-            int y = i.getParametro(1), x = i.getParametro(2), n = i.getParametro(3);
-            cache.escribir(n + registros[y], registros[x]);
+            int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
+            cache.Escribir(n + registros[y], registros[x]);
         }
 
-        public void beqz(Instruccion i)
+        /// <summary>
+        /// Metodo que ejecuta la instruccion de beqz
+        /// </summary>
+        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        private void beqz(Instruccion i)
         {
-            int x = i.getParametro(1), n = i.getParametro(3);
+            int x = i.GetParametro(1), n = i.GetParametro(3);
             if (registros[x] == 0)
             {
                 // Despues el metodo que llama a este aumenta en 4 el pc
@@ -114,9 +148,13 @@ namespace ProyectoArqui.simulador
             }
         }
 
-        public void bnez(Instruccion i)
+        /// <summary>
+        /// Metodo que ejecuta la instruccion de bnez
+        /// </summary>
+        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        private void bnez(Instruccion i)
         {
-            int x = i.getParametro(1), n = i.getParametro(3);
+            int x = i.GetParametro(1), n = i.GetParametro(3);
             if (registros[x] != 0)
             {
                 // Despues el metodo que llama a este aumenta en 4 el pc
@@ -124,7 +162,11 @@ namespace ProyectoArqui.simulador
             }
         }
 
-        public void fin(Instruccion i)
+        /// <summary>
+        /// Metodo que ejecuta la instruccion de fin
+        /// </summary>
+        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        private void fin(Instruccion i)
         {
             finalizado = true;
         }
