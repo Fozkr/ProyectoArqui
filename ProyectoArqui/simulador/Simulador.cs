@@ -10,10 +10,10 @@ namespace ProyectoArqui.simulador
     class Simulador
     {
 
-        public void ejecutarSimulacion()
+        public void ejecutarSimulacion(List<int> instrucciones, List<int> iniciosProgramas)
         {
-            
-            CacheInstrucciones cacheInst = new CacheInstrucciones(); // Debe venir de afuera
+
+            CacheInstrucciones cacheInst = new CacheInstrucciones(instrucciones, iniciosProgramas); // Debe venir de afuera
             Procesador procesador = new Procesador(cacheInst);
             Controlador controlador = new Controlador(1, new Procesador[]{procesador});
 

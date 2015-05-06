@@ -23,14 +23,19 @@ namespace ProyectoArqui.simulador
         /// Crea una cache de instrucciones
         /// </summary>
         /// <param name="numeroDeProgramas"></param>
-        public CacheInstrucciones(int numeroDeProgramas) 
+        public CacheInstrucciones(List<int> instruccionesRecibidas, List<int> iniciosProgramas) 
         {
             // TODO Completar este constructor para que añada a la lista las instrucciones
-
-            // Implementacion Dummy
-            // 3 "programas" que solo ejecutan una instruccion de finalizacion
-            instrucciones = new Instruccion[] { new Instruccion(63, 0, 0, 0), new Instruccion(63, 0, 0, 0), new Instruccion(63, 0, 0, 0)};
-            instruccionesIniciales = new int[] { 0, 4, 8 };
+            instrucciones = new Instruccion[instruccionesRecibidas.Count / 4];
+            for (short inst = 0; inst < instruccionesRecibidas.Count; inst += 4)
+                instrucciones[inst / 4] = new Instruccion(instruccionesRecibidas[inst],instruccionesRecibidas[inst+1],instruccionesRecibidas[inst+2],instruccionesRecibidas[inst+3]);
+            instruccionesIniciales = new int[iniciosProgramas.Count];
+            for (short i = 0; i < iniciosProgramas.Count; ++i)
+                instruccionesIniciales[i] = iniciosProgramas[i];
+                // Implementacion Dummy
+                // 3 "programas" que solo ejecutan una instruccion de finalizacion
+            //    instrucciones = new Instruccion[] { new Instruccion(63, 0, 0, 0), new Instruccion(63, 0, 0, 0), new Instruccion(63, 0, 0, 0) };
+            //instruccionesIniciales = new int[] { 0, 4, 8 };
             indiceSiguientePrograma = 0;
         }
         

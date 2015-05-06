@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ProyectoArqui.simulador;
 
 namespace ProyectoArqui
 {
@@ -17,6 +18,7 @@ namespace ProyectoArqui
     {
         //Atributos
         //Controladora hiloMaestro;
+        Simulador programa;
 
         /*
          * Constructor, inicializa la instancia del hilo maestro.
@@ -25,6 +27,7 @@ namespace ProyectoArqui
         {
             InitializeComponent();
             //hiloMaestro = new Controladora();
+            programa = new Simulador();
         }
 
         /*
@@ -92,6 +95,7 @@ namespace ProyectoArqui
                         instrucciones.Add(parteInstruccion = int.Parse(partes[i])); //agrega cada número entero al arreglo
                 }
             }
+            programa.ejecutarSimulacion(instrucciones, iniciosProgramas);
         }
     }
 }
