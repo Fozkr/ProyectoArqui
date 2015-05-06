@@ -1,0 +1,80 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ProyectoArqui.simulador
+{
+    class CacheDatos
+    {
+
+        MemoriaPrincipal memoriaPrincipal;
+        Bloque[] cache = new Bloque[4];
+        char[] estados = new char[4];
+        int [] numBloque = new int[4];
+
+        CacheDatos(MemoriaPrincipal memoriaPrincipal)
+        {
+            this.memoriaPrincipal = memoriaPrincipal;
+            for (int i = 0; i < estados.Length; ++i)
+            {
+                estados[i] = 'I';
+                numBloque[i] = -1;
+            }
+        }
+
+        public void escribir(int dirMem, int elemento)
+        {
+            int numBloque = dirMem / 16;
+            int numPalabra = (dirMem % 16) / 4;
+            int indiceEnCache = getIndiceDeBloqueEnCache(numBloque);
+            if (indiceEnCache == -1)
+            {
+                indiceEnCache = traerDeMemoria(numBloque);
+            }
+            cache[indiceEnCache].set(numPalabra, elemento);
+            estados[indiceEnCache] = 'M';
+            // Aqui se deberia invalidar en las otras caches el bloque "numBloque" a traves del bus
+        }
+
+        private int getIndiceDeBloqueEnCache(int bloqueBuscado) 
+        {
+            int index = 0;
+            bool encontrado = false;
+            while (!encontrado && index < 4)
+            {
+                if (numBloque[index] == bloqueBuscado)
+                {
+                    encontrado = true;
+                }
+                else
+                {
+                    ++index;
+                }
+            }
+            if (!encontrado)
+            {
+                index = -1;
+            }
+            return index;
+        }
+
+        public void leer(int dirMem)
+        {
+
+        }
+
+        private enviarAMemoria() {
+
+        }
+
+        private int traerDeMemoria(int numBloque)
+        {
+            // Carga el bloque y devuelve el indice en el vector cache
+            return -1;
+        }
+
+
+    }
+}
