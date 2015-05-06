@@ -35,9 +35,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.BotonAgregarArchivo = new System.Windows.Forms.Button();
             this.PanelIniciar = new System.Windows.Forms.Panel();
+            this.BotonIniciarSimulacion = new System.Windows.Forms.Button();
             this.GridPaths = new System.Windows.Forms.DataGridView();
             this.Path = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BotonIniciarSimulacion = new System.Windows.Forms.Button();
             this.PanelIniciar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridPaths)).BeginInit();
             this.SuspendLayout();
@@ -108,6 +108,17 @@
             this.PanelIniciar.Size = new System.Drawing.Size(1130, 106);
             this.PanelIniciar.TabIndex = 5;
             // 
+            // BotonIniciarSimulacion
+            // 
+            this.BotonIniciarSimulacion.Enabled = false;
+            this.BotonIniciarSimulacion.Location = new System.Drawing.Point(179, 54);
+            this.BotonIniciarSimulacion.Name = "BotonIniciarSimulacion";
+            this.BotonIniciarSimulacion.Size = new System.Drawing.Size(100, 23);
+            this.BotonIniciarSimulacion.TabIndex = 6;
+            this.BotonIniciarSimulacion.Text = "Iniciar Simulación";
+            this.BotonIniciarSimulacion.UseVisualStyleBackColor = true;
+            this.BotonIniciarSimulacion.Click += new System.EventHandler(this.BotonIniciarSimulacion_Click);
+            // 
             // GridPaths
             // 
             this.GridPaths.AllowUserToAddRows = false;
@@ -124,17 +135,8 @@
             // 
             this.Path.HeaderText = "Path del archivo";
             this.Path.Name = "Path";
+            this.Path.ReadOnly = true;
             this.Path.Width = 1000;
-            // 
-            // BotonIniciarSimulacion
-            // 
-            this.BotonIniciarSimulacion.Enabled = false;
-            this.BotonIniciarSimulacion.Location = new System.Drawing.Point(179, 54);
-            this.BotonIniciarSimulacion.Name = "BotonIniciarSimulacion";
-            this.BotonIniciarSimulacion.Size = new System.Drawing.Size(100, 23);
-            this.BotonIniciarSimulacion.TabIndex = 6;
-            this.BotonIniciarSimulacion.Text = "Iniciar Simulación";
-            this.BotonIniciarSimulacion.UseVisualStyleBackColor = true;
             // 
             // FormPrincipal
             // 

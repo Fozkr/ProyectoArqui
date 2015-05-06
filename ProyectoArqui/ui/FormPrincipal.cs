@@ -16,15 +16,15 @@ namespace ProyectoArqui
     public partial class FormPrincipal : Form
     {
         //Atributos
-        Controladora hiloMaestro;
+        //Controladora hiloMaestro;
 
         /*
-         * Constructor,
+         * Constructor, inicializa la instancia del hilo maestro.
          */
         public FormPrincipal()
         {
             InitializeComponent();
-            hiloMaestro = new Controladora();
+            //hiloMaestro = new Controladora();
         }
 
         /*
@@ -44,8 +44,8 @@ namespace ProyectoArqui
          */
         private void TextBoxCantidadProgramas_TextChanged(object sender, EventArgs e)
         {
-            if(TextBoxCantidadProgramas.TextLength != 0)
-                hiloMaestro.CantidadProgramas = Convert.ToInt32(TextBoxCantidadProgramas.Text);
+            //if(TextBoxCantidadProgramas.TextLength != 0)
+            //    hiloMaestro.CantidadProgramas = Convert.ToInt32(TextBoxCantidadProgramas.Text);
         }
 
         /*
@@ -67,6 +67,31 @@ namespace ProyectoArqui
             GridPaths.Rows.Add(pathNuevoArchivo);
             if(TextBoxCantidadProgramas.TextLength == GridPaths.Rows.Count)
                 BotonIniciarSimulacion.Enabled = true;
+        }
+
+        /*
+         * Inicia la simulación.
+         * Por ahora, y temporalmente, albergará el código para la carga de instrucciones desde los archivos.
+         */
+        private void BotonIniciarSimulacion_Click(object sender, EventArgs e)
+        {
+            List<int> instrucciones = new List<int>();      //arreglo general que almacenará todas las instrucciones leídas
+            List<int> iniciosProgramas = new List<int>();   //arreglo pequeño que almacena los índices en el anterior donde inicia cada programa
+            String pathArchivo = "";            //usada para iterar por los paths
+            String instruccionIndividual = "";  //usada para iterar por las líneas de los archivos
+            int parteInstruccion = 0;           //usada para iterar por los números enteros en cada línea
+            foreach(DataGridViewRow fila in GridPaths.Rows)
+            {
+                pathArchivo = fila.Cells[0].Value.ToString();
+                iniciosProgramas.Add(instrucciones.Count);
+                System.IO.TextReader lector = System.IO.File.OpenText(pathArchivo); //abre el archivo para leer sus líneas una por una
+                while ((instruccionIndividual = lector.ReadLine()) != null)
+                {
+                    string[] partes = instruccionIndividual.Split(' '); //divide cada línea en partes, usando los espacios como token separador
+                    for (short i = 0; i < 4; ++i)
+                        instrucciones.Add(parteInstruccion = int.Parse(partes[i])); //agrega cada número entero al arreglo
+                }
+            }
         }
     }
 }
