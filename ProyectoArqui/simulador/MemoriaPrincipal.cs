@@ -14,6 +14,14 @@ namespace ProyectoArqui.simulador
     {
         private Bloque[] bloquesDeMemoria = new Bloque[8];
 
+        public MemoriaPrincipal()
+        {
+            for (int i = 0; i < 8; ++i)
+            {
+                bloquesDeMemoria[i] = new Bloque();
+            }
+        }
+
         /// <summary>
         /// Devuelve un bloque de la memoria
         /// </summary>

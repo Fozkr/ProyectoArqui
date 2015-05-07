@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace ProyectoArqui.simulador
 {
@@ -18,27 +19,34 @@ namespace ProyectoArqui.simulador
         private Instruccion[] instrucciones;
         private int[] instruccionesIniciales;
         private int indiceSiguientePrograma;
+        private int cantidadProgramas;
 
         /// <summary>
         /// Crea una cache de instrucciones
         /// </summary>
         /// <param name="numeroDeProgramas"></param>
-        public CacheInstrucciones(List<int> instruccionesRecibidas, List<int> iniciosProgramas) 
+        public CacheInstrucciones(List<int> instruccionesRecibidas, List<int> iniciosProgramas)
         {
-            // TODO Completar este constructor para que añada a la lista las instrucciones
+
+            cantidadProgramas = iniciosProgramas.Count;
+            Debug.WriteLine("CacheInstrucciones: Hay " + cantidadProgramas + " programas");
+
             instrucciones = new Instruccion[instruccionesRecibidas.Count / 4];
             for (short inst = 0; inst < instruccionesRecibidas.Count; inst += 4)
-                instrucciones[inst / 4] = new Instruccion(instruccionesRecibidas[inst],instruccionesRecibidas[inst+1],instruccionesRecibidas[inst+2],instruccionesRecibidas[inst+3]);
+            {
+                instrucciones[inst / 4] = new Instruccion(instruccionesRecibidas[inst], instruccionesRecibidas[inst + 1], instruccionesRecibidas[inst + 2], instruccionesRecibidas[inst + 3]);
+            }
+            Debug.WriteLine("CacheInstrucciones: Hay " + instrucciones.Length + " instrucciones en todos los programas");
+
             instruccionesIniciales = new int[iniciosProgramas.Count];
             for (short i = 0; i < iniciosProgramas.Count; ++i)
+            {
                 instruccionesIniciales[i] = iniciosProgramas[i];
-                // Implementacion Dummy
-                // 3 "programas" que solo ejecutan una instruccion de finalizacion
-            //    instrucciones = new Instruccion[] { new Instruccion(63, 0, 0, 0), new Instruccion(63, 0, 0, 0), new Instruccion(63, 0, 0, 0) };
-            //instruccionesIniciales = new int[] { 0, 4, 8 };
+            }
+
             indiceSiguientePrograma = 0;
         }
-        
+
         /// <summary>
         /// Devuelve la instruccion que el procesador solicite
         /// </summary>
@@ -48,6 +56,11 @@ namespace ProyectoArqui.simulador
         {
             int indiceInstruccion = GetIndiceInstruccion(direccionMemoria);
             return instrucciones[indiceInstruccion];
+        }
+
+        public bool HaySiguientePrograma()
+        {
+            return indiceSiguientePrograma < cantidadProgramas;
         }
 
         /// <summary>

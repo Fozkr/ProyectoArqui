@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace ProyectoArqui.simulador
 {
@@ -13,11 +14,16 @@ namespace ProyectoArqui.simulador
         public void ejecutarSimulacion(List<int> instrucciones, List<int> iniciosProgramas)
         {
 
-            CacheInstrucciones cacheInst = new CacheInstrucciones(instrucciones, iniciosProgramas);
-            Procesador procesador = new Procesador(cacheInst);
-            Controlador controlador = new Controlador(1, new Procesador[]{procesador});
+            Debug.WriteLine("Simulador: Iniciando...");
+            Debug.Flush();
 
-            procesador.setControlador(controlador);
+            CacheInstrucciones cacheInstrucciones = new CacheInstrucciones(instrucciones, iniciosProgramas);
+
+            Procesador procesador = new Procesador(cacheInstrucciones, 0);
+
+            Controlador controlador = new Controlador(1, new Procesador[]{procesador}, cacheInstrucciones);
+
+            procesador.SetControlador(controlador);
 
             // CrearHilo
             Thread procesadorHilo = new Thread(procesador.procesar);

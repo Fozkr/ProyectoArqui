@@ -45,6 +45,7 @@ namespace ProyectoArqui.simulador
             this.controlador = controlador;
             for (int i = 0; i < estadosDeBloque.Length; ++i)
             {
+                this.bloquesDeCache[i] = new Bloque();
                 this.estadosDeBloque[i] = 'I';
                 this.numerosDeBloque[i] = -1; // Da error si se intenta acceder a la posicion -1
             }
@@ -115,8 +116,7 @@ namespace ProyectoArqui.simulador
             // Se esperan 16 ticks de reloj del controlador
             controlador.esperar(16);
             memoriaPrincipal.SetBloque(numerosDeBloque[indiceDeCache], bloquesDeCache[indiceDeCache]);
-            estadosDeBloque[indiceDeCache] = 'I';
-            numerosDeBloque[indiceDeCache] = -1; // El bloque ya no está en la cache
+            estadosDeBloque[indiceDeCache] = 'C';
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace ProyectoArqui.simulador
 {
@@ -17,51 +18,57 @@ namespace ProyectoArqui.simulador
         private Controlador controlador;
 
         private int programCounter;
-        private int[] registros =  new int[32];
+        private int[] registros = new int[32];
         private CacheDatos cache;
-        private CacheInstrucciones cacheInst;
+        private CacheInstrucciones cacheInstrucciones;
+        private int id;
 
         // FIXME Usar un mapa <int, inst>
         private delegate void inst(Instruccion i);
-        private int[] codigos = {8, 32, 34, 35, 43, 4, 5, 63};
-        private inst[] metodos = new inst[8];
+        Dictionary<int, inst> mapa = new Dictionary<int, inst>();
 
-        public Procesador(CacheInstrucciones cacheInst)
+        public Procesador(CacheInstrucciones cacheInst, int id)
         {
-            this.metodos[0] = daddi;
-            this.metodos[1] = dadd;
-            this.metodos[2] = dsub;
-            this.metodos[3] = lw;
-            this.metodos[4] = sw;
-            this.metodos[5] = beqz;
-            this.metodos[6] = bnez;
-            this.metodos[7] = fin;
+            mapa.Add(8, daddi);
+            mapa.Add(32, dadd);
+            mapa.Add(34, dsub);
+            mapa.Add(35, lw);
+            mapa.Add(43, sw);
+            mapa.Add(4, beqz);
+            mapa.Add(5, bnez);
+            mapa.Add(63, fin);
 
             this.programCounter = 0;
-            this.cache = new CacheDatos(new MemoriaPrincipal(), controlador);
-            this.cacheInst = cacheInst;
-
+            this.cacheInstrucciones = cacheInst;
+            this.id = id;
         }
 
-        public void setProgramCounter(int programCounter)
+        public void SetProgramCounter(int programCounter)
         {
             this.programCounter = programCounter;
         }
 
-        public void setControlador(Controlador controlador)
+        public void SetControlador(Controlador controlador)
         {
             this.controlador = controlador;
+            this.cache = new CacheDatos(new MemoriaPrincipal(), controlador);
         }
 
         public void procesar()
         {
             while (!finalizado)
             {
-                Instruccion i = cacheInst.obtenerInstruccion(programCounter);
+                Debug.WriteLine("Procesador: PC = " + programCounter);
+                Instruccion i = cacheInstrucciones.obtenerInstruccion(programCounter);
                 procesarInstruccion(i);
+                Debug.Flush();
             }
         }
 
+        public void SetFinalizado()
+        {
+            finalizado = true;
+        }
 
         /// <summary>
         /// Metodo que procesa una instruccion.
@@ -70,17 +77,9 @@ namespace ProyectoArqui.simulador
         /// <param name="i">Instruccion cuyo codigo se decodifica</param>
         private void procesarInstruccion(Instruccion inst)
         {
-            // 
-            bool ejecutado = false;
-            for (int i = 0; i < codigos.Length && !ejecutado; ++i)
-            {
-                if (codigos[i] == inst.GetCodigo())
-                {
-                    metodos[i](inst);
-                    ejecutado = true;
-                }
-            }
+            mapa[inst.GetCodigo()](inst);
             programCounter += 4;
+            Debug.WriteLine("Procesador: Esperando 1 tick luego de ejecutar una instruccion");
             controlador.esperar(1);
         }
 
@@ -91,7 +90,10 @@ namespace ProyectoArqui.simulador
         private void daddi(Instruccion i)
         {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
+            Debug.WriteLine("Procesador: DADDI R" + x + " = R" + y + " + " + n);
+            Debug.WriteLine("Procesador: DADDI R" + x + " = " + registros[y] + " + " + n);
             registros[x] = registros[y] + n;
+            Debug.WriteLine("Procesador: DADDI R" + x + " = " + registros[x]);
         }
 
         /// <summary>
@@ -101,7 +103,10 @@ namespace ProyectoArqui.simulador
         private void dadd(Instruccion i)
         {
             int y = i.GetParametro(1), z = i.GetParametro(2), x = i.GetParametro(3);
+            Debug.WriteLine("Procesador: DADD R" + x + " = R" + y + " + R" + z);
+            Debug.WriteLine("Procesador: DADD R" + x + " = " + registros[y] + " + " + registros[z]);
             registros[x] = registros[y] + registros[z];
+            Debug.WriteLine("Procesador: DADD R" + x + " = " + registros[x]);
         }
 
         /// <summary>
@@ -111,7 +116,10 @@ namespace ProyectoArqui.simulador
         private void dsub(Instruccion i)
         {
             int y = i.GetParametro(1), z = i.GetParametro(2), x = i.GetParametro(3);
+            Debug.WriteLine("Procesador: DSUB R" + x + " = R" + y + " - R" + z);
+            Debug.WriteLine("Procesador: DSUB R" + x + " = " + registros[y] + " - " + registros[z]);
             registros[x] = registros[y] - registros[z];
+            Debug.WriteLine("Procesador: DSUB R" + x + " = " + registros[x]);
         }
 
         /// <summary>
@@ -122,6 +130,9 @@ namespace ProyectoArqui.simulador
         {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
             registros[x] = cache.Leer(n + registros[y]);
+            Debug.WriteLine("Procesador: LW R" + x + " = MEM(" + n + " + R" + y +")");
+            Debug.WriteLine("Procesador: LW R" + x + " = MEM(" + (n + registros[y]) + ")");
+            Debug.WriteLine("Procesador: LW R" + x + " = " + registros[x]);
         }
 
         /// <summary>
@@ -132,6 +143,8 @@ namespace ProyectoArqui.simulador
         {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
             cache.Escribir(n + registros[y], registros[x]);
+            Debug.WriteLine("Procesador: SW MEM(" + n + " + R" + y + ") = R" + x);
+            Debug.WriteLine("Procesador: SW MEM(" + (n + registros[y]) + ") = " + registros[x]);
         }
 
         /// <summary>
@@ -143,9 +156,15 @@ namespace ProyectoArqui.simulador
             int x = i.GetParametro(1), n = i.GetParametro(3);
             if (registros[x] == 0)
             {
-                // Despues el metodo que llama a este aumenta en 4 el pc
-                programCounter = n - 4;
+                programCounter = (programCounter + 4) + n * 4;
+                Debug.WriteLine("Procesador: BEQZ Salto a " + programCounter);
+                programCounter -= 4;
             }
+            else
+            {
+                Debug.WriteLine("Procesador: BEQZ No salto");
+            }
+            // Despues el metodo que llama a este aumenta en 4 el pc
         }
 
         /// <summary>
@@ -157,9 +176,15 @@ namespace ProyectoArqui.simulador
             int x = i.GetParametro(1), n = i.GetParametro(3);
             if (registros[x] != 0)
             {
-                // Despues el metodo que llama a este aumenta en 4 el pc
-                programCounter = n - 4;
+                programCounter = (programCounter + 4) + n * 4;
+                Debug.WriteLine("Procesador: BNEZ Salto a " + programCounter);
+                programCounter -= 4;
             }
+            else
+            {
+                Debug.WriteLine("Procesador: BNEZ No salto");
+            }
+            // Despues el metodo que llama a este aumenta en 4 el pc
         }
 
         /// <summary>
@@ -168,7 +193,8 @@ namespace ProyectoArqui.simulador
         /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
         private void fin(Instruccion i)
         {
-            finalizado = true;
+            controlador.programaTerminado(id);
+            Debug.WriteLine("Procesador: Un programa ha finalizado");
         }
 
     }

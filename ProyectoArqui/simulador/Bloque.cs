@@ -18,7 +18,7 @@ namespace ProyectoArqui.simulador
         /// <summary>
         /// Crea un nuevo bloque inicializado en ceros.
         /// </summary>
-        Bloque()
+        public Bloque()
         {
             for (int i = 0; i < palabrasDelBloque.Length; ++i)
             {
