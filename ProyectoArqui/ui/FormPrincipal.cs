@@ -12,13 +12,12 @@ using ProyectoArqui.simulador;
 namespace ProyectoArqui
 {
     /*
-     * 
+     * Clase interfaz, obtiene los parámetros del usuario y crea la instancia del hilo maestro para iniciar el programa.
      */
     public partial class FormPrincipal : Form
     {
         //Atributos
-        //Controladora hiloMaestro;
-        Simulador programa;
+        Simulador hiloMaestro;
 
         /*
          * Constructor, inicializa la instancia del hilo maestro.
@@ -26,12 +25,11 @@ namespace ProyectoArqui
         public FormPrincipal()
         {
             InitializeComponent();
-            //hiloMaestro = new Controladora();
-            programa = new Simulador();
+            hiloMaestro = new Simulador();
         }
 
         /*
-         * Limpia los campos para comenzar una nueva simulación.
+         * Limpia y habilita los campos para comenzar una nueva simulación.
          */
         private void BotonNuevaSimulacion_Click(object sender, EventArgs e)
         {
@@ -39,16 +37,6 @@ namespace ProyectoArqui
             GridPaths.Rows.Clear();
             TextBoxCantidadProgramas.Enabled = true;
             BotonAgregarArchivo.Enabled = true;
-        }
-
-        /*
-         * Cuando escriba la cantidad de programas que serán ejecutados en la simulación, se guardan en el atributo de la clase,
-         * más adelante debe bloquearse este textbox, cuando la simulación sea iniciada.
-         */
-        private void TextBoxCantidadProgramas_TextChanged(object sender, EventArgs e)
-        {
-            //if(TextBoxCantidadProgramas.TextLength != 0)
-            //    hiloMaestro.CantidadProgramas = Convert.ToInt32(TextBoxCantidadProgramas.Text);
         }
 
         /*
@@ -73,11 +61,20 @@ namespace ProyectoArqui
         }
 
         /*
-         * Inicia la simulación.
-         * Por ahora, y temporalmente, albergará el código para la carga de instrucciones desde los archivos.
+         * Lee desde los archivos todas las instrucciones para luego enviarlas al simulador.
          */
         private void BotonIniciarSimulacion_Click(object sender, EventArgs e)
         {
+            if ((TextBoxCantidadProgramas.TextLength != GridPaths.Rows.Count) || (TextBoxCantidadProgramas.TextLength == 0))
+                return; //TODO mostrar un mensaje de error
+
+            //Deshabilitar botones para no entorpecer la interfaz durante la simulación (TODO agregar botón para detenerla)
+            BotonNuevaSimulacion.Enabled = false;
+            TextBoxCantidadProgramas.Enabled = false;
+            BotonAgregarArchivo.Enabled = false;
+            BotonIniciarSimulacion.Enabled = false;
+
+            //Lee todas las instrucciones y las guarda en una lista
             List<int> instrucciones = new List<int>();      //arreglo general que almacenará todas las instrucciones leídas
             List<int> iniciosProgramas = new List<int>();   //arreglo pequeño que almacena los índices en el anterior donde inicia cada programa
             String pathArchivo = "";            //usada para iterar por los paths
@@ -95,7 +92,10 @@ namespace ProyectoArqui
                         instrucciones.Add(parteInstruccion = int.Parse(partes[i])); //agrega cada número entero al arreglo
                 }
             }
-            programa.ejecutarSimulacion(instrucciones, iniciosProgramas);
+
+            //Enviar parámetros al simulador e iniciar la simulación
+            hiloMaestro.CantidadProgramas = Convert.ToInt16(TextBoxCantidadProgramas.Text); //se asume que sólo escribirán números
+            hiloMaestro.ejecutarSimulacion(instrucciones, iniciosProgramas);
         }
     }
 }

@@ -8,12 +8,27 @@ using System.Diagnostics;
 
 namespace ProyectoArqui.simulador
 {
+    /*
+     * 
+     */
     class Simulador
     {
+        //Atributos
+        private short cantidadProgramas;
 
+        /*
+         * Constructor, inicializa el atributo.
+         */
+        public Simulador()
+        {
+            cantidadProgramas = 0;
+        }
+
+        /*
+         * 
+         */
         public void ejecutarSimulacion(List<int> instrucciones, List<int> iniciosProgramas)
         {
-
             Debug.WriteLine("Simulador: Iniciando...");
             Debug.Flush();
 
@@ -33,5 +48,13 @@ namespace ProyectoArqui.simulador
             procesadorHilo.Join();
         }
 
+        /*
+         * Setter y getter para el atributo cantidadProgramas.
+         */
+        public short CantidadProgramas
+        {
+            get { return this.cantidadProgramas; }
+            set { this.cantidadProgramas = value; }
+        }
     }
 }
