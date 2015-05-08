@@ -56,7 +56,7 @@ namespace ProyectoArqui
         {
             String pathNuevoArchivo = FileChooser.FileName;
             GridPaths.Rows.Add(pathNuevoArchivo);
-            if(TextBoxCantidadProgramas.TextLength == GridPaths.Rows.Count)
+            if (Convert.ToInt32(TextBoxCantidadProgramas.Text) == GridPaths.Rows.Count)
                 BotonIniciarSimulacion.Enabled = true;
         }
 
@@ -65,7 +65,7 @@ namespace ProyectoArqui
          */
         private void BotonIniciarSimulacion_Click(object sender, EventArgs e)
         {
-            if ((TextBoxCantidadProgramas.TextLength != GridPaths.Rows.Count) || (TextBoxCantidadProgramas.TextLength == 0))
+            if ((Convert.ToInt32(TextBoxCantidadProgramas.Text) != GridPaths.Rows.Count) || (TextBoxCantidadProgramas.TextLength == 0))
                 return; //TODO mostrar un mensaje de error
 
             //Deshabilitar botones para no entorpecer la interfaz durante la simulación (TODO agregar botón para detenerla)
