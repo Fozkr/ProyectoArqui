@@ -111,8 +111,7 @@ namespace ProyectoArqui.View
 
             //Enviar parámetros al simulador e iniciar la simulación
             Simulador simulador = new Simulador(instrucciones, iniciosProgramas, nombresProgramas, this);
-            simulador.CantidadProgramas = Convert.ToInt16(TextBoxCantidadProgramas.Text); //se asume que sólo escribirán números
-            Thread hiloSimulacion = new Thread(simulador.ejecutarSimulacion);
+            Thread hiloSimulacion = new Thread(simulador.EjecutarSimulacion);
             hiloSimulacion.Start();
 
             // NO hacer join al hiloSimulacion porque sino se detienen los eventos de la interfaz grafica
@@ -242,7 +241,7 @@ namespace ProyectoArqui.View
                     grid = gridProcesador2;
                     break;
             }
-            int tuplaInicial = (cantidadProgramasPorGrid[idProcesador] - 1) * 16; //28 tuplas por programa (3 titulo, 8 registros, 4 cache, 1 final)
+            int tuplaInicial = (cantidadProgramasPorGrid[idProcesador] - 1) * 16; //28 tuplas por programa (3 titulo, 8 registros, 4 cacheDatos, 1 final)
             grid.Rows[tuplaInicial + 2].Cells[1].Value = (ticsReloj - (int)grid.Rows[tuplaInicial + 1].Cells[1].Value);
             for (short i = 0; i < 8; ++i)
             {

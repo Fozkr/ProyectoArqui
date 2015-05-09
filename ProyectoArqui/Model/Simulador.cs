@@ -22,9 +22,13 @@ namespace ProyectoArqui.Model
         private Listener interfaz;
         private String[] nombresProgramas;
 
-        /*
-         * Constructor, inicializa el atributo.
-         */
+        /// <summary>
+        /// Constructor de la simulacion
+        /// </summary>
+        /// <param name="instrucciones">Lista de instrucciones de todos los programas</param>
+        /// <param name="iniciosProgramas">Indica el inicio de cada programa</param>
+        /// <param name="nombresProgramasRecibidos">Indica el nombre de cada programa</param>
+        /// <param name="interfaz">Vista que va a recibir los datos que el modelo emite</param>
         public Simulador(List<int> instrucciones, List<int> iniciosProgramas, List<string> nombresProgramasRecibidos, Listener interfaz)
         {
             this.cantidadProgramas = iniciosProgramas.Count;
@@ -34,10 +38,16 @@ namespace ProyectoArqui.Model
             this.interfaz = interfaz;
         }
 
-        /*
-         * 
-         */
-        public void ejecutarSimulacion()
+        /// <summary>
+        /// Crea todas las condiciones necesarias para la simulacion y
+        /// posteriormente la inicia simplemente diciendole a cada procesador
+        /// que se ejecute
+        /// 
+        /// Este metodo esta pensado en que se va a envolver en un hilo cuando se
+        /// cree desde la vista!
+        /// 
+        /// </summary>
+        public void EjecutarSimulacion()
         {
             Debug.WriteLine("Simulador: Iniciando...");
             Debug.Flush();
@@ -45,61 +55,46 @@ namespace ProyectoArqui.Model
             // Modificar aqui la cantidad de procesadores deseados!
             int numeroProcesadores = 1;
 
-            CacheInstrucciones cacheInstrucciones = new CacheInstrucciones(instrucciones, iniciosProgramas, cantidadProgramas, nombresProgramas);
-
+            // Se crean vectores para todos los objetos necesarios
+            Controlador controlador = new Controlador();
             Procesador[] procesadores = new Procesador[numeroProcesadores];
+            CacheInstrucciones cacheInstrucciones = new CacheInstrucciones(instrucciones, iniciosProgramas, cantidadProgramas, nombresProgramas);
+            CacheDatos[] cachesDatos = new CacheDatos[numeroProcesadores];
+            MemoriaPrincipal[] memoriasPrincipales = new MemoriaPrincipal[numeroProcesadores];
 
+            // Se inicializan todos los objetos relacionados a los procesadores
             for (int i = 0; i < numeroProcesadores; ++i)
             {
-                procesadores[i] = new Procesador(cacheInstrucciones, i);
+                memoriasPrincipales[i] = new MemoriaPrincipal();
+                cachesDatos[i] = new CacheDatos(memoriasPrincipales[i], controlador);
+                procesadores[i] = new Procesador(i, cacheInstrucciones, cachesDatos[i], controlador);
             }
 
-            Controlador controlador = new Controlador(numeroProcesadores, procesadores, cacheInstrucciones);
+            // Se inicializa el controlador que hasta el momento no conocia a nadie
+            controlador.Inicializar(procesadores, cachesDatos, cacheInstrucciones, memoriasPrincipales);
+            
+            // Se agrega la interfaz como listener del controlador/modelo
             controlador.AddListener(interfaz);
 
+            // Se crean los hilos necesarios
+            Thread[] hilosProcesadores = new Thread[numeroProcesadores];
             for (int i = 0; i < numeroProcesadores; ++i)
             {
-                procesadores[i].SetControlador(controlador);
-            }
-
-            Thread[] hilosProcesadores = new Thread[3];
-            for (int i = 0; i < numeroProcesadores; ++i)
-            {
-                hilosProcesadores[i] = new Thread(procesadores[i].procesar);
+                // Se crea un hilo para cada procesador y se manda a ejectuar instrucciones
+                hilosProcesadores[i] = new Thread(procesadores[i].Procesar);
                 hilosProcesadores[i].Start();
             }
 
-            // Cuando todos los procesadores comienzan se empiezan a sincronizar solos con ayuda del objeto controlador
-            // porque ahi esta la barrera
+            // Cuando todos los procesadores comienzan, se empiezan a sincronizar 
+            // solos con ayuda del objeto controlador porque ahi esta la barrera
 
+            // Se espera que cada procesador termine
             for (int i = 0; i < numeroProcesadores; ++i)
             {
                 hilosProcesadores[i].Join();
             }
-        }
 
-        private int[] descomponerCache(CacheDatos cache)
-        {
-            int[] descomposicion = new int[4 * 4]; //4 bloques, 4 palabras, 4 bytes
-            Bloque[] bloques = cache.BloquesDeCache;
-            short byteActual = 0;
-            for(short i=0; i<4; ++i) //4 bloques
-            {
-                int[] palabras = bloques[i].PalabrasDelBloque;
-                for (short k = 0; k < 4; ++k) //4  palabras
-                    descomposicion[byteActual++] = palabras[k];
-            }
-            return descomposicion;
+            // El hilo del simulador termina en el momento que todos los procesadores terminan!
         }
-
-        /*
-         * Setter y getter para el atributo cantidadProgramas.
-         */
-        public int CantidadProgramas
-        {
-            get { return this.cantidadProgramas; }
-            set { this.cantidadProgramas = value; }
-        }
-
     }
 }

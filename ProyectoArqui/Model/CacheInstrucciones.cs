@@ -8,22 +8,22 @@ using System.Diagnostics;
 namespace ProyectoArqui.Model
 {
     /// <summary>
-    /// Representacion de una cache de instrucciones.
+    /// Representacion de una cacheDatos de instrucciones.
     /// Contiene un vector con todas las instrucciones de todos los programa
     /// Contiene un vector que indica donde esta la primera instruccion de cada programa a ejecutar
-    /// No funciona como la cache de datos, simplemente contiene las instrucciones.
+    /// No funciona como la cacheDatos de datos, simplemente contiene las instrucciones.
     /// </summary>
     class CacheInstrucciones
     {
 
         private Instruccion[] instrucciones;
+        private String[] nombresProgramas;
         private int[] instruccionesIniciales;
         private int indiceSiguientePrograma;
         private int cantidadProgramas;
-        private String[] nombresProgramas;
 
         /// <summary>
-        /// Crea una cache de instrucciones
+        /// Crea una cacheDatos de instrucciones
         /// </summary>
         /// <param name="instruccionesRecibidas"></param>
         /// <param name="iniciosProgramas"></param>
@@ -56,13 +56,58 @@ namespace ProyectoArqui.Model
         /// </summary>
         /// <param name="direccionMemoria">Recibe la direccion de memoria donde se encuentra ubicada la instruccion que el procesador desea</param>
         /// <returns>Devuelve la instruccion solicitada</returns>
-        public Instruccion obtenerInstruccion(int direccionMemoria)
+        public Instruccion ObtenerInstruccion(int direccionMemoria)
         {
             int indiceInstruccion = GetIndiceInstruccion(direccionMemoria);
             return instrucciones[indiceInstruccion];
         }
 
-        public bool HaySiguientePrograma()
+        /// <summary>
+        /// Devuelve el nombre del programa cuya primera dirección es la que se indica por parámetro
+        /// </summary>
+        /// <param name="direccionInicial">Dirección inicial donde se encuentra la primera instruccion del programa</param>
+        /// <returns></returns>
+        public String GetNombrePrograma(int direccionInicial)
+        {
+            String nombre = "Desconocido";
+            for (int i = 0; i < cantidadProgramas; ++i)
+            {
+                if (direccionInicial == instruccionesIniciales[i])
+                {
+                    nombre = nombresProgramas[i];
+                }
+            }
+            return nombre;
+        }
+
+        /// <summary>
+        /// Le indica al procesador que entra como parametro cual es el siguiente programa que deberia ejecutar
+        /// Si no hay un siguiente programa, indica que el procesador ha terminado su trabajo
+        /// </summary>
+        /// <param name="procesador">Procesador cuyo programa se quiere modificar</param>
+        /// <returns>Debuelve true si cambia el programa del procesador</returns>
+        public bool AsignarPrograma(Procesador procesador)
+        {
+            bool asignado = HaySiguientePrograma();
+            if (asignado)
+            {
+                int direccionSiguientePrograma = GetDireccionSiguientePrograma();
+                procesador.ProgramCounter = direccionSiguientePrograma;
+                Debug.WriteLine("CacheInstrucciones: El procesador " + procesador.ID + " va a ejecutar el programa que empieza en " + direccionSiguientePrograma);
+            }
+            else
+            {
+                Debug.WriteLine("CacheInstrucciones: El procesador " + procesador.ID + " va a finalizar porque no hay mas programas que ejecutar");
+                procesador.Finalizado = true;
+            }
+            return asignado;
+        }
+
+        /// <summary>
+        /// Devuelve si hay un siguiente programa que ejecutar
+        /// </summary>
+        /// <returns>True si aun quedan programas por ejecutar, false en cualquier otro caso</returns>
+        private bool HaySiguientePrograma()
         {
             return indiceSiguientePrograma < cantidadProgramas;
         }
@@ -72,7 +117,7 @@ namespace ProyectoArqui.Model
         /// Cada llamado a este metodo devuelve una direccion distinta
         /// </summary>
         /// <returns>direccion de memoria del siguiente programa</returns>
-        public int GetDireccionSiguientePrograma()
+        private int GetDireccionSiguientePrograma()
         {
             return instruccionesIniciales[indiceSiguientePrograma++];
         }
@@ -87,17 +132,6 @@ namespace ProyectoArqui.Model
             return direccionMemoria / 4;
         }
 
-        public String GetNombrePrograma(int direccionInicial)
-        {
-            String nombre = "Desconocido";
-            for (int i = 0; i < cantidadProgramas; ++i)
-            {
-                if (direccionInicial == instruccionesIniciales[i])
-                {
-                    nombre = nombresProgramas[i];
-                }
-            }
-            return nombre;
-        }
+
     }
 }

@@ -8,35 +8,33 @@ using ProyectoArqui.Controller;
 namespace ProyectoArqui.Model
 {
     /// <summary>
-    /// Representa una cache de datos para un procesador.
+    /// Representa una cacheDatos de datos para un procesador.
     /// Se compone de 4 bloques.
     /// </summary>
     class CacheDatos
     {
 
-        Controlador controlador;
-
-        MemoriaPrincipal memoriaPrincipal;
-
-        Bloque[] bloquesDeCache = new Bloque[4];
+        private Controlador controlador;
+        private MemoriaPrincipal memoriaPrincipal;
+        private Bloque[] bloquesDeCache = new Bloque[4];
 
         // Contiene el estado de cada bloque
         //      'I' Invalido
         //      'C' Compartido
         //      'M' Modificado
-        char[] estadosDeBloque = new char[4];
+        private char[] estadosDeBloque = new char[4];
 
         // Indica el numero de bloque en memoria principal
-        int [] numerosDeBloque = new int[4];
+        private int [] numerosDeBloque = new int[4];
 
         // Numero de Bloque = direccionMemoria / 16
         // Numeros de Palabra = (direccionMemoria % 16) / 4
 
         /// <summary>
-        /// Crea una nueva cache de datos.
-        /// Recibe una memoria principal para la cual sirve de cache y
+        /// Crea una nueva cacheDatos de datos.
+        /// Recibe una memoria principal para la cual sirve de cacheDatos y
         /// un controlador que utiliza para esperar cierta cantidad de ticks 
-        /// cuando ocurren fallos de cache
+        /// cuando ocurren fallos de cacheDatos
         /// </summary>
         /// <param name="memoriaPrincipal">Memoria principal de la que se reciben y escriben bloques</param>
         /// <param name="controlador">controlador que controla el reloj de la simulacion</param>
@@ -64,7 +62,7 @@ namespace ProyectoArqui.Model
             int indiceEnCache = GetIndiceBloqueEnCache(numeroDeBloque);
             bloquesDeCache[indiceEnCache].SetPalabra(numeroDePalabraEnBloque, palabra);
             estadosDeBloque[indiceEnCache] = 'M';
-            // TODO Aqui se deberia invalidar en las otras caches el bloque "numerosDeBloque" a traves del bus y del directorio
+            // TODO Aqui se deberia invalidar en las otras cachesDatos el bloque "numerosDeBloque" a traves del bus y del directorio
         }
 
         /// <summary>
@@ -81,11 +79,11 @@ namespace ProyectoArqui.Model
         }
 
         /// <summary>
-        /// Devuelve el indice en el cual se encuentra en la cache el bloque se quiere de memoria.
-        /// Si el bloque de memoria no está en la cache, se manda a traer de memoria con el metodo ReemplazarBloque
+        /// Devuelve el indice en el cual se encuentra en la cacheDatos el bloque se quiere de memoria.
+        /// Si el bloque de memoria no está en la cacheDatos, se manda a traer de memoria con el metodo ReemplazarBloque
         /// </summary>
         /// <param name="numeroDeBloqueEnMemoria">Numero de bloque en el que se necesita escribir</param>
-        /// <returns>Devuelve el indice en el cual se encuentra el bloque buscado en la cache</returns>
+        /// <returns>Devuelve el indice en el cual se encuentra el bloque buscado en la cacheDatos</returns>
         private int GetIndiceBloqueEnCache(int numeroDeBloqueEnMemoria)
         {
             int i = MapeoDirecto(numeroDeBloqueEnMemoria);
@@ -100,7 +98,7 @@ namespace ProyectoArqui.Model
         /// Se encarga de traer un bloque de la memoria, pero verificando si el bloque esta modificado.
         /// Si el bloque se encuentra modificado, entonces lo manda a escribir en memoria antes de reemplazarlo.
         /// </summary>
-        /// <param name="indiceEnCache">indice en cache donde se quiere traer un bloque</param>
+        /// <param name="indiceEnCache">indice en cacheDatos donde se quiere traer un bloque</param>
         /// <param name="numeroDeBloqueEnMemoria">Numero de bloque en memoria que se quiere poner en indiceEnCache</param>
         private void ReemplazarBloque(int indiceEnCache, int numeroDeBloqueEnMemoria)
         {
@@ -112,7 +110,7 @@ namespace ProyectoArqui.Model
         }
 
         /// <summary>
-        /// Escribe un bloque de memoria de la cache en su posicion respectiva en la memoria principal
+        /// Escribe un bloque de memoria de la cacheDatos en su posicion respectiva en la memoria principal
         /// </summary>
         /// <param name="indiceDeCache">Indice del bloque que se quiere enviar a memoria principal</param>
         private void EnviarBloqueAMemoria(int indiceDeCache) 
@@ -138,20 +136,14 @@ namespace ProyectoArqui.Model
         }
 
         /// <summary>
-        /// Indica donde deberia ubicarse determinado bloque de memoria principal en la cache
+        /// Indica donde deberia ubicarse determinado bloque de memoria principal en la cacheDatos
         /// </summary>
-        /// <param name="numeroDeBloqueEnMemoria">Numero de bloque que se necesita saber su posible indice en cache</param>
-        /// <returns>Devuelve el indice que el bloque deberia tener en la cache</returns>
+        /// <param name="numeroDeBloqueEnMemoria">Numero de bloque que se necesita saber su posible indice en cacheDatos</param>
+        /// <returns>Devuelve el indice que el bloque deberia tener en la cacheDatos</returns>
         private int MapeoDirecto(int numeroDeBloqueEnMemoria)
         {
-            // 4 es el numero de bloques de la cache
+            // 4 es el numero de bloques de la cacheDatos
             return numeroDeBloqueEnMemoria % 4;
-        }
-
-        public Bloque[] BloquesDeCache
-        {
-            get { return this.bloquesDeCache; }
-            set { this.bloquesDeCache = value; }
         }
     }
 }

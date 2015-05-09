@@ -14,6 +14,10 @@ namespace ProyectoArqui.Model
     {
         private Bloque[] bloquesDeMemoria = new Bloque[8];
 
+        /// <summary>
+        /// Crea los bloques de la memoria principal
+        /// Se inicializa en ceros
+        /// </summary>
         public MemoriaPrincipal()
         {
             for (int i = 0; i < 8; ++i)
@@ -35,7 +39,7 @@ namespace ProyectoArqui.Model
 
         /// <summary>
         /// Asigna un bloque nuevo en una posicion de la memoria
-        /// Este bloque deberia venir de la cache de datos
+        /// Este bloque deberia venir de la cacheDatos de datos
         /// </summary>
         /// <param name="i">Indice donde se coloca el bloque nuevo</param>
         /// <param name="bloqueNuevo">Nuevo bloque a colocar</param>

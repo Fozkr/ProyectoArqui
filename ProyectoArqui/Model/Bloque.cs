@@ -46,10 +46,5 @@ namespace ProyectoArqui.Model
             palabrasDelBloque[i] = nuevaPalabra;
         }
 
-        public int[] PalabrasDelBloque
-        {
-            get { return this.palabrasDelBloque; }
-            set { this.palabrasDelBloque = value; }
-        }
     }
 }
