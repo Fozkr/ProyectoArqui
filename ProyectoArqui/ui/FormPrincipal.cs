@@ -18,6 +18,7 @@ namespace ProyectoArqui
     {
         //Atributos
         Simulador hiloMaestro;
+        short[] cantidadProgramasPorGrid;
 
         /*
          * Constructor, inicializa la instancia del hilo maestro.
@@ -26,6 +27,7 @@ namespace ProyectoArqui
         {
             InitializeComponent();
             hiloMaestro = new Simulador(this);
+            cantidadProgramasPorGrid = new short[3];
         }
 
         /*
@@ -35,8 +37,13 @@ namespace ProyectoArqui
         {
             TextBoxCantidadProgramas.Text = "";
             GridPaths.Rows.Clear();
+            gridProcesador0.Rows.Clear();
+            gridProcesador1.Rows.Clear();
+            gridProcesador2.Rows.Clear();
+            gridMemoriaCompartida.Rows.Clear();
             TextBoxCantidadProgramas.Enabled = true;
             BotonAgregarArchivo.Enabled = true;
+            cantidadProgramasPorGrid[0] = cantidadProgramasPorGrid[1] = cantidadProgramasPorGrid[2] = 0;
         }
 
         /*
@@ -94,14 +101,21 @@ namespace ProyectoArqui
                     for (short i = 0; i < 4; ++i)
                         instrucciones.Add(parteInstruccion = int.Parse(partes[i])); //agrega cada número entero al arreglo
                 }
+                lector.Close();
             }
 
             //Enviar parámetros al simulador e iniciar la simulación
             hiloMaestro.CantidadProgramas = Convert.ToInt16(TextBoxCantidadProgramas.Text); //se asume que sólo escribirán números
             hiloMaestro.ejecutarSimulacion(instrucciones, iniciosProgramas, nombresProgramas);
+
+            //Dejar listo para una nueva simulación
+            BotonNuevaSimulacion.Enabled = true;
         }
 
-        //delegate void delegateactualizarNombrePrograma(Control control, String nombrePrograma, int idProcesador);
+        /*
+         * Simplemente actualiza la label que indica el nombre del programa (archivo de programa) que está corriendo
+         * en uno de los procesadores.
+         */
         public void actualizarNombrePrograma(String nombrePrograma, int idProcesador)
         {
             switch (idProcesador)
@@ -115,6 +129,79 @@ namespace ProyectoArqui
                 case 2:
                     labelProcesador2Corriendo.Text = nombrePrograma;
                     break;
+            }
+        }
+
+        /*
+         * Cuando un procesador empieza a simular un nuevo programa, se deben crear las tuplas que mostrarán los resultados
+         * de esa simulación, con valores iniciales.
+         */
+        public void crearTuplasResultado(int idProcesador, String nombrePrograma, int ticsRelojInicio, int[] registros, int[] cache)
+        {
+            DataGridView grid = null;
+            switch (idProcesador)
+            {
+                case 0:
+                    grid = gridProcesador0;
+                    break;
+                case 1:
+                    grid = gridProcesador1;
+                    break;
+                case 2:
+                    grid = gridProcesador2;
+                    break;
+            }
+            grid.Rows.Add(nombrePrograma);
+            grid.Rows.Add("Reloj al inicio", ticsRelojInicio);
+            grid.Rows.Add("Tics totales", 0);
+            for (short i = 0; i < 8; ++i)
+                grid.Rows.Add("Registros",  "R" + i + ": " + registros[i],
+                                            "R" + (i+8) + ": " + registros[(i+8)],
+                                            "R" + (i+16) + ": " + registros[(i+16)],
+                                            "R" + (i + 24) + ": " + registros[(i + 24)]);
+            for (short i = 0; i < 4; ++i)
+                grid.Rows.Add("Caché datos",cache[i],
+                                            cache[i+4],
+                                            cache[i+8],
+                                            cache[i+12]);
+            grid.Rows.Add("-", "-", "-", "-", "-");
+            cantidadProgramasPorGrid[idProcesador]++;
+        }
+
+        /*
+         * Conforme los procesadores simulan los programas, la interfaz va actualizando visualmente el estado
+         * de los datos de interés de cada simulación.
+         */
+        public void actualizarTuplasResultado(int idProcesador, int ticsReloj, int[] registros, int[] cache)
+        {
+            DataGridView grid = null;
+            switch (idProcesador)
+            {
+                case 0:
+                    grid = gridProcesador0;
+                    break;
+                case 1:
+                    grid = gridProcesador1;
+                    break;
+                case 2:
+                    grid = gridProcesador2;
+                    break;
+            }
+            int tuplaInicial = (cantidadProgramasPorGrid[idProcesador] - 1) * 16; //28 tuplas por programa (3 titulo, 8 registros, 4 cache, 1 final)
+            grid.Rows[tuplaInicial + 2].Cells[1].Value = (ticsReloj - (int)grid.Rows[tuplaInicial + 1].Cells[1].Value);
+            for (short i = 0; i < 8; ++i)
+            {
+                grid.Rows[i + 3 + tuplaInicial].Cells[1].Value = "R" + i + ": " + registros[i];
+                grid.Rows[i + 3 + tuplaInicial].Cells[2].Value = "R" + (i + 8) + ": " + registros[(i + 8)];
+                grid.Rows[i + 3 + tuplaInicial].Cells[3].Value = "R" + (i + 16) + ": " + registros[(i + 16)];
+                grid.Rows[i + 3 + tuplaInicial].Cells[4].Value = "R" + (i + 24) + ": " + registros[(i + 24)];
+            }
+            for (short i = 0; i < 4; ++i)
+            {
+                grid.Rows[i + 11 + tuplaInicial].Cells[1].Value = cache[i];
+                grid.Rows[i + 11 + tuplaInicial].Cells[2].Value = cache[i+4];
+                grid.Rows[i + 11 + tuplaInicial].Cells[3].Value = cache[i+8];
+                grid.Rows[i + 11 + tuplaInicial].Cells[4].Value = cache[i+12];
             }
         }
     }

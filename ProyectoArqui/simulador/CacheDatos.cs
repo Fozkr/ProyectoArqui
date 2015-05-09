@@ -144,5 +144,10 @@ namespace ProyectoArqui.simulador
             return numeroDeBloqueEnMemoria % 4;
         }
 
+        public Bloque[] BloquesDeCache
+        {
+            get { return this.bloquesDeCache; }
+            set { this.bloquesDeCache = value; }
+        }
     }
 }

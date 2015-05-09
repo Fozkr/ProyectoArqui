@@ -15,6 +15,7 @@ namespace ProyectoArqui.simulador
         Procesador[] procesadores;
         CacheInstrucciones cacheInstrucciones;
         bool[] programasTerminados;
+        int ticsReloj;
 
         public Controlador(int numeroProcesadores, Procesador[] procesadores, CacheInstrucciones cacheInstrucciones)
         {
@@ -24,6 +25,7 @@ namespace ProyectoArqui.simulador
             this.procesadores = procesadores;
             this.cacheInstrucciones = cacheInstrucciones;
             programasTerminados = new bool[numeroProcesadores]; //***
+            ticsReloj = 1;
 
             // Decirle a a cada procesador cual programa va a ejecutar
 
@@ -34,7 +36,7 @@ namespace ProyectoArqui.simulador
                 {
                     procesadores[i].NombrePrograma = cacheInstrucciones.GetNombreSiguientePrograma();
                     int direccionSiguientePrograma = cacheInstrucciones.GetDireccionSiguientePrograma();
-                    procesadores[i].SetProgramCounter(cacheInstrucciones.GetDireccionSiguientePrograma());
+                    procesadores[i].SetProgramCounter(direccionSiguientePrograma);
                     Debug.WriteLine("Controlador: El procesador " + i + " va a ejecutar el programa que empieza en " + direccionSiguientePrograma);
                 }
                 else
@@ -50,6 +52,7 @@ namespace ProyectoArqui.simulador
             for (int i = 0; i < ticksDeReloj; ++i)
             {
                 barrier.SignalAndWait();
+                ++ticsReloj;
             }
         }
 
@@ -87,10 +90,12 @@ namespace ProyectoArqui.simulador
                     }
                 }
             }
-
-
         }
 
-
+        public int TicsReloj
+        {
+            get { return this.ticsReloj; }
+            set { this.ticsReloj = value; }
+        }
     }
 }

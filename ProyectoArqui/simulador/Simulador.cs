@@ -53,6 +53,11 @@ namespace ProyectoArqui.simulador
             //procesador1.SetControlador(controlador);
             //procesador2.SetControlador(controlador);
 
+            String[] programasActuales = new String[3] { "", "", "" };
+            interfaz.actualizarNombrePrograma("corriendo " + procesador0.NombrePrograma + "...", 0);
+            //interfaz.actualizarNombrePrograma("corriendo " + procesador1.NombrePrograma + "...", 1);
+            //interfaz.actualizarNombrePrograma("corriendo " + procesador2.NombrePrograma + "...", 2);
+
             // CrearHilo
             Thread procesador0Hilo = new Thread(new ParameterizedThreadStart(procesador0.procesar));
             //Thread procesador1Hilo = new Thread(procesador1.procesar);
@@ -62,14 +67,53 @@ namespace ProyectoArqui.simulador
             //procesador2Hilo.Start();
 
             while (!procesador0.Finalizado)
+            //while(!procesador0.Finalizado || !procesador1.Finalizado || !procesador2.Finalizado)
             {
                 interfaz.actualizarNombrePrograma("corriendo " + procesador0.NombrePrograma + "...", 0);
+                if (!procesador0.Finalizado)
+                {
+                    if (programasActuales[0] != procesador0.NombrePrograma) //el procesador está corriendo un nuevo programa
+                    {
+                        programasActuales[0] = procesador0.NombrePrograma;
+                        interfaz.crearTuplasResultado(procesador0.ID, procesador0.NombrePrograma, controlador.TicsReloj, procesador0.Registros, descomponerCache(procesador0.Cache));
+                    }
+                    else
+                        interfaz.actualizarTuplasResultado(procesador0.ID, controlador.TicsReloj, procesador0.Registros, descomponerCache(procesador0.Cache));
+                }
+                //if (!procesador1.Finalizado)
+                //{
+
+                //}
+                //if (!procesador2.Finalizado)
+                //{
+
+                //}
             }
 
             // Esperar a que termine
-            procesador0Hilo.Join();
+            //procesador0Hilo.Join();
             //procesador1Hilo.Join();
             //procesador2Hilo.Join();
+            interfaz.actualizarNombrePrograma("", 0);
+            interfaz.actualizarNombrePrograma("", 1);
+            interfaz.actualizarNombrePrograma("", 2);
+        }
+
+        /*
+         * 
+         */
+        private int[] descomponerCache(CacheDatos cache)
+        {
+            int[] descomposicion = new int[4 * 4]; //4 bloques, 4 palabras, 4 bytes
+            Bloque[] bloques = cache.BloquesDeCache;
+            short byteActual = 0;
+            for(short i=0; i<4; ++i) //4 bloques
+            {
+                int[] palabras = bloques[i].PalabrasDelBloque;
+                for (short k = 0; k < 4; ++k) //4  palabras
+                    descomposicion[byteActual++] = palabras[k];
+            }
+            return descomposicion;
         }
 
         /*

@@ -46,5 +46,10 @@ namespace ProyectoArqui.simulador
             palabrasDelBloque[i] = nuevaPalabra;
         }
 
+        public int[] PalabrasDelBloque
+        {
+            get { return this.palabrasDelBloque; }
+            set { this.palabrasDelBloque = value; }
+        }
     }
 }

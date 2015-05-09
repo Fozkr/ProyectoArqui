@@ -79,6 +79,24 @@ namespace ProyectoArqui.simulador
             set { this.nombrePrograma = value; }
         }
 
+        public int ID
+        {
+            get { return this.id; }
+            set { this.id = value; }
+        }
+
+        public int[] Registros
+        {
+            get { return this.registros; }
+            set { this.registros = value; }
+        }
+
+        public CacheDatos Cache
+        {
+            get { return this.cache; }
+            set { this.cache = value; }
+        }
+
         /// <summary>
         /// Metodo que procesa una instruccion.
         /// Se encarga de hacer la decodificacion de la instruccion y llamar al metodo de procesamiento correcto.

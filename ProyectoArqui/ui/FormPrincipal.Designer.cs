@@ -45,26 +45,36 @@
             this.labelProcesador0Corriendo = new System.Windows.Forms.Label();
             this.labelProcesador2 = new System.Windows.Forms.Label();
             this.labelProcesador1 = new System.Windows.Forms.Label();
-            this.gridProcesador3 = new System.Windows.Forms.DataGridView();
-            this.Propiedad2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Informacion2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.gridProcesador2 = new System.Windows.Forms.DataGridView();
-            this.Propiedad1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Informacion1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.gridProcesador1 = new System.Windows.Forms.DataGridView();
-            this.Propiedad0 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Informacion0 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridProcesador0 = new System.Windows.Forms.DataGridView();
             this.labelProcesador0 = new System.Windows.Forms.Label();
             this.panelMemoria = new System.Windows.Forms.Panel();
             this.gridMemoriaCompartida = new System.Windows.Forms.DataGridView();
+            this.Direcciones = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Registros = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labelMemoriaCompartida = new System.Windows.Forms.Label();
+            this.Propiedad1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion13 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion14 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Propiedad2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion22 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion23 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion24 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Propiedad0 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion0 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion02 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion03 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion04 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panelIniciar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridPaths)).BeginInit();
             this.panelProcesadores.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.gridProcesador3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridProcesador2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridProcesador1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridProcesador0)).BeginInit();
             this.panelMemoria.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridMemoriaCompartida)).BeginInit();
             this.SuspendLayout();
@@ -185,9 +195,9 @@
             this.panelProcesadores.Controls.Add(this.labelProcesador0Corriendo);
             this.panelProcesadores.Controls.Add(this.labelProcesador2);
             this.panelProcesadores.Controls.Add(this.labelProcesador1);
-            this.panelProcesadores.Controls.Add(this.gridProcesador3);
             this.panelProcesadores.Controls.Add(this.gridProcesador2);
             this.panelProcesadores.Controls.Add(this.gridProcesador1);
+            this.panelProcesadores.Controls.Add(this.gridProcesador0);
             this.panelProcesadores.Controls.Add(this.labelProcesador0);
             this.panelProcesadores.Location = new System.Drawing.Point(18, 177);
             this.panelProcesadores.Name = "panelProcesadores";
@@ -206,7 +216,7 @@
             // labelProcesador1Corriendo
             // 
             this.labelProcesador1Corriendo.AutoSize = true;
-            this.labelProcesador1Corriendo.Location = new System.Drawing.Point(443, 13);
+            this.labelProcesador1Corriendo.Location = new System.Drawing.Point(440, 13);
             this.labelProcesador1Corriendo.Name = "labelProcesador1Corriendo";
             this.labelProcesador1Corriendo.Size = new System.Drawing.Size(0, 13);
             this.labelProcesador1Corriendo.TabIndex = 7;
@@ -214,7 +224,7 @@
             // labelProcesador0Corriendo
             // 
             this.labelProcesador0Corriendo.AutoSize = true;
-            this.labelProcesador0Corriendo.Location = new System.Drawing.Point(75, 13);
+            this.labelProcesador0Corriendo.Location = new System.Drawing.Point(69, 12);
             this.labelProcesador0Corriendo.Name = "labelProcesador0Corriendo";
             this.labelProcesador0Corriendo.Size = new System.Drawing.Size(0, 13);
             this.labelProcesador0Corriendo.TabIndex = 6;
@@ -231,39 +241,11 @@
             // labelProcesador1
             // 
             this.labelProcesador1.AutoSize = true;
-            this.labelProcesador1.Location = new System.Drawing.Point(371, 13);
+            this.labelProcesador1.Location = new System.Drawing.Point(368, 13);
             this.labelProcesador1.Name = "labelProcesador1";
             this.labelProcesador1.Size = new System.Drawing.Size(70, 13);
             this.labelProcesador1.TabIndex = 4;
             this.labelProcesador1.Text = "Procesador 1";
-            // 
-            // gridProcesador3
-            // 
-            this.gridProcesador3.AllowUserToAddRows = false;
-            this.gridProcesador3.AllowUserToDeleteRows = false;
-            this.gridProcesador3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.gridProcesador3.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Propiedad2,
-            this.Informacion2});
-            this.gridProcesador3.Enabled = false;
-            this.gridProcesador3.Location = new System.Drawing.Point(742, 28);
-            this.gridProcesador3.Name = "gridProcesador3";
-            this.gridProcesador3.ReadOnly = true;
-            this.gridProcesador3.Size = new System.Drawing.Size(365, 212);
-            this.gridProcesador3.TabIndex = 3;
-            // 
-            // Propiedad2
-            // 
-            this.Propiedad2.HeaderText = "Propiedad";
-            this.Propiedad2.Name = "Propiedad2";
-            this.Propiedad2.ReadOnly = true;
-            // 
-            // Informacion2
-            // 
-            this.Informacion2.HeaderText = "Información";
-            this.Informacion2.Name = "Informacion2";
-            this.Informacion2.ReadOnly = true;
-            this.Informacion2.Width = 220;
             // 
             // gridProcesador2
             // 
@@ -271,27 +253,17 @@
             this.gridProcesador2.AllowUserToDeleteRows = false;
             this.gridProcesador2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridProcesador2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Propiedad1,
-            this.Informacion1});
-            this.gridProcesador2.Enabled = false;
-            this.gridProcesador2.Location = new System.Drawing.Point(371, 28);
+            this.Propiedad2,
+            this.Informacion2,
+            this.Informacion22,
+            this.Informacion23,
+            this.Informacion24});
+            this.gridProcesador2.Location = new System.Drawing.Point(742, 28);
             this.gridProcesador2.Name = "gridProcesador2";
             this.gridProcesador2.ReadOnly = true;
+            this.gridProcesador2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.gridProcesador2.Size = new System.Drawing.Size(365, 212);
-            this.gridProcesador2.TabIndex = 2;
-            // 
-            // Propiedad1
-            // 
-            this.Propiedad1.HeaderText = "Propiedad";
-            this.Propiedad1.Name = "Propiedad1";
-            this.Propiedad1.ReadOnly = true;
-            // 
-            // Informacion1
-            // 
-            this.Informacion1.HeaderText = "Información";
-            this.Informacion1.Name = "Informacion1";
-            this.Informacion1.ReadOnly = true;
-            this.Informacion1.Width = 220;
+            this.gridProcesador2.TabIndex = 3;
             // 
             // gridProcesador1
             // 
@@ -299,32 +271,40 @@
             this.gridProcesador1.AllowUserToDeleteRows = false;
             this.gridProcesador1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridProcesador1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Propiedad0,
-            this.Informacion0});
-            this.gridProcesador1.Enabled = false;
-            this.gridProcesador1.Location = new System.Drawing.Point(0, 28);
+            this.Propiedad1,
+            this.Informacion1,
+            this.Informacion12,
+            this.Informacion13,
+            this.Informacion14});
+            this.gridProcesador1.Location = new System.Drawing.Point(371, 28);
             this.gridProcesador1.Name = "gridProcesador1";
             this.gridProcesador1.ReadOnly = true;
+            this.gridProcesador1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.gridProcesador1.Size = new System.Drawing.Size(365, 212);
-            this.gridProcesador1.TabIndex = 1;
+            this.gridProcesador1.TabIndex = 2;
             // 
-            // Propiedad0
+            // gridProcesador0
             // 
-            this.Propiedad0.HeaderText = "Propiedad";
-            this.Propiedad0.Name = "Propiedad0";
-            this.Propiedad0.ReadOnly = true;
-            // 
-            // Informacion0
-            // 
-            this.Informacion0.HeaderText = "Información";
-            this.Informacion0.Name = "Informacion0";
-            this.Informacion0.ReadOnly = true;
-            this.Informacion0.Width = 220;
+            this.gridProcesador0.AllowUserToAddRows = false;
+            this.gridProcesador0.AllowUserToDeleteRows = false;
+            this.gridProcesador0.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridProcesador0.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Propiedad0,
+            this.Informacion0,
+            this.Informacion02,
+            this.Informacion03,
+            this.Informacion04});
+            this.gridProcesador0.Location = new System.Drawing.Point(0, 28);
+            this.gridProcesador0.Name = "gridProcesador0";
+            this.gridProcesador0.ReadOnly = true;
+            this.gridProcesador0.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.gridProcesador0.Size = new System.Drawing.Size(365, 212);
+            this.gridProcesador0.TabIndex = 1;
             // 
             // labelProcesador0
             // 
             this.labelProcesador0.AutoSize = true;
-            this.labelProcesador0.Location = new System.Drawing.Point(3, 13);
+            this.labelProcesador0.Location = new System.Drawing.Point(-3, 12);
             this.labelProcesador0.Name = "labelProcesador0";
             this.labelProcesador0.Size = new System.Drawing.Size(70, 13);
             this.labelProcesador0.TabIndex = 0;
@@ -344,6 +324,7 @@
             // 
             this.gridMemoriaCompartida.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridMemoriaCompartida.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Direcciones,
             this.Registros});
             this.gridMemoriaCompartida.Enabled = false;
             this.gridMemoriaCompartida.Location = new System.Drawing.Point(0, 16);
@@ -351,11 +332,16 @@
             this.gridMemoriaCompartida.Size = new System.Drawing.Size(1107, 213);
             this.gridMemoriaCompartida.TabIndex = 6;
             // 
+            // Direcciones
+            // 
+            this.Direcciones.HeaderText = "Direcciones";
+            this.Direcciones.Name = "Direcciones";
+            // 
             // Registros
             // 
             this.Registros.HeaderText = "Registros";
             this.Registros.Name = "Registros";
-            this.Registros.Width = 1060;
+            this.Registros.Width = 960;
             // 
             // labelMemoriaCompartida
             // 
@@ -365,6 +351,109 @@
             this.labelMemoriaCompartida.Size = new System.Drawing.Size(151, 13);
             this.labelMemoriaCompartida.TabIndex = 6;
             this.labelMemoriaCompartida.Text = "Memoria compartida resultante";
+            // 
+            // Propiedad1
+            // 
+            this.Propiedad1.HeaderText = "";
+            this.Propiedad1.Name = "Propiedad1";
+            this.Propiedad1.ReadOnly = true;
+            // 
+            // Informacion1
+            // 
+            this.Informacion1.HeaderText = "";
+            this.Informacion1.Name = "Informacion1";
+            this.Informacion1.ReadOnly = true;
+            this.Informacion1.Width = 55;
+            // 
+            // Informacion12
+            // 
+            this.Informacion12.HeaderText = "";
+            this.Informacion12.Name = "Informacion12";
+            this.Informacion12.ReadOnly = true;
+            this.Informacion12.Width = 55;
+            // 
+            // Informacion13
+            // 
+            this.Informacion13.HeaderText = "";
+            this.Informacion13.Name = "Informacion13";
+            this.Informacion13.ReadOnly = true;
+            this.Informacion13.Width = 55;
+            // 
+            // Informacion14
+            // 
+            this.Informacion14.HeaderText = "";
+            this.Informacion14.Name = "Informacion14";
+            this.Informacion14.ReadOnly = true;
+            this.Informacion14.Width = 55;
+            // 
+            // Propiedad2
+            // 
+            this.Propiedad2.HeaderText = "";
+            this.Propiedad2.Name = "Propiedad2";
+            this.Propiedad2.ReadOnly = true;
+            // 
+            // Informacion2
+            // 
+            this.Informacion2.HeaderText = "";
+            this.Informacion2.Name = "Informacion2";
+            this.Informacion2.ReadOnly = true;
+            this.Informacion2.Width = 55;
+            // 
+            // Informacion22
+            // 
+            this.Informacion22.HeaderText = "";
+            this.Informacion22.Name = "Informacion22";
+            this.Informacion22.ReadOnly = true;
+            this.Informacion22.Width = 55;
+            // 
+            // Informacion23
+            // 
+            this.Informacion23.HeaderText = "";
+            this.Informacion23.Name = "Informacion23";
+            this.Informacion23.ReadOnly = true;
+            this.Informacion23.Width = 55;
+            // 
+            // Informacion24
+            // 
+            this.Informacion24.HeaderText = "";
+            this.Informacion24.Name = "Informacion24";
+            this.Informacion24.ReadOnly = true;
+            this.Informacion24.Width = 55;
+            // 
+            // Propiedad0
+            // 
+            this.Propiedad0.HeaderText = "";
+            this.Propiedad0.Name = "Propiedad0";
+            this.Propiedad0.ReadOnly = true;
+            this.Propiedad0.Width = 90;
+            // 
+            // Informacion0
+            // 
+            this.Informacion0.HeaderText = "";
+            this.Informacion0.Name = "Informacion0";
+            this.Informacion0.ReadOnly = true;
+            this.Informacion0.Width = 55;
+            // 
+            // Informacion02
+            // 
+            this.Informacion02.HeaderText = "";
+            this.Informacion02.Name = "Informacion02";
+            this.Informacion02.ReadOnly = true;
+            this.Informacion02.Width = 55;
+            // 
+            // Informacion03
+            // 
+            this.Informacion03.HeaderText = "";
+            this.Informacion03.Name = "Informacion03";
+            this.Informacion03.ReadOnly = true;
+            this.Informacion03.Width = 55;
+            // 
+            // Informacion04
+            // 
+            this.Informacion04.HeaderText = "";
+            this.Informacion04.Name = "Informacion04";
+            this.Informacion04.ReadOnly = true;
+            this.Informacion04.Width = 55;
             // 
             // FormPrincipal
             // 
@@ -382,9 +471,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.GridPaths)).EndInit();
             this.panelProcesadores.ResumeLayout(false);
             this.panelProcesadores.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.gridProcesador3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridProcesador2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridProcesador1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridProcesador0)).EndInit();
             this.panelMemoria.ResumeLayout(false);
             this.panelMemoria.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridMemoriaCompartida)).EndInit();
@@ -411,21 +500,31 @@
         private System.Windows.Forms.Label labelProcesador0;
         private System.Windows.Forms.Label labelProcesador2;
         private System.Windows.Forms.Label labelProcesador1;
-        private System.Windows.Forms.DataGridView gridProcesador3;
         private System.Windows.Forms.DataGridView gridProcesador2;
         private System.Windows.Forms.DataGridView gridProcesador1;
+        private System.Windows.Forms.DataGridView gridProcesador0;
         private System.Windows.Forms.DataGridView gridMemoriaCompartida;
         private System.Windows.Forms.Label labelMemoriaCompartida;
         private System.Windows.Forms.Label labelProcesador0Corriendo;
         private System.Windows.Forms.Label labelProcesador2Corriendo;
         private System.Windows.Forms.Label labelProcesador1Corriendo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Direcciones;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Registros;
         private System.Windows.Forms.DataGridViewTextBoxColumn Propiedad2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Informacion2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Informacion22;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Informacion23;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Informacion24;
         private System.Windows.Forms.DataGridViewTextBoxColumn Propiedad1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Informacion1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Informacion12;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Informacion13;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Informacion14;
         private System.Windows.Forms.DataGridViewTextBoxColumn Propiedad0;
         private System.Windows.Forms.DataGridViewTextBoxColumn Informacion0;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Registros;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Informacion02;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Informacion03;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Informacion04;
     }
 }
 
