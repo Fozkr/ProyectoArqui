@@ -153,19 +153,19 @@ namespace ProyectoArqui.ui
 
         }
 
-        public void onRegistersChanged(int nuevosRegistros[], int idProcesador) 
+        public void onRegistersChanged(int[] nuevosRegistros, int idProcesador) 
         {
             // IMPLEMENTAR ESTO!
 
         }
 
-        public void onCacheChanged(int palabrasCache[], int idProcesador) 
+        public void onCacheChanged(int[] palabrasCache, int idProcesador) 
         {
             // IMPLEMENTAR ESTO!
 
         }
 
-        public void onMemoryChanged(int palabrasMemoria[], int idProcesador) 
+        public void onMemoryChanged(int[] palabrasMemoria, int idProcesador) 
         {
             // IMPLEMENTAR ESTO!
 

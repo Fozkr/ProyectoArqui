@@ -14,11 +14,11 @@ namespace ProyectoArqui.ui
 
         void onProgramCounterChanged(int newPc, int idProcesador);
 
-        void onRegistersChanged(int nuevosRegistros[], int idProcesador);
+        void onRegistersChanged(int[] nuevosRegistros, int idProcesador);
 
-        void onCacheChanged(int palabrasCache[], int idProcesador);
+        void onCacheChanged(int[] palabrasCache, int idProcesador);
 
-        void onMemoryChanged(int palabrasMemoria[], int idProcesador);
+        void onMemoryChanged(int[] palabrasMemoria, int idProcesador);
 
         void onSimulationFinished();
 
