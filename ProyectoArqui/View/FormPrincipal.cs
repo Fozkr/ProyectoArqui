@@ -172,7 +172,7 @@ namespace ProyectoArqui.View
 
         }
 
-        void onProgramEnded(string nombrePrograma, int[] registrosFinales, int idProcesador)
+        public void onProgramEnded(string nombrePrograma, int[] registrosFinales, int idProcesador)
         {
             // IMPLEMENTAR ESTO!
 
