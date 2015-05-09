@@ -98,7 +98,7 @@ namespace ProyectoArqui.simulador
             bool todosFinalizados = true;
             for (int i = 0; i < procesadores.Length; ++i)
             {
-                todosFinalizados = procesadores[i].Finalizado;
+                todosFinalizados = todosFinalizados && procesadores[i].Finalizado;
             }
             if (todosFinalizados)
             {

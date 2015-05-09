@@ -117,16 +117,12 @@ namespace ProyectoArqui.ui
             // NO hacer join al hiloSimulacion porque sino se detienen los eventos de la interfaz grafica
         }
 
-        public void onSimulationFinished()
-        {
-            // Habilitar el boton hasta que termine la simulacion
-            BotonNuevaSimulacion.Enabled = true;
-        }
 
         public void onTickChanged(int newTick)
         {
             // TODO La simulacion llama a este metodo cada vez que termina un tick
             // De forma que en este metodo se puede actualizar la interfaz
+
         }
 
 
@@ -148,6 +144,39 @@ namespace ProyectoArqui.ui
                     labelProcesador2Corriendo.Text = nombrePrograma;
                     break;
             }
+        }
+
+        
+        public void onProgramCounterChanged(int newPc, int idProcesador) 
+        {
+            // IMPLEMENTAR ESTO!
+
+        }
+
+        public void onRegistersChanged(int nuevosRegistros[], int idProcesador) 
+        {
+            // IMPLEMENTAR ESTO!
+
+        }
+
+        public void onCacheChanged(int palabrasCache[], int idProcesador) 
+        {
+            // IMPLEMENTAR ESTO!
+
+        }
+
+        public void onMemoryChanged(int palabrasMemoria[], int idProcesador) 
+        {
+            // IMPLEMENTAR ESTO!
+
+        }
+
+        public void onSimulationFinished()
+        {
+            // IMPLEMENTAR ESTO!
+
+            // Habilitar el boton hasta que termine la simulacion
+            BotonNuevaSimulacion.Enabled = true;
         }
 
         /*
@@ -222,5 +251,7 @@ namespace ProyectoArqui.ui
                 grid.Rows[i + 11 + tuplaInicial].Cells[4].Value = cache[i + 12];
             }
         }
+
     }
+
 }
