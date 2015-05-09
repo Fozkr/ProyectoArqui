@@ -89,7 +89,10 @@ namespace ProyectoArqui.Model
         private int GetIndiceBloqueEnCache(int numeroDeBloqueEnMemoria)
         {
             int i = MapeoDirecto(numeroDeBloqueEnMemoria);
-            ReemplazarBloque(i, numeroDeBloqueEnMemoria);
+            if (numerosDeBloque[i] == numeroDeBloqueEnMemoria)
+            {
+                ReemplazarBloque(i, numeroDeBloqueEnMemoria);
+            }
             return i;
         }
 
