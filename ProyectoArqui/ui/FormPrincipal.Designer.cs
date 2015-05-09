@@ -40,25 +40,25 @@
             this.Path = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labelTitulo = new System.Windows.Forms.Label();
             this.panelProcesadores = new System.Windows.Forms.Panel();
+            this.labelProcesador2Corriendo = new System.Windows.Forms.Label();
+            this.labelProcesador1Corriendo = new System.Windows.Forms.Label();
             this.labelProcesador0Corriendo = new System.Windows.Forms.Label();
             this.labelProcesador2 = new System.Windows.Forms.Label();
             this.labelProcesador1 = new System.Windows.Forms.Label();
             this.gridProcesador3 = new System.Windows.Forms.DataGridView();
+            this.Propiedad2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.gridProcesador2 = new System.Windows.Forms.DataGridView();
+            this.Propiedad1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.gridProcesador1 = new System.Windows.Forms.DataGridView();
+            this.Propiedad0 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Informacion0 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labelProcesador0 = new System.Windows.Forms.Label();
             this.panelMemoria = new System.Windows.Forms.Panel();
             this.gridMemoriaCompartida = new System.Windows.Forms.DataGridView();
-            this.labelMemoriaCompartida = new System.Windows.Forms.Label();
-            this.labelProcesador1Corriendo = new System.Windows.Forms.Label();
-            this.labelProcesador2Corriendo = new System.Windows.Forms.Label();
-            this.Propiedad1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Informacion1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Propiedad0 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Informacion0 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Propiedad2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Informacion2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Registros = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.labelMemoriaCompartida = new System.Windows.Forms.Label();
             this.panelIniciar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridPaths)).BeginInit();
             this.panelProcesadores.SuspendLayout();
@@ -195,10 +195,26 @@
             this.panelProcesadores.TabIndex = 7;
             this.panelProcesadores.Visible = false;
             // 
+            // labelProcesador2Corriendo
+            // 
+            this.labelProcesador2Corriendo.AutoSize = true;
+            this.labelProcesador2Corriendo.Location = new System.Drawing.Point(811, 13);
+            this.labelProcesador2Corriendo.Name = "labelProcesador2Corriendo";
+            this.labelProcesador2Corriendo.Size = new System.Drawing.Size(0, 13);
+            this.labelProcesador2Corriendo.TabIndex = 8;
+            // 
+            // labelProcesador1Corriendo
+            // 
+            this.labelProcesador1Corriendo.AutoSize = true;
+            this.labelProcesador1Corriendo.Location = new System.Drawing.Point(443, 13);
+            this.labelProcesador1Corriendo.Name = "labelProcesador1Corriendo";
+            this.labelProcesador1Corriendo.Size = new System.Drawing.Size(0, 13);
+            this.labelProcesador1Corriendo.TabIndex = 7;
+            // 
             // labelProcesador0Corriendo
             // 
             this.labelProcesador0Corriendo.AutoSize = true;
-            this.labelProcesador0Corriendo.Location = new System.Drawing.Point(3, 13);
+            this.labelProcesador0Corriendo.Location = new System.Drawing.Point(75, 13);
             this.labelProcesador0Corriendo.Name = "labelProcesador0Corriendo";
             this.labelProcesador0Corriendo.Size = new System.Drawing.Size(0, 13);
             this.labelProcesador0Corriendo.TabIndex = 6;
@@ -206,7 +222,7 @@
             // labelProcesador2
             // 
             this.labelProcesador2.AutoSize = true;
-            this.labelProcesador2.Location = new System.Drawing.Point(739, 0);
+            this.labelProcesador2.Location = new System.Drawing.Point(739, 13);
             this.labelProcesador2.Name = "labelProcesador2";
             this.labelProcesador2.Size = new System.Drawing.Size(70, 13);
             this.labelProcesador2.TabIndex = 5;
@@ -215,7 +231,7 @@
             // labelProcesador1
             // 
             this.labelProcesador1.AutoSize = true;
-            this.labelProcesador1.Location = new System.Drawing.Point(371, 0);
+            this.labelProcesador1.Location = new System.Drawing.Point(371, 13);
             this.labelProcesador1.Name = "labelProcesador1";
             this.labelProcesador1.Size = new System.Drawing.Size(70, 13);
             this.labelProcesador1.TabIndex = 4;
@@ -236,6 +252,19 @@
             this.gridProcesador3.Size = new System.Drawing.Size(365, 212);
             this.gridProcesador3.TabIndex = 3;
             // 
+            // Propiedad2
+            // 
+            this.Propiedad2.HeaderText = "Propiedad";
+            this.Propiedad2.Name = "Propiedad2";
+            this.Propiedad2.ReadOnly = true;
+            // 
+            // Informacion2
+            // 
+            this.Informacion2.HeaderText = "Información";
+            this.Informacion2.Name = "Informacion2";
+            this.Informacion2.ReadOnly = true;
+            this.Informacion2.Width = 220;
+            // 
             // gridProcesador2
             // 
             this.gridProcesador2.AllowUserToAddRows = false;
@@ -250,6 +279,19 @@
             this.gridProcesador2.ReadOnly = true;
             this.gridProcesador2.Size = new System.Drawing.Size(365, 212);
             this.gridProcesador2.TabIndex = 2;
+            // 
+            // Propiedad1
+            // 
+            this.Propiedad1.HeaderText = "Propiedad";
+            this.Propiedad1.Name = "Propiedad1";
+            this.Propiedad1.ReadOnly = true;
+            // 
+            // Informacion1
+            // 
+            this.Informacion1.HeaderText = "Información";
+            this.Informacion1.Name = "Informacion1";
+            this.Informacion1.ReadOnly = true;
+            this.Informacion1.Width = 220;
             // 
             // gridProcesador1
             // 
@@ -266,10 +308,23 @@
             this.gridProcesador1.Size = new System.Drawing.Size(365, 212);
             this.gridProcesador1.TabIndex = 1;
             // 
+            // Propiedad0
+            // 
+            this.Propiedad0.HeaderText = "Propiedad";
+            this.Propiedad0.Name = "Propiedad0";
+            this.Propiedad0.ReadOnly = true;
+            // 
+            // Informacion0
+            // 
+            this.Informacion0.HeaderText = "Información";
+            this.Informacion0.Name = "Informacion0";
+            this.Informacion0.ReadOnly = true;
+            this.Informacion0.Width = 220;
+            // 
             // labelProcesador0
             // 
             this.labelProcesador0.AutoSize = true;
-            this.labelProcesador0.Location = new System.Drawing.Point(3, 0);
+            this.labelProcesador0.Location = new System.Drawing.Point(3, 13);
             this.labelProcesador0.Name = "labelProcesador0";
             this.labelProcesador0.Size = new System.Drawing.Size(70, 13);
             this.labelProcesador0.TabIndex = 0;
@@ -296,6 +351,12 @@
             this.gridMemoriaCompartida.Size = new System.Drawing.Size(1107, 213);
             this.gridMemoriaCompartida.TabIndex = 6;
             // 
+            // Registros
+            // 
+            this.Registros.HeaderText = "Registros";
+            this.Registros.Name = "Registros";
+            this.Registros.Width = 1060;
+            // 
             // labelMemoriaCompartida
             // 
             this.labelMemoriaCompartida.AutoSize = true;
@@ -304,67 +365,6 @@
             this.labelMemoriaCompartida.Size = new System.Drawing.Size(151, 13);
             this.labelMemoriaCompartida.TabIndex = 6;
             this.labelMemoriaCompartida.Text = "Memoria compartida resultante";
-            // 
-            // labelProcesador1Corriendo
-            // 
-            this.labelProcesador1Corriendo.AutoSize = true;
-            this.labelProcesador1Corriendo.Location = new System.Drawing.Point(371, 13);
-            this.labelProcesador1Corriendo.Name = "labelProcesador1Corriendo";
-            this.labelProcesador1Corriendo.Size = new System.Drawing.Size(0, 13);
-            this.labelProcesador1Corriendo.TabIndex = 7;
-            // 
-            // labelProcesador2Corriendo
-            // 
-            this.labelProcesador2Corriendo.AutoSize = true;
-            this.labelProcesador2Corriendo.Location = new System.Drawing.Point(739, 13);
-            this.labelProcesador2Corriendo.Name = "labelProcesador2Corriendo";
-            this.labelProcesador2Corriendo.Size = new System.Drawing.Size(0, 13);
-            this.labelProcesador2Corriendo.TabIndex = 8;
-            // 
-            // Propiedad1
-            // 
-            this.Propiedad1.HeaderText = "Propiedad";
-            this.Propiedad1.Name = "Propiedad1";
-            this.Propiedad1.ReadOnly = true;
-            // 
-            // Informacion1
-            // 
-            this.Informacion1.HeaderText = "Información";
-            this.Informacion1.Name = "Informacion1";
-            this.Informacion1.ReadOnly = true;
-            this.Informacion1.Width = 220;
-            // 
-            // Propiedad0
-            // 
-            this.Propiedad0.HeaderText = "Propiedad";
-            this.Propiedad0.Name = "Propiedad0";
-            this.Propiedad0.ReadOnly = true;
-            // 
-            // Informacion0
-            // 
-            this.Informacion0.HeaderText = "Información";
-            this.Informacion0.Name = "Informacion0";
-            this.Informacion0.ReadOnly = true;
-            this.Informacion0.Width = 220;
-            // 
-            // Propiedad2
-            // 
-            this.Propiedad2.HeaderText = "Propiedad";
-            this.Propiedad2.Name = "Propiedad2";
-            this.Propiedad2.ReadOnly = true;
-            // 
-            // Informacion2
-            // 
-            this.Informacion2.HeaderText = "Información";
-            this.Informacion2.Name = "Informacion2";
-            this.Informacion2.ReadOnly = true;
-            this.Informacion2.Width = 220;
-            // 
-            // Registros
-            // 
-            this.Registros.HeaderText = "Registros";
-            this.Registros.Name = "Registros";
-            this.Registros.Width = 1060;
             // 
             // FormPrincipal
             // 

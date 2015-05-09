@@ -25,7 +25,7 @@ namespace ProyectoArqui
         public FormPrincipal()
         {
             InitializeComponent();
-            hiloMaestro = new Simulador();
+            hiloMaestro = new Simulador(this);
         }
 
         /*
@@ -73,16 +73,19 @@ namespace ProyectoArqui
             TextBoxCantidadProgramas.Enabled = false;
             BotonAgregarArchivo.Enabled = false;
             BotonIniciarSimulacion.Enabled = false;
+            panelProcesadores.Visible = true; //también hace este panel visible para ver los programas correr
 
             //Lee todas las instrucciones y las guarda en una lista
-            List<int> instrucciones = new List<int>();      //arreglo general que almacenará todas las instrucciones leídas
-            List<int> iniciosProgramas = new List<int>();   //arreglo pequeño que almacena los índices en el anterior donde inicia cada programa
+            List<int> instrucciones = new List<int>();          //arreglo general que almacenará todas las instrucciones leídas
+            List<int> iniciosProgramas = new List<int>();       //arreglo pequeño que almacena los índices en el anterior donde inicia cada programa
+            List<string> nombresProgramas = new List<string>();
             String pathArchivo = "";            //usada para iterar por los paths
             String instruccionIndividual = "";  //usada para iterar por las líneas de los archivos
             int parteInstruccion = 0;           //usada para iterar por los números enteros en cada línea
             foreach(DataGridViewRow fila in GridPaths.Rows)
             {
                 pathArchivo = fila.Cells[0].Value.ToString();
+                nombresProgramas.Add(pathArchivo.Substring(pathArchivo.LastIndexOf('\\')+1));
                 iniciosProgramas.Add(instrucciones.Count);
                 System.IO.TextReader lector = System.IO.File.OpenText(pathArchivo); //abre el archivo para Leer sus líneas una por una
                 while ((instruccionIndividual = lector.ReadLine()) != null)
@@ -95,7 +98,24 @@ namespace ProyectoArqui
 
             //Enviar parámetros al simulador e iniciar la simulación
             hiloMaestro.CantidadProgramas = Convert.ToInt16(TextBoxCantidadProgramas.Text); //se asume que sólo escribirán números
-            hiloMaestro.ejecutarSimulacion(instrucciones, iniciosProgramas);
+            hiloMaestro.ejecutarSimulacion(instrucciones, iniciosProgramas, nombresProgramas);
+        }
+
+        //delegate void delegateactualizarNombrePrograma(Control control, String nombrePrograma, int idProcesador);
+        public void actualizarNombrePrograma(String nombrePrograma, int idProcesador)
+        {
+            switch (idProcesador)
+            {
+                case 0:
+                    labelProcesador0Corriendo.Text = nombrePrograma;
+                    break;
+                case 1:
+                    labelProcesador1Corriendo.Text = nombrePrograma;
+                    break;
+                case 2:
+                    labelProcesador2Corriendo.Text = nombrePrograma;
+                    break;
+            }
         }
     }
 }

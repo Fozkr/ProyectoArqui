@@ -10,7 +10,7 @@ namespace ProyectoArqui.simulador
 {
     class Controlador
     {
-
+        //Atributos
         Barrier barrier;
         Procesador[] procesadores;
         CacheInstrucciones cacheInstrucciones;
@@ -23,7 +23,7 @@ namespace ProyectoArqui.simulador
             this.barrier = new Barrier(numeroProcesadores, entreCiclosDeReloj);
             this.procesadores = procesadores;
             this.cacheInstrucciones = cacheInstrucciones;
-            programasTerminados = new bool[numeroProcesadores];
+            programasTerminados = new bool[numeroProcesadores]; //***
 
             // Decirle a a cada procesador cual programa va a ejecutar
 
@@ -32,14 +32,15 @@ namespace ProyectoArqui.simulador
             {
                 if (cacheInstrucciones.HaySiguientePrograma())
                 {
+                    procesadores[i].NombrePrograma = cacheInstrucciones.GetNombreSiguientePrograma();
                     int direccionSiguientePrograma = cacheInstrucciones.GetDireccionSiguientePrograma();
-                    procesadores[i].SetProgramCounter(direccionSiguientePrograma);
+                    procesadores[i].SetProgramCounter(cacheInstrucciones.GetDireccionSiguientePrograma());
                     Debug.WriteLine("Controlador: El procesador " + i + " va a ejecutar el programa que empieza en " + direccionSiguientePrograma);
                 }
                 else
                 {
                     Debug.WriteLine("Controlador: El procesador " + i + " va a finalizar porque no hay mas programas que ejecutar");
-                    procesadores[i].SetFinalizado();
+                    procesadores[i].Finalizado = true;
                 }
             }
         }
@@ -74,6 +75,7 @@ namespace ProyectoArqui.simulador
                     programasTerminados[i] = false;
                     if (cacheInstrucciones.HaySiguientePrograma())
                     {
+                        procesadores[i].NombrePrograma = cacheInstrucciones.GetNombreSiguientePrograma();
                         int direccionSiguientePrograma = cacheInstrucciones.GetDireccionSiguientePrograma();
                         procesadores[i].SetProgramCounter(direccionSiguientePrograma);
                         Debug.WriteLine("Controlador: El procesador " + i + " va a ejecutar el programa que empieza en " + direccionSiguientePrograma);
@@ -81,7 +83,7 @@ namespace ProyectoArqui.simulador
                     else
                     {
                         Debug.WriteLine("Controlador: El procesador " + i + " va a finalizar porque no hay mas programas que ejecutar");
-                        procesadores[i].SetFinalizado();
+                        procesadores[i].Finalizado = true;
                     }
                 }
             }

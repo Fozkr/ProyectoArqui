@@ -20,15 +20,19 @@ namespace ProyectoArqui.simulador
         private int[] instruccionesIniciales;
         private int indiceSiguientePrograma;
         private int cantidadProgramas;
+        private String[] nombresProgramas;
 
         /// <summary>
         /// Crea una cache de instrucciones
         /// </summary>
-        /// <param name="numeroDeProgramas"></param>
-        public CacheInstrucciones(List<int> instruccionesRecibidas, List<int> iniciosProgramas)
+        /// <param name="instruccionesRecibidas"></param>
+        /// <param name="iniciosProgramas"></param>
+        /// <param name="cantidadProgramasRecibida"></param>
+        public CacheInstrucciones(List<int> instruccionesRecibidas, List<int> iniciosProgramas, int cantidadProgramasRecibida, String[] nombresProgramasRecibidos)
         {
 
-            cantidadProgramas = iniciosProgramas.Count;
+            cantidadProgramas = cantidadProgramasRecibida;
+            nombresProgramas = nombresProgramasRecibidos;
             Debug.WriteLine("CacheInstrucciones: Hay " + cantidadProgramas + " programas");
 
             instrucciones = new Instruccion[instruccionesRecibidas.Count / 4];
@@ -80,6 +84,11 @@ namespace ProyectoArqui.simulador
         private int GetIndiceInstruccion(int direccionMemoria)
         {
             return direccionMemoria / 4;
+        }
+
+        public String GetNombreSiguientePrograma()
+        {
+            return nombresProgramas[indiceSiguientePrograma];
         }
     }
 }

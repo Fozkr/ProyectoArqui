@@ -55,8 +55,8 @@ namespace ProyectoArqui
 
             }
 
-            Simulador programa = new Simulador();
-            programa.ejecutarSimulacion(instrucciones, iniciosProgramas);
+            //Simulador programa = new Simulador();
+            //programa.ejecutarSimulacion(instrucciones, iniciosProgramas);
 
         }
 

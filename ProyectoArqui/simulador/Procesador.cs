@@ -12,7 +12,7 @@ namespace ProyectoArqui.simulador
     /// </summary>
     class Procesador
     {
-
+        //Atributos
         private bool finalizado = false;
 
         private Controlador controlador;
@@ -22,6 +22,7 @@ namespace ProyectoArqui.simulador
         private CacheDatos cache;
         private CacheInstrucciones cacheInstrucciones;
         private int id;
+        private String nombrePrograma;
 
         // FIXME Usar un mapa <int, inst>
         private delegate void inst(Instruccion i);
@@ -41,6 +42,7 @@ namespace ProyectoArqui.simulador
             this.programCounter = 0;
             this.cacheInstrucciones = cacheInst;
             this.id = id;
+            this.nombrePrograma = "";
         }
 
         public void SetProgramCounter(int programCounter)
@@ -54,7 +56,7 @@ namespace ProyectoArqui.simulador
             this.cache = new CacheDatos(new MemoriaPrincipal(), controlador);
         }
 
-        public void procesar()
+        public void procesar(object form)
         {
             while (!finalizado)
             {
@@ -65,9 +67,16 @@ namespace ProyectoArqui.simulador
             }
         }
 
-        public void SetFinalizado()
+        public bool Finalizado
         {
-            finalizado = true;
+            get { return this.finalizado; }
+            set { this.finalizado = value; }
+        }
+
+        public String NombrePrograma
+        {
+            get { return this.nombrePrograma; }
+            set { this.nombrePrograma = value; }
         }
 
         /// <summary>
@@ -196,6 +205,5 @@ namespace ProyectoArqui.simulador
             controlador.programaTerminado(id);
             Debug.WriteLine("Procesador: Un programa ha finalizado");
         }
-
     }
 }
