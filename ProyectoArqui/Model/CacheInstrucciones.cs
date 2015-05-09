@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace ProyectoArqui.simulador
+namespace ProyectoArqui.Model
 {
     /// <summary>
     /// Representacion de una cache de instrucciones.

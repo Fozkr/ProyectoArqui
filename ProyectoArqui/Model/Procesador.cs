@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using ProyectoArqui.Controller;
 
-namespace ProyectoArqui.simulador
+namespace ProyectoArqui.Model
 {
     /// <summary>
     /// Representa un procesador simulado. Ejecuta instrucciones hasta que llega a una instruccion fin.

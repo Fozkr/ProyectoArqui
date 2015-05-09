@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProyectoArqui.simulador
+namespace ProyectoArqui.Model
 {
     /// <summary>
     /// Abstraccion de una instruccion, para mayor facilidad de programacion en el procesador.

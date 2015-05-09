@@ -1,4 +1,4 @@
-﻿namespace ProyectoArqui.ui
+﻿namespace ProyectoArqui.View
 {
     partial class FormPrincipal
     {

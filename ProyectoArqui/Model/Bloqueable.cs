@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProyectoArqui
+namespace ProyectoArqui.Model
 {
-    class Bus
+    class Bloqueable
     {
     }
 }

@@ -5,9 +5,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using ProyectoArqui.ui;
+using ProyectoArqui.Model;
+using ProyectoArqui.View;
 
-namespace ProyectoArqui.simulador
+namespace ProyectoArqui.Controller
 {
     class Controlador : Observable
     {

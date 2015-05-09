@@ -44,28 +44,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="simulador\Bloque.cs" />
-    <Compile Include="simulador\Bloqueable.cs" />
-    <Compile Include="simulador\Bus.cs" />
-    <Compile Include="simulador\CacheDatos.cs" />
-    <Compile Include="simulador\Directorio.cs" />
-    <Compile Include="simulador\Instruccion.cs" />
-    <Compile Include="simulador\MemoriaPrincipal.cs" />
-    <Compile Include="simulador\Simulador.cs" />
-    <Compile Include="ui\FormPrincipal.cs">
+    <Compile Include="Model\Bloque.cs" />
+    <Compile Include="Model\Bloqueable.cs" />
+    <Compile Include="Model\Bus.cs" />
+    <Compile Include="Model\CacheDatos.cs" />
+    <Compile Include="Model\Directorio.cs" />
+    <Compile Include="Model\Instruccion.cs" />
+    <Compile Include="Model\MemoriaPrincipal.cs" />
+    <Compile Include="Model\Simulador.cs" />
+    <Compile Include="View\FormPrincipal.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\FormPrincipal.Designer.cs">
+    <Compile Include="View\FormPrincipal.Designer.cs">
       <DependentUpon>FormPrincipal.cs</DependentUpon>
     </Compile>
-    <Compile Include="simulador\CacheInstrucciones.cs" />
-    <Compile Include="simulador\Procesador.cs" />
+    <Compile Include="Model\CacheInstrucciones.cs" />
+    <Compile Include="Model\Procesador.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="simulador\Controlador.cs" />
-    <Compile Include="ui\Listener.cs" />
-    <Compile Include="ui\Observable.cs" />
-    <EmbeddedResource Include="ui\FormPrincipal.resx">
+    <Compile Include="Controller\Controlador.cs" />
+    <Compile Include="Controller\Listener.cs" />
+    <Compile Include="Controller\Observable.cs" />
+    <EmbeddedResource Include="View\FormPrincipal.resx">
       <DependentUpon>FormPrincipal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

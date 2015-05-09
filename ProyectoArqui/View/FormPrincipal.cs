@@ -8,9 +8,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ProyectoArqui.simulador;
+using ProyectoArqui.Controller;
+using ProyectoArqui.Model;
 
-namespace ProyectoArqui.ui
+namespace ProyectoArqui.View
 {
     /*
      * Clase interfaz, obtiene los parámetros del usuario y crea la instancia del hilo maestro para iniciar el programa.
@@ -170,6 +171,13 @@ namespace ProyectoArqui.ui
             // IMPLEMENTAR ESTO!
 
         }
+
+        void onProgramEnded(string nombrePrograma, int[] registrosFinales, int idProcesador)
+        {
+            // IMPLEMENTAR ESTO!
+
+        }
+
 
         public void onSimulationFinished()
         {

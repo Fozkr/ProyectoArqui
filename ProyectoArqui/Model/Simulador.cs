@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows.Forms;
-using ProyectoArqui.ui;
+using ProyectoArqui.Controller;
 
-namespace ProyectoArqui.simulador
+namespace ProyectoArqui.Model
 {
     /*
      * 

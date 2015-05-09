@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProyectoArqui.simulador
+namespace ProyectoArqui.Model
 {
     /// <summary>
     /// Esta clase representa un bloque de memoria para la bloquesDeCache o memoria principal.
