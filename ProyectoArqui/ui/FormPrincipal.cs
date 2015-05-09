@@ -5,19 +5,19 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ProyectoArqui.simulador;
 
-namespace ProyectoArqui
+namespace ProyectoArqui.ui
 {
     /*
      * Clase interfaz, obtiene los parámetros del usuario y crea la instancia del hilo maestro para iniciar el programa.
      */
-    public partial class FormPrincipal : Form
+    public partial class FormPrincipal : Form, Listener
     {
         //Atributos
-        Simulador hiloMaestro;
         short[] cantidadProgramasPorGrid;
 
         /*
@@ -26,7 +26,6 @@ namespace ProyectoArqui
         public FormPrincipal()
         {
             InitializeComponent();
-            hiloMaestro = new Simulador(this);
             cantidadProgramasPorGrid = new short[3];
         }
 
@@ -89,34 +88,53 @@ namespace ProyectoArqui
             String pathArchivo = "";            //usada para iterar por los paths
             String instruccionIndividual = "";  //usada para iterar por las líneas de los archivos
             int parteInstruccion = 0;           //usada para iterar por los números enteros en cada línea
-            foreach(DataGridViewRow fila in GridPaths.Rows)
+            foreach (DataGridViewRow fila in GridPaths.Rows)
             {
                 pathArchivo = fila.Cells[0].Value.ToString();
-                nombresProgramas.Add(pathArchivo.Substring(pathArchivo.LastIndexOf('\\')+1));
+                nombresProgramas.Add(pathArchivo.Substring(pathArchivo.LastIndexOf('\\') + 1));
                 iniciosProgramas.Add(instrucciones.Count);
                 System.IO.TextReader lector = System.IO.File.OpenText(pathArchivo); //abre el archivo para Leer sus líneas una por una
                 while ((instruccionIndividual = lector.ReadLine()) != null)
                 {
                     string[] partes = instruccionIndividual.Split(' '); //divide cada línea en partes, usando los espacios como token separador
-                    for (short i = 0; i < 4; ++i)
-                        instrucciones.Add(parteInstruccion = int.Parse(partes[i])); //agrega cada número entero al arreglo
+                    if (partes.Length == 4)
+                    {
+                        for (short i = 0; i < 4; ++i)
+                        {
+                            instrucciones.Add(parteInstruccion = int.Parse(partes[i])); //agrega cada número entero al arreglo
+                        }
+                    }
                 }
                 lector.Close();
             }
 
             //Enviar parámetros al simulador e iniciar la simulación
-            hiloMaestro.CantidadProgramas = Convert.ToInt16(TextBoxCantidadProgramas.Text); //se asume que sólo escribirán números
-            hiloMaestro.ejecutarSimulacion(instrucciones, iniciosProgramas, nombresProgramas);
+            Simulador simulador = new Simulador(instrucciones, iniciosProgramas, nombresProgramas, this);
+            simulador.CantidadProgramas = Convert.ToInt16(TextBoxCantidadProgramas.Text); //se asume que sólo escribirán números
+            Thread hiloSimulacion = new Thread(simulador.ejecutarSimulacion);
+            hiloSimulacion.Start();
 
-            //Dejar listo para una nueva simulación
+            // NO hacer join al hiloSimulacion porque sino se detienen los eventos de la interfaz grafica
+        }
+
+        public void onSimulationFinished()
+        {
+            // Habilitar el boton hasta que termine la simulacion
             BotonNuevaSimulacion.Enabled = true;
         }
+
+        public void onTickChanged(int newTick)
+        {
+            // TODO La simulacion llama a este metodo cada vez que termina un tick
+            // De forma que en este metodo se puede actualizar la interfaz
+        }
+
 
         /*
          * Simplemente actualiza la label que indica el nombre del programa (archivo de programa) que está corriendo
          * en uno de los procesadores.
          */
-        public void actualizarNombrePrograma(String nombrePrograma, int idProcesador)
+        public void onProgramNameChanged(String nombrePrograma, int idProcesador)
         {
             switch (idProcesador)
             {
@@ -155,15 +173,15 @@ namespace ProyectoArqui
             grid.Rows.Add("Reloj al inicio", ticsRelojInicio);
             grid.Rows.Add("Tics totales", 0);
             for (short i = 0; i < 8; ++i)
-                grid.Rows.Add("Registros",  "R" + i + ": " + registros[i],
-                                            "R" + (i+8) + ": " + registros[(i+8)],
-                                            "R" + (i+16) + ": " + registros[(i+16)],
+                grid.Rows.Add("Registros", "R" + i + ": " + registros[i],
+                                            "R" + (i + 8) + ": " + registros[(i + 8)],
+                                            "R" + (i + 16) + ": " + registros[(i + 16)],
                                             "R" + (i + 24) + ": " + registros[(i + 24)]);
             for (short i = 0; i < 4; ++i)
-                grid.Rows.Add("Caché datos",cache[i],
-                                            cache[i+4],
-                                            cache[i+8],
-                                            cache[i+12]);
+                grid.Rows.Add("Caché datos", cache[i],
+                                            cache[i + 4],
+                                            cache[i + 8],
+                                            cache[i + 12]);
             grid.Rows.Add("-", "-", "-", "-", "-");
             cantidadProgramasPorGrid[idProcesador]++;
         }
@@ -199,9 +217,9 @@ namespace ProyectoArqui
             for (short i = 0; i < 4; ++i)
             {
                 grid.Rows[i + 11 + tuplaInicial].Cells[1].Value = cache[i];
-                grid.Rows[i + 11 + tuplaInicial].Cells[2].Value = cache[i+4];
-                grid.Rows[i + 11 + tuplaInicial].Cells[3].Value = cache[i+8];
-                grid.Rows[i + 11 + tuplaInicial].Cells[4].Value = cache[i+12];
+                grid.Rows[i + 11 + tuplaInicial].Cells[2].Value = cache[i + 4];
+                grid.Rows[i + 11 + tuplaInicial].Cells[3].Value = cache[i + 8];
+                grid.Rows[i + 11 + tuplaInicial].Cells[4].Value = cache[i + 12];
             }
         }
     }

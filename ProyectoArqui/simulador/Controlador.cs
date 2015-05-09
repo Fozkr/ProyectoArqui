@@ -5,17 +5,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using ProyectoArqui.ui;
 
 namespace ProyectoArqui.simulador
 {
-    class Controlador
+    class Controlador : Observable
     {
         //Atributos
         Barrier barrier;
         Procesador[] procesadores;
         CacheInstrucciones cacheInstrucciones;
         bool[] programasTerminados;
-        int ticsReloj;
+        int ticksReloj;
 
         public Controlador(int numeroProcesadores, Procesador[] procesadores, CacheInstrucciones cacheInstrucciones)
         {
@@ -25,7 +26,7 @@ namespace ProyectoArqui.simulador
             this.procesadores = procesadores;
             this.cacheInstrucciones = cacheInstrucciones;
             programasTerminados = new bool[numeroProcesadores]; //***
-            ticsReloj = 1;
+            ticksReloj = 1;
 
             // Decirle a a cada procesador cual programa va a ejecutar
 
@@ -34,9 +35,9 @@ namespace ProyectoArqui.simulador
             {
                 if (cacheInstrucciones.HaySiguientePrograma())
                 {
-                    procesadores[i].NombrePrograma = cacheInstrucciones.GetNombreSiguientePrograma();
                     int direccionSiguientePrograma = cacheInstrucciones.GetDireccionSiguientePrograma();
                     procesadores[i].SetProgramCounter(direccionSiguientePrograma);
+                    fireProgramNameChanged(cacheInstrucciones.GetNombrePrograma(direccionSiguientePrograma), i);
                     Debug.WriteLine("Controlador: El procesador " + i + " va a ejecutar el programa que empieza en " + direccionSiguientePrograma);
                 }
                 else
@@ -52,7 +53,6 @@ namespace ProyectoArqui.simulador
             for (int i = 0; i < ticksDeReloj; ++i)
             {
                 barrier.SignalAndWait();
-                ++ticsReloj;
             }
         }
 
@@ -62,14 +62,17 @@ namespace ProyectoArqui.simulador
             programasTerminados[idProcesador] = true;
         }
 
+        // Este metodo se ejecuta entre ciclos de controlador
+        // Aqui se pueden procesar mensajes de caches, etc
         public void entreCiclosDeReloj(Barrier b)
         {
-            // Este metodo se ejecuta entre ciclos de controlador
-            // Aqui se pueden procesar mensajes de caches, etc
+            // Se aumenta la cantidad de tics de Reloj
+            ++ticksReloj;
 
+            // Se notifica a los listeners que hay un nuevo tick de relo
+            fireTickChanged(ticksReloj);
 
             // Ver si los procesadres han terminado de procesar un programa
-
             // TODO Modularizar esto
             for (int i = 0; i < procesadores.Length;  ++i )
             {
@@ -78,9 +81,9 @@ namespace ProyectoArqui.simulador
                     programasTerminados[i] = false;
                     if (cacheInstrucciones.HaySiguientePrograma())
                     {
-                        procesadores[i].NombrePrograma = cacheInstrucciones.GetNombreSiguientePrograma();
                         int direccionSiguientePrograma = cacheInstrucciones.GetDireccionSiguientePrograma();
                         procesadores[i].SetProgramCounter(direccionSiguientePrograma);
+                        fireProgramNameChanged(cacheInstrucciones.GetNombrePrograma(direccionSiguientePrograma), i);
                         Debug.WriteLine("Controlador: El procesador " + i + " va a ejecutar el programa que empieza en " + direccionSiguientePrograma);
                     }
                     else
@@ -90,12 +93,20 @@ namespace ProyectoArqui.simulador
                     }
                 }
             }
+
+            // Ver si todos los procesadores ya terminaron
+            bool todosFinalizados = true;
+            for (int i = 0; i < procesadores.Length; ++i)
+            {
+                todosFinalizados = procesadores[i].Finalizado;
+            }
+            if (todosFinalizados)
+            {
+                fireSimulationFinished();
+            }
+
+
         }
 
-        public int TicsReloj
-        {
-            get { return this.ticsReloj; }
-            set { this.ticsReloj = value; }
-        }
     }
 }

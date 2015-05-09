@@ -22,7 +22,6 @@ namespace ProyectoArqui.simulador
         private CacheDatos cache;
         private CacheInstrucciones cacheInstrucciones;
         private int id;
-        private String nombrePrograma;
 
         // FIXME Usar un mapa <int, inst>
         private delegate void inst(Instruccion i);
@@ -42,7 +41,6 @@ namespace ProyectoArqui.simulador
             this.programCounter = 0;
             this.cacheInstrucciones = cacheInst;
             this.id = id;
-            this.nombrePrograma = "";
         }
 
         public void SetProgramCounter(int programCounter)
@@ -56,7 +54,7 @@ namespace ProyectoArqui.simulador
             this.cache = new CacheDatos(new MemoriaPrincipal(), controlador);
         }
 
-        public void procesar(object form)
+        public void procesar()
         {
             while (!finalizado)
             {
@@ -71,12 +69,6 @@ namespace ProyectoArqui.simulador
         {
             get { return this.finalizado; }
             set { this.finalizado = value; }
-        }
-
-        public String NombrePrograma
-        {
-            get { return this.nombrePrograma; }
-            set { this.nombrePrograma = value; }
         }
 
         public int ID

@@ -69,6 +69,7 @@ namespace ProyectoArqui.simulador
 
         /// <summary>
         /// Devuelve la direccion de memoria del siguiente programa a ejecutar
+        /// Cada llamado a este metodo devuelve una direccion distinta
         /// </summary>
         /// <returns>direccion de memoria del siguiente programa</returns>
         public int GetDireccionSiguientePrograma()
@@ -86,9 +87,17 @@ namespace ProyectoArqui.simulador
             return direccionMemoria / 4;
         }
 
-        public String GetNombreSiguientePrograma()
+        public String GetNombrePrograma(int direccionInicial)
         {
-            return nombresProgramas[indiceSiguientePrograma];
+            String nombre = "Desconocido";
+            for (int i = 0; i < cantidadProgramas; ++i)
+            {
+                if (direccionInicial == instruccionesIniciales[i])
+                {
+                    nombre = nombresProgramas[i];
+                }
+            }
+            return nombre;
         }
     }
 }
