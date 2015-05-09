@@ -55,7 +55,7 @@ namespace ProyectoArqui.Model
         /// <returns>Vector de datos</returns>
         public int[] ToArray()
         {
-            int[] vector = new int[16];
+            int[] vector = new int[32];
             int i = 0;
             foreach (Bloque bloque in bloquesDeMemoria)
             {

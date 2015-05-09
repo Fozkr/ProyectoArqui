@@ -21,7 +21,7 @@ namespace ProyectoArqui.Controller
         private Procesador[] procesadores;
         private CacheDatos[] cachesDatos;
         private CacheInstrucciones cacheInstrucciones;
-        private MemoriaPrincipal[] memorias;
+        private MemoriaPrincipal[] memoriasPrincipales;
         private int ticksReloj;
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace ProyectoArqui.Controller
             this.procesadores = null;
             this.cachesDatos = null;
             this.cacheInstrucciones = null;
-            this.memorias = null;
+            this.memoriasPrincipales = null;
             this.ticksReloj = -1;
         }
 
@@ -54,13 +54,15 @@ namespace ProyectoArqui.Controller
         /// <param name="cachesDatos">Caches de Datos de la simulacion</param>
         /// <param name="cacheInstrucciones">Cache de instrucciones para todos los procesadores</param>
         /// <param name="memoriasPrincipales">Memorias Principales de todos los procesadores</param>
-        public void Inicializar(Procesador[] procesadores, CacheDatos[] caches, CacheInstrucciones cacheInstrucciones, MemoriaPrincipal[] memorias)
+        public void Inicializar(Procesador[] procesadores, CacheDatos[] cachesDatos, CacheInstrucciones cacheInstrucciones, MemoriaPrincipal[] memoriasPrincipales)
         {
             int numeroProcesadores = procesadores.Length;
             Debug.WriteLine("Controlador: Creando una barrera para " + numeroProcesadores + "procesadores");
             this.barrier = new Barrier(numeroProcesadores, entreCiclosDeReloj);
             this.procesadores = procesadores;
+            this.cachesDatos = cachesDatos;
             this.cacheInstrucciones = cacheInstrucciones;
+            this.memoriasPrincipales = memoriasPrincipales;
             this.ticksReloj = 1;
             // Se asigna el programa inicial a cada procesador
             // Por defecto los procesadores deben empezar en finalizado = true para que
@@ -70,14 +72,14 @@ namespace ProyectoArqui.Controller
 
         /// <summary>
         /// Este es el metodo que los procesadores, cachesDatos y otros objetos llaman
-        /// cuando deben esperar cierta cantidad de ticks de reloj
+        /// cuando deben Esperar cierta cantidad de ticks de reloj
         /// 
         /// Este es el mecanismo de sincronizacion que implementa que todos los procesadores
         /// tengan el mismo reloj!
         /// 
         /// </summary>
-        /// <param name="ticksDeRelojPorEsperar">Ticks de reloj que se deben esperar</param>
-        public void esperar(int ticksDeRelojPorEsperar)
+        /// <param name="ticksDeRelojPorEsperar">Ticks de reloj que se deben Esperar</param>
+        public void Esperar(int ticksDeRelojPorEsperar)
         {
             for (int i = 0; i < ticksDeRelojPorEsperar; ++i)
             {
@@ -90,12 +92,12 @@ namespace ProyectoArqui.Controller
         // Aqui se pueden Procesar mensajes de cachesDatos, etc
         public void entreCiclosDeReloj(Barrier b)
         {
+            // Se notifica a las vistas del tick de reloj que acaba de terminar
+            // Se realiza cuando el tick termine
+            fireTickChanged(ticksReloj);
+
             // Se notifica a las vistas del cambio en el Pc
             NotificarCambioPC();
-
-            // Se aumenta la cantidad de tics de Reloj y se notifica a las vistas
-            ++ticksReloj;
-            fireTickChanged(ticksReloj);
 
             // Se notifica a las vistas si hubo cambios en algun componente de la simulacion
             NotificarCambioRegistros();
@@ -107,6 +109,10 @@ namespace ProyectoArqui.Controller
 
             // Ver si ya se termino la simulacion
             VerificarSimulacionTerminada();
+
+            // Se aumenta el tick de reloj al final porque cuenta hasta la proxima vez que los procesadores continuen
+            // y se notifica hasta la proxima vez que se este en "medio" de 2 ciclos de reloj
+            ++ticksReloj;
         }
 
         /// <summary>
@@ -144,7 +150,7 @@ namespace ProyectoArqui.Controller
         {
             for (int i = 0; i < procesadores.Length; ++i)
             {
-                // p.Modificado == true si los bloques de las caches se modificaron en el ultimo
+                // p.Modificado == true si los bloques de las cachesDatos se modificaron en el ultimo
                 // ciclo de reloj
                 if (cachesDatos[i].Modificado)
                 {
@@ -155,18 +161,18 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
-        /// Notifica a las vistas si hubo un cambio en los bloques de las memorias 
+        /// Notifica a las vistas si hubo un cambio en los bloques de las memoriasPrincipales 
         /// </summary>
         private void NotificarCambioMemorias()
         {
             for (int i = 0; i < procesadores.Length; ++i)
             {
-                // p.Modificado == true si las memorias se modificaron en el ultimo
+                // p.Modificado == true si las memoriasPrincipales se modificaron en el ultimo
                 // ciclo de reloj
-                if (memorias[i].Modificado)
+                if (memoriasPrincipales[i].Modificado)
                 {
-                    memorias[i].Modificado = false;
-                    fireMemoryChanged(memorias[i].ToArray(), i);
+                    memoriasPrincipales[i].Modificado = false;
+                    fireMemoryChanged(memoriasPrincipales[i].ToArray(), i);
                 }
             }
         }
@@ -188,6 +194,7 @@ namespace ProyectoArqui.Controller
                     String nombreProgramaAnterior = cacheInstrucciones.GetNombreProgramaAsignado(procesadores[i]);
                     if (cacheInstrucciones.AsignarPrograma(procesadores[i]))
                     {
+                        procesadores[i].Finalizado = false;
                         fireProgramEnded(nombreProgramaAnterior, procesadores[i].GetRegistros(), procesadores[i].ID);
                         String nombreProgramaNuevo = cacheInstrucciones.GetNombrePrograma(procesadores[i].ProgramCounter);
                         fireProgramNameChanged(nombreProgramaNuevo, i);
@@ -198,7 +205,9 @@ namespace ProyectoArqui.Controller
                         // no hace falta mantenerlo vivo
                         // Simplemente se le anuncia a la barrera que dicho "participante"
                         // ya no esta
-                        barrier.RemoveParticipant();
+                        // barrier.RemoveParticipant();
+                        // La linea anterior es la solucion pero no se puede llamar dentro de este metodo
+                        // Hay que buscar como solucionar esto para la 2da entrega
                     }
                 }
             }

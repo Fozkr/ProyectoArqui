@@ -33,7 +33,7 @@ namespace ProyectoArqui.Model
         /// <summary>
         /// Crea una nueva cacheDatos de datos.
         /// Recibe una memoria principal para la cual sirve de cacheDatos y
-        /// un controlador que utiliza para esperar cierta cantidad de ticks 
+        /// un controlador que utiliza para Esperar cierta cantidad de ticks 
         /// cuando ocurren fallos de cacheDatos
         /// </summary>
         /// <param name="memoriaPrincipal">Memoria principal de la que se reciben y escriben bloques</param>
@@ -117,7 +117,7 @@ namespace ProyectoArqui.Model
         private void EnviarBloqueAMemoria(int indiceDeCache)
         {
             // Se esperan 16 ticks de reloj del controlador
-            controlador.esperar(16);
+            controlador.Esperar(16);
             memoriaPrincipal.SetBloque(numerosDeBloque[indiceDeCache], bloquesDeCache[indiceDeCache]);
             estadosDeBloque[indiceDeCache] = 'C';
         }
@@ -130,7 +130,7 @@ namespace ProyectoArqui.Model
         private void TraerBloqueDeMemoria(int indiceEnCache, int numeroDeBloqueEnMemoria)
         {
             // Se esperan 16 ticks de reloj del controlador
-            controlador.esperar(16);
+            controlador.Esperar(16);
             bloquesDeCache[indiceEnCache] = memoriaPrincipal.GetBloque(numeroDeBloqueEnMemoria);
             this.numerosDeBloque[indiceEnCache] = numeroDeBloqueEnMemoria;
             estadosDeBloque[indiceEnCache] = 'C';

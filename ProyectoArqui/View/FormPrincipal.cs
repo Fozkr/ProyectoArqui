@@ -19,7 +19,17 @@ namespace ProyectoArqui.View
     public partial class FormPrincipal : Form, Listener
     {
         //Atributos
-        short[] cantidadProgramasPorGrid;
+        private short[] cantidadProgramasPorGrid;
+
+        // Estos delegates se ocupan para poder hacer ThreadSafe llamados a la interfaz
+        private delegate void onTickChangedCallback(int newTick);
+        private delegate void onProgramNameChangedCallback(String newName, int idProcesador);
+        private delegate void onProgramCounterChangedCallback(int newPc, int idProcesador);
+        private delegate void onRegistersChangedCallback(int[] nuevosRegistros, int idProcesador);
+        private delegate void onCacheChangedCallback(int[] palabrasCache, int idProcesador);
+        private delegate void onMemoryChangedCallback(int[] palabrasMemoria, int idProcesador);
+        private delegate void onProgramEndedCallback(string nombrePrograma, int[] registrosFinales, int idProcesador);
+        private delegate void onSimulationFinishedCallback();
 
         /*
          * Constructor, inicializa la instancia del hilo maestro.
@@ -117,14 +127,18 @@ namespace ProyectoArqui.View
             // NO hacer join al hiloSimulacion porque sino se detienen los eventos de la interfaz grafica
         }
 
-
         public void onTickChanged(int newTick)
         {
-            // TODO La simulacion llama a este metodo cada vez que termina un tick
-            // De forma que en este metodo se puede actualizar la interfaz
-
+            if (this.InvokeRequired)
+            {
+                onTickChangedCallback callback = new onTickChangedCallback(onTickChanged);
+                this.Invoke(callback, new object[] { newTick });
+            }
+            else
+            {
+                // TODO La simulacion llama a este metodo cada vez que termina un tick de forma que en este metodo se puede actualizar la interfaz
+            }
         }
-
 
         /*
          * Simplemente actualiza la label que indica el nombre del programa (archivo de programa) que está corriendo
@@ -132,58 +146,109 @@ namespace ProyectoArqui.View
          */
         public void onProgramNameChanged(String nombrePrograma, int idProcesador)
         {
-            switch (idProcesador)
+            if (this.InvokeRequired)
             {
-                case 0:
-                    labelProcesador0Corriendo.Text = nombrePrograma;
-                    break;
-                case 1:
-                    labelProcesador1Corriendo.Text = nombrePrograma;
-                    break;
-                case 2:
-                    labelProcesador2Corriendo.Text = nombrePrograma;
-                    break;
+                onProgramNameChangedCallback callback = new onProgramNameChangedCallback(onProgramNameChanged);
+                this.Invoke(callback, new object[] { nombrePrograma, idProcesador });
+            }
+            else
+            {
+                // Implementacion del metodo
+                switch (idProcesador)
+                {
+                    case 0:
+                        labelProcesador0Corriendo.Text = nombrePrograma;
+                        break;
+                    case 1:
+                        labelProcesador1Corriendo.Text = nombrePrograma;
+                        break;
+                    case 2:
+                        labelProcesador2Corriendo.Text = nombrePrograma;
+                        break;
+                }
             }
         }
 
-        
-        public void onProgramCounterChanged(int newPc, int idProcesador) 
-        {
-            // IMPLEMENTAR ESTO!
 
+        public void onProgramCounterChanged(int newPc, int idProcesador)
+        {
+            if (this.InvokeRequired)
+            {
+                onProgramCounterChangedCallback callback = new onProgramCounterChangedCallback(onProgramCounterChanged);
+                this.Invoke(callback, new object[] { newPc, idProcesador });
+            }
+            else
+            {
+                // IMPLEMENTAR ESTO!
+            }
         }
 
-        public void onRegistersChanged(int[] nuevosRegistros, int idProcesador) 
+        public void onRegistersChanged(int[] nuevosRegistros, int idProcesador)
         {
-            // IMPLEMENTAR ESTO!
 
+            if (this.InvokeRequired)
+            {
+                onRegistersChangedCallback callback = new onRegistersChangedCallback(onRegistersChanged);
+                this.Invoke(callback, new object[] { nuevosRegistros, idProcesador });
+            }
+            else
+            {
+                // IMPLEMENTAR ESTO!
+            }
         }
 
-        public void onCacheChanged(int[] palabrasCache, int idProcesador) 
+        public void onCacheChanged(int[] palabrasCache, int idProcesador)
         {
-            // IMPLEMENTAR ESTO!
-
+            if (this.InvokeRequired)
+            {
+                onCacheChangedCallback callback = new onCacheChangedCallback(onCacheChanged);
+                this.Invoke(callback, new object[] { palabrasCache, idProcesador });
+            }
+            else
+            {
+                // IMPLEMENTAR ESTO!
+            }
         }
 
-        public void onMemoryChanged(int[] palabrasMemoria, int idProcesador) 
+        public void onMemoryChanged(int[] palabrasMemoria, int idProcesador)
         {
-            // IMPLEMENTAR ESTO!
-
+            if (this.InvokeRequired)
+            {
+                onMemoryChangedCallback callback = new onMemoryChangedCallback(onMemoryChanged);
+                this.Invoke(callback, new object[] { palabrasMemoria, idProcesador });
+            }
+            else
+            {
+                // IMPLEMENTAR ESTO!
+            }
         }
 
         public void onProgramEnded(string nombrePrograma, int[] registrosFinales, int idProcesador)
         {
-            // IMPLEMENTAR ESTO!
-
+            if (this.InvokeRequired)
+            {
+                onProgramEndedCallback callback = new onProgramEndedCallback(onProgramEnded);
+                this.Invoke(callback, new object[] { nombrePrograma, registrosFinales, idProcesador });
+            }
+            else
+            {
+                // IMPLEMENTAR ESTO!
+            }
         }
-
 
         public void onSimulationFinished()
         {
-            // IMPLEMENTAR ESTO!
-
-            // Habilitar el boton hasta que termine la simulacion
-            BotonNuevaSimulacion.Enabled = true;
+            if (this.InvokeRequired)
+            {
+                onSimulationFinishedCallback callback = new onSimulationFinishedCallback(onSimulationFinished);
+                this.Invoke(callback);
+            }
+            else
+            {
+                // IMPLEMENTAR ESTO!
+                // Habilitar el boton hasta que termine la simulacion
+                BotonNuevaSimulacion.Enabled = true;
+            }
         }
 
         /*

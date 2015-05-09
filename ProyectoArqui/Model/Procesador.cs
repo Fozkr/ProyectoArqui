@@ -116,7 +116,7 @@ namespace ProyectoArqui.Model
             mapa[inst.GetCodigo()](inst);
             programCounter += 4; // Se modifica el pc para que la proxima instruccion arranque donde debe
             Debug.WriteLine("Procesador: Esperando 1 tick luego de ejecutar una instruccion");
-            controlador.esperar(1);
+            controlador.Esperar(1);
         }
 
         /// <summary>

@@ -105,7 +105,7 @@ namespace ProyectoArqui.Model
             {
                 int direccionSiguientePrograma = GetDireccionSiguientePrograma();
                 procesador.ProgramCounter = direccionSiguientePrograma;
-                nombresProgramas[procesador.ID] = GetNombrePrograma(procesador.ProgramCounter);
+                programasAsignados[procesador.ID] = GetNombrePrograma(procesador.ProgramCounter);
                 Debug.WriteLine("CacheInstrucciones: El procesador " + procesador.ID + " va a ejecutar el programa que empieza en " + direccionSiguientePrograma);
             }
             else
