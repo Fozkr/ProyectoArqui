@@ -24,11 +24,11 @@ namespace ProyectoArqui.Controller
             }
         }
 
-        public void fireProgramNameChanged(String newName, int idProcesador)
+        public void fireProgramChanged(int idProcesador, String newName, int ticksRelojs, int[] registros, int[] cache) //TODO enviar memoria también
         {
             foreach (Listener l in listeners)
             {
-                l.onProgramNameChanged(newName, idProcesador);
+                l.onProgramChanged(idProcesador, newName, ticksRelojs, registros, cache);
             }
         }
 

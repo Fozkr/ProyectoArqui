@@ -10,7 +10,7 @@ namespace ProyectoArqui.Controller
     {
         void onTickChanged(int newTick);
 
-        void onProgramNameChanged(String newName, int idProcesador);
+        void onProgramChanged(int idProcesador, String nombrePrograma, int ticksReloj, int[] registros, int[] cache);
 
         void onProgramCounterChanged(int newPc, int idProcesador);
 

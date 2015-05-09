@@ -78,20 +78,6 @@ namespace ProyectoArqui.Model
             }
         }
 
-        private int[] descomponerCache(CacheDatos cache)
-        {
-            int[] descomposicion = new int[4 * 4]; //4 bloques, 4 palabras, 4 bytes
-            Bloque[] bloques = cache.BloquesDeCache;
-            short byteActual = 0;
-            for(short i=0; i<4; ++i) //4 bloques
-            {
-                int[] palabras = bloques[i].PalabrasDelBloque;
-                for (short k = 0; k < 4; ++k) //4  palabras
-                    descomposicion[byteActual++] = palabras[k];
-            }
-            return descomposicion;
-        }
-
         /*
          * Setter y getter para el atributo cantidadProgramas.
          */

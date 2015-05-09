@@ -38,7 +38,7 @@ namespace ProyectoArqui.Controller
                 {
                     int direccionSiguientePrograma = cacheInstrucciones.GetDireccionSiguientePrograma();
                     procesadores[i].SetProgramCounter(direccionSiguientePrograma);
-                    fireProgramNameChanged(cacheInstrucciones.GetNombrePrograma(direccionSiguientePrograma), i);
+                    fireProgramChanged(i, cacheInstrucciones.GetNombrePrograma(direccionSiguientePrograma), ticksReloj, procesadores[i].Registros, null);
                     Debug.WriteLine("Controlador: El procesador " + i + " va a ejecutar el programa que empieza en " + direccionSiguientePrograma);
                 }
                 else
@@ -84,7 +84,7 @@ namespace ProyectoArqui.Controller
                     {
                         int direccionSiguientePrograma = cacheInstrucciones.GetDireccionSiguientePrograma();
                         procesadores[i].SetProgramCounter(direccionSiguientePrograma);
-                        fireProgramNameChanged(cacheInstrucciones.GetNombrePrograma(direccionSiguientePrograma), i);
+                        fireProgramChanged(i, cacheInstrucciones.GetNombrePrograma(direccionSiguientePrograma), ticksReloj, procesadores[i].Registros, descomponerCache(procesadores[i].Cache));
                         Debug.WriteLine("Controlador: El procesador " + i + " va a ejecutar el programa que empieza en " + direccionSiguientePrograma);
                     }
                     else
@@ -107,6 +107,22 @@ namespace ProyectoArqui.Controller
             }
 
 
+        }
+
+
+
+        private int[] descomponerCache(CacheDatos cache)
+        {
+            int[] descomposicion = new int[4 * 4]; //4 bloques, 4 palabras, 4 bytes
+            Bloque[] bloques = cache.BloquesDeCache;
+            short byteActual = 0;
+            for (short i = 0; i < 4; ++i) //4 bloques
+            {
+                int[] palabras = bloques[i].PalabrasDelBloque;
+                for (short k = 0; k < 4; ++k) //4  palabras
+                    descomposicion[byteActual++] = palabras[k];
+            }
+            return descomposicion;
         }
 
     }
