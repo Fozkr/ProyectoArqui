@@ -11,7 +11,7 @@ namespace ProyectoArqui.Model
     /// Representa una cacheDatos de datos para un procesador.
     /// Se compone de 4 bloques.
     /// </summary>
-    class CacheDatos
+    class CacheDatos : Modificable
     {
 
         private Controlador controlador;
@@ -25,7 +25,7 @@ namespace ProyectoArqui.Model
         private char[] estadosDeBloque = new char[4];
 
         // Indica el numero de bloque en memoria principal
-        private int [] numerosDeBloque = new int[4];
+        private int[] numerosDeBloque = new int[4];
 
         // Numero de Bloque = direccionMemoria / 16
         // Numeros de Palabra = (direccionMemoria % 16) / 4
@@ -62,6 +62,7 @@ namespace ProyectoArqui.Model
             int indiceEnCache = GetIndiceBloqueEnCache(numeroDeBloque);
             bloquesDeCache[indiceEnCache].SetPalabra(numeroDePalabraEnBloque, palabra);
             estadosDeBloque[indiceEnCache] = 'M';
+            Modificado = true; // Indica que hubo un cambio en un bloque de la cache
             // TODO Aqui se deberia invalidar en las otras cachesDatos el bloque "numerosDeBloque" a traves del bus y del directorio
         }
 
@@ -113,7 +114,7 @@ namespace ProyectoArqui.Model
         /// Escribe un bloque de memoria de la cacheDatos en su posicion respectiva en la memoria principal
         /// </summary>
         /// <param name="indiceDeCache">Indice del bloque que se quiere enviar a memoria principal</param>
-        private void EnviarBloqueAMemoria(int indiceDeCache) 
+        private void EnviarBloqueAMemoria(int indiceDeCache)
         {
             // Se esperan 16 ticks de reloj del controlador
             controlador.esperar(16);
@@ -144,6 +145,24 @@ namespace ProyectoArqui.Model
         {
             // 4 es el numero de bloques de la cacheDatos
             return numeroDeBloqueEnMemoria % 4;
+        }
+
+        /// <summary>
+        /// Convierte los bloques de la Cache en un vector para las vistas
+        /// </summary>
+        /// <returns>Vector de datos</returns>
+        public int[] ToArray()
+        {
+            int[] vector = new int[16];
+            int i = 0;
+            foreach (Bloque bloque in bloquesDeCache)
+            {
+                foreach (int palabra in bloque.ToArray())
+                {
+                    vector[i++] = palabra;
+                }
+            }
+            return vector;
         }
     }
 }

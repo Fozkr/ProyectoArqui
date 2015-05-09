@@ -14,7 +14,7 @@ namespace ProyectoArqui.Model
     /// Esta clase se convierte en un hilo de la simulacion!
     /// 
     /// </summary>
-    class Procesador
+    class Procesador : Modificable
     {
         //Atributos
         private Controlador controlador;
@@ -75,6 +75,20 @@ namespace ProyectoArqui.Model
         }
 
         /// <summary>
+        /// Devuelve una copia de los registros del procesador
+        /// </summary>
+        /// <returns>Una copia de los registros</returns>
+        public int[] GetRegistros()
+        {
+            int[] registrosCopy = new int[32];
+            for (int i = 0; i < 32; ++i)
+            {
+                registrosCopy[i] = registros[i];
+            }
+            return registrosCopy;
+        }
+
+        /// <summary>
         /// Este es el metodo principal del procesador.
         /// 
         /// Cuando el procesador se envuelva en un hilo, este es el metodo que se ejecuta
@@ -96,7 +110,7 @@ namespace ProyectoArqui.Model
         /// Metodo que procesa una instruccion.
         /// Se encarga de hacer la decodificacion de la instruccion y llamar al metodo de procesamiento correcto.
         /// </summary>
-        /// <param name="i">Instruccion cuyo codigo se decodifica</param>
+        /// <param name="palabra">Instruccion cuyo codigo se decodifica</param>
         private void procesarInstruccion(Instruccion inst)
         {
             mapa[inst.GetCodigo()](inst);
@@ -108,50 +122,54 @@ namespace ProyectoArqui.Model
         /// <summary>
         /// Metodo que ejecuta la instruccion de Daddi
         /// </summary>
-        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
         private void Daddi(Instruccion i)
         {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
             Debug.WriteLine("Procesador: DADDI R" + x + " = R" + y + " + " + n);
             Debug.WriteLine("Procesador: DADDI R" + x + " = " + registros[y] + " + " + n);
             registros[x] = registros[y] + n;
+            this.Modificado = true; // Indica que hubo un cambio en un registro
             Debug.WriteLine("Procesador: DADDI R" + x + " = " + registros[x]);
         }
 
         /// <summary>
         /// Metodo que ejecuta la instruccion de Dadd
         /// </summary>
-        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
         private void Dadd(Instruccion i)
         {
             int y = i.GetParametro(1), z = i.GetParametro(2), x = i.GetParametro(3);
             Debug.WriteLine("Procesador: DADD R" + x + " = R" + y + " + R" + z);
             Debug.WriteLine("Procesador: DADD R" + x + " = " + registros[y] + " + " + registros[z]);
             registros[x] = registros[y] + registros[z];
+            this.Modificado = true; // Indica que hubo un cambio en un registro
             Debug.WriteLine("Procesador: DADD R" + x + " = " + registros[x]);
         }
 
         /// <summary>
         /// Metodo que ejecuta la instruccion de Dsub
         /// </summary>
-        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
         private void Dsub(Instruccion i)
         {
             int y = i.GetParametro(1), z = i.GetParametro(2), x = i.GetParametro(3);
             Debug.WriteLine("Procesador: DSUB R" + x + " = R" + y + " - R" + z);
             Debug.WriteLine("Procesador: DSUB R" + x + " = " + registros[y] + " - " + registros[z]);
             registros[x] = registros[y] - registros[z];
+            this.Modificado = true; // Indica que hubo un cambio en un registro
             Debug.WriteLine("Procesador: DSUB R" + x + " = " + registros[x]);
         }
 
         /// <summary>
         /// Metodo que ejecuta la instruccion de Lw
         /// </summary>
-        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param
+        /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param
         private void Lw(Instruccion i)
         {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
             registros[x] = cacheDatos.Leer(n + registros[y]);
+            this.Modificado = true; // Indica que hubo un cambio en un registro
             Debug.WriteLine("Procesador: LW R" + x + " = MEM(" + n + " + R" + y + ")");
             Debug.WriteLine("Procesador: LW R" + x + " = MEM(" + (n + registros[y]) + ")");
             Debug.WriteLine("Procesador: LW R" + x + " = " + registros[x]);
@@ -160,7 +178,7 @@ namespace ProyectoArqui.Model
         /// <summary>
         /// Metodo que ejecuta la instruccion de Sw
         /// </summary>
-        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
         private void Sw(Instruccion i)
         {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
@@ -172,7 +190,7 @@ namespace ProyectoArqui.Model
         /// <summary>
         /// Metodo que ejecuta la instruccion de Beqz
         /// </summary>
-        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
         private void Beqz(Instruccion i)
         {
             int x = i.GetParametro(1), n = i.GetParametro(3);
@@ -192,7 +210,7 @@ namespace ProyectoArqui.Model
         /// <summary>
         /// Metodo que ejecuta la instruccion de Bnez
         /// </summary>
-        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
         private void Bnez(Instruccion i)
         {
             int x = i.GetParametro(1), n = i.GetParametro(3);
@@ -212,7 +230,7 @@ namespace ProyectoArqui.Model
         /// <summary>
         /// Metodo que ejecuta la instruccion de Fin
         /// </summary>
-        /// <param name="i">Instruccion de la cual se extraen los parametros necesarios</param>
+        /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
         private void Fin(Instruccion i)
         {
             // A pesar de que se asigna true a finalizado cada vez que llega a un final de programa
@@ -221,5 +239,6 @@ namespace ProyectoArqui.Model
             Finalizado = true;
             Debug.WriteLine("Procesador: Un programa ha finalizado");
         }
+
     }
 }

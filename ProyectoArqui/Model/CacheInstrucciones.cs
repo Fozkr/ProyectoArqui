@@ -18,6 +18,7 @@ namespace ProyectoArqui.Model
 
         private Instruccion[] instrucciones;
         private String[] nombresProgramas;
+        private String[] programasAsignados;
         private int[] instruccionesIniciales;
         private int indiceSiguientePrograma;
         private int cantidadProgramas;
@@ -28,11 +29,12 @@ namespace ProyectoArqui.Model
         /// <param name="instruccionesRecibidas"></param>
         /// <param name="iniciosProgramas"></param>
         /// <param name="cantidadProgramasRecibida"></param>
-        public CacheInstrucciones(List<int> instruccionesRecibidas, List<int> iniciosProgramas, int cantidadProgramasRecibida, String[] nombresProgramasRecibidos)
+        public CacheInstrucciones(int numeroProcesadores, List<int> instruccionesRecibidas, List<int> iniciosProgramas, int cantidadProgramasRecibida, String[] nombresProgramasRecibidos)
         {
 
             cantidadProgramas = cantidadProgramasRecibida;
             nombresProgramas = nombresProgramasRecibidos;
+            programasAsignados = new String[numeroProcesadores];
             Debug.WriteLine("CacheInstrucciones: Hay " + cantidadProgramas + " programas");
 
             instrucciones = new Instruccion[instruccionesRecibidas.Count / 4];
@@ -81,6 +83,16 @@ namespace ProyectoArqui.Model
         }
 
         /// <summary>
+        /// Devuelve el nombre del programa asignado en un procesador
+        /// </summary>
+        /// <param name="idProcesador">Id del procesador</param>
+        /// <returns>Devuelve el nombre del programa en el procesador</returns>
+        public String GetNombreProgramaAsignado(Procesador procesador)
+        {
+            return programasAsignados[procesador.ID];
+        }
+
+        /// <summary>
         /// Le indica al procesador que entra como parametro cual es el siguiente programa que deberia ejecutar
         /// Si no hay un siguiente programa, indica que el procesador ha terminado su trabajo
         /// </summary>
@@ -93,6 +105,7 @@ namespace ProyectoArqui.Model
             {
                 int direccionSiguientePrograma = GetDireccionSiguientePrograma();
                 procesador.ProgramCounter = direccionSiguientePrograma;
+                nombresProgramas[procesador.ID] = GetNombrePrograma(procesador.ProgramCounter);
                 Debug.WriteLine("CacheInstrucciones: El procesador " + procesador.ID + " va a ejecutar el programa que empieza en " + direccionSiguientePrograma);
             }
             else

@@ -29,8 +29,8 @@ namespace ProyectoArqui.Model
         /// <summary>
         /// Devuelve una palabra del bloque.
         /// </summary>
-        /// <param name="i">Indice de la palabra</param>
-        /// <returns>Devuelve la palabra i del bloque</returns>
+        /// <param name="palabra">Indice de la palabra</param>
+        /// <returns>Devuelve la palabra palabra del bloque</returns>
         public int GetPalabra(int i)
         {
             return palabrasDelBloque[i];
@@ -39,12 +39,20 @@ namespace ProyectoArqui.Model
         /// <summary>
         /// Asigna una palabra nueva en una posicion del bloque
         /// </summary>
-        /// <param name="i">Indice donde se coloca la palabra nueva</param>
+        /// <param name="palabra">Indice donde se coloca la palabra nueva</param>
         /// <param name="nuevaPalabra">Nueva palabra a colocar</param>
         public void SetPalabra(int i, int nuevaPalabra)
         {
             palabrasDelBloque[i] = nuevaPalabra;
         }
 
+        /// <summary>
+        /// Convierte las palabras del Bloque en un vector para las vistas
+        /// </summary>
+        /// <returns>Vector de datos</returns>
+        public int[] ToArray()
+        {
+            return palabrasDelBloque;
+        }
     }
 }

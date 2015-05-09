@@ -58,7 +58,7 @@ namespace ProyectoArqui.Model
             // Se crean vectores para todos los objetos necesarios
             Controlador controlador = new Controlador();
             Procesador[] procesadores = new Procesador[numeroProcesadores];
-            CacheInstrucciones cacheInstrucciones = new CacheInstrucciones(instrucciones, iniciosProgramas, cantidadProgramas, nombresProgramas);
+            CacheInstrucciones cacheInstrucciones = new CacheInstrucciones(numeroProcesadores, instrucciones, iniciosProgramas, cantidadProgramas, nombresProgramas);
             CacheDatos[] cachesDatos = new CacheDatos[numeroProcesadores];
             MemoriaPrincipal[] memoriasPrincipales = new MemoriaPrincipal[numeroProcesadores];
 

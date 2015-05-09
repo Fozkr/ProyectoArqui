@@ -19,7 +19,7 @@ namespace ProyectoArqui.Controller
         //Atributos
         private Barrier barrier;
         private Procesador[] procesadores;
-        private CacheDatos[] caches;
+        private CacheDatos[] cachesDatos;
         private CacheInstrucciones cacheInstrucciones;
         private MemoriaPrincipal[] memorias;
         private int ticksReloj;
@@ -35,7 +35,7 @@ namespace ProyectoArqui.Controller
             // llame obligatoriamente al metodo inicializa antes de ejecutar la simulacion!
             this.barrier = null;
             this.procesadores = null;
-            this.caches = null;
+            this.cachesDatos = null;
             this.cacheInstrucciones = null;
             this.memorias = null;
             this.ticksReloj = -1;
@@ -90,16 +90,85 @@ namespace ProyectoArqui.Controller
         // Aqui se pueden Procesar mensajes de cachesDatos, etc
         public void entreCiclosDeReloj(Barrier b)
         {
+            // Se notifica a las vistas del cambio en el Pc
+            NotificarCambioPC();
+
             // Se aumenta la cantidad de tics de Reloj y se notifica a las vistas
             ++ticksReloj;
             fireTickChanged(ticksReloj);
+
+            // Se notifica a las vistas si hubo cambios en algun componente de la simulacion
+            NotificarCambioRegistros();
+            NotificarCambioCaches();
+            NotificarCambioMemorias();
 
             // Ver si los procesadres han terminado de Procesar un programa
             AsignarProgramasAProcesadores();
 
             // Ver si ya se termino la simulacion
             VerificarSimulacionTerminada();
+        }
 
+        /// <summary>
+        /// Notifica a las vistas que hubo un cambio en el PC 
+        /// </summary>
+        private void NotificarCambioPC()
+        {
+            foreach (Procesador p in procesadores)
+            {
+                fireProgramCounterChanged(p.ProgramCounter, p.ID);
+            }
+        }
+
+        /// <summary>
+        /// Notifica a las vistas si hubo un cambio en los registros del procesador
+        /// </summary>
+        private void NotificarCambioRegistros()
+        {
+            foreach (Procesador p in procesadores)
+            {
+                // p.Modificado == true si los registros se modificaron en el ultimo
+                // ciclo de reloj
+                if (p.Modificado)
+                {
+                    p.Modificado = false;
+                    fireRegistersChanged(p.GetRegistros(), p.ID);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Notifica a las vistas si hubo un cambio en los bloques de las cachesDatos
+        /// </summary>
+        private void NotificarCambioCaches()
+        {
+            for (int i = 0; i < procesadores.Length; ++i)
+            {
+                // p.Modificado == true si los bloques de las caches se modificaron en el ultimo
+                // ciclo de reloj
+                if (cachesDatos[i].Modificado)
+                {
+                    cachesDatos[i].Modificado = false;
+                    fireCacheChanged(cachesDatos[i].ToArray(), i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Notifica a las vistas si hubo un cambio en los bloques de las memorias 
+        /// </summary>
+        private void NotificarCambioMemorias()
+        {
+            for (int i = 0; i < procesadores.Length; ++i)
+            {
+                // p.Modificado == true si las memorias se modificaron en el ultimo
+                // ciclo de reloj
+                if (memorias[i].Modificado)
+                {
+                    memorias[i].Modificado = false;
+                    fireMemoryChanged(memorias[i].ToArray(), i);
+                }
+            }
         }
 
         /// <summary>
@@ -116,9 +185,12 @@ namespace ProyectoArqui.Controller
             {
                 if (procesadores[i].Finalizado)
                 {
+                    String nombreProgramaAnterior = cacheInstrucciones.GetNombreProgramaAsignado(procesadores[i]);
                     if (cacheInstrucciones.AsignarPrograma(procesadores[i]))
                     {
-                        fireProgramNameChanged(cacheInstrucciones.GetNombrePrograma(procesadores[i].ProgramCounter), i);
+                        fireProgramEnded(nombreProgramaAnterior, procesadores[i].GetRegistros(), procesadores[i].ID);
+                        String nombreProgramaNuevo = cacheInstrucciones.GetNombrePrograma(procesadores[i].ProgramCounter);
+                        fireProgramNameChanged(nombreProgramaNuevo, i);
                     }
                     else
                     {
@@ -148,8 +220,6 @@ namespace ProyectoArqui.Controller
                 fireSimulationFinished();
             }
         }
-
-
 
     }
 }

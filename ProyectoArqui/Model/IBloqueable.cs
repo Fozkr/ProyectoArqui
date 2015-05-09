@@ -10,7 +10,7 @@ namespace ProyectoArqui.Model
     /// Esta clase se utilizara en proximas implementaciones para definir un objeto abstracto con capacidad de bloquearse
     /// El proposito es que otras clases extiendan de esta clase y adquieran dicha habilidad.
     /// </summary>
-    class Bloqueable
+    interface IBloqueable
     {
     }
 }

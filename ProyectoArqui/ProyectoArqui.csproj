@@ -45,10 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Bloque.cs" />
-    <Compile Include="Model\Bloqueable.cs" />
+    <Compile Include="Model\IBloqueable.cs" />
     <Compile Include="Model\Bus.cs" />
     <Compile Include="Model\CacheDatos.cs" />
     <Compile Include="Model\Directorio.cs" />
+    <Compile Include="Model\Modificable.cs" />
     <Compile Include="Model\Instruccion.cs" />
     <Compile Include="Model\MemoriaPrincipal.cs" />
     <Compile Include="Model\Simulador.cs" />

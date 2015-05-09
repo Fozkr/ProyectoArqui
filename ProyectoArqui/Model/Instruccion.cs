@@ -38,7 +38,7 @@ namespace ProyectoArqui.Model
         /// Devuelve uno de los parametros de la instruccion.
         /// Los valores posibles son 1, 2 o 3
         /// </summary>
-        /// <param name="i">Numero de parametro que se quiere</param>
+        /// <param name="palabra">Numero de parametro que se quiere</param>
         /// <returns>Parametro deseado</returns>
         public int GetParametro(int i)
         {
