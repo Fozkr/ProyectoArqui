@@ -197,7 +197,7 @@ namespace ProyectoArqui.Controller
                         procesadores[i].Finalizado = false;
                         fireProgramEnded(nombreProgramaAnterior, procesadores[i].GetRegistros(), procesadores[i].ID);
                         String nombreProgramaNuevo = cacheInstrucciones.GetNombrePrograma(procesadores[i].ProgramCounter);
-                        fireProgramNameChanged(nombreProgramaNuevo, i);
+                        fireProgramChanged(i, nombreProgramaNuevo, ticksReloj, procesadores[i].GetRegistros(), cachesDatos[i].ToArray());
                     }
                     else
                     {
@@ -229,6 +229,5 @@ namespace ProyectoArqui.Controller
                 fireSimulationFinished();
             }
         }
-
     }
 }

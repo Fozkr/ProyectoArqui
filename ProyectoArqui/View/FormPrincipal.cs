@@ -23,7 +23,7 @@ namespace ProyectoArqui.View
 
         // Estos delegates se ocupan para poder hacer ThreadSafe llamados a la interfaz
         private delegate void onTickChangedCallback(int newTick);
-        private delegate void onProgramNameChangedCallback(String newName, int idProcesador);
+        private delegate void onProgramChangedCallback(int idProcesador, String nombrePrograma, int ticksReloj, int[] registros, int[] cache);
         private delegate void onProgramCounterChangedCallback(int newPc, int idProcesador);
         private delegate void onRegistersChangedCallback(int[] nuevosRegistros, int idProcesador);
         private delegate void onCacheChangedCallback(int[] palabrasCache, int idProcesador);
@@ -137,19 +137,21 @@ namespace ProyectoArqui.View
             else
             {
                 // TODO La simulacion llama a este metodo cada vez que termina un tick de forma que en este metodo se puede actualizar la interfaz
+                // Por ahora actualiza los ticks de duración en cada grid (se podría quitar después si es demasiado lento)
+                actualizarTuplasResultado(0, newTick, null, null);
             }
         }
 
         /*
          * Simplemente actualiza la label que indica el nombre del programa (archivo de programa) que está corriendo
-         * en uno de los procesadores.
+         * en uno de los procesadores. Ahora, como el programa cambió, también deben agregarse tuplas al grid para éste.
          */
-        public void onProgramNameChanged(String nombrePrograma, int idProcesador)
+        public void onProgramChanged(int idProcesador, String nombrePrograma, int ticksReloj, int[] registros, int[] cache)
         {
             if (this.InvokeRequired)
             {
-                onProgramNameChangedCallback callback = new onProgramNameChangedCallback(onProgramNameChanged);
-                this.Invoke(callback, new object[] { nombrePrograma, idProcesador });
+                onProgramChangedCallback callback = new onProgramChangedCallback(onProgramChanged);
+                this.Invoke(callback, new object[] { idProcesador, nombrePrograma, ticksReloj, registros, cache });
             }
             else
             {
@@ -167,8 +169,9 @@ namespace ProyectoArqui.View
                         break;
                 }
             }
+            crearTuplasResultado(idProcesador, nombrePrograma, ticksReloj, registros, cache);
+            cantidadProgramasPorGrid[idProcesador]++;
         }
-
 
         public void onProgramCounterChanged(int newPc, int idProcesador)
         {
@@ -180,12 +183,12 @@ namespace ProyectoArqui.View
             else
             {
                 // IMPLEMENTAR ESTO!
+                // Por ahora nada
             }
         }
 
         public void onRegistersChanged(int[] nuevosRegistros, int idProcesador)
         {
-
             if (this.InvokeRequired)
             {
                 onRegistersChangedCallback callback = new onRegistersChangedCallback(onRegistersChanged);
@@ -194,6 +197,7 @@ namespace ProyectoArqui.View
             else
             {
                 // IMPLEMENTAR ESTO!
+                actualizarTuplasResultado(idProcesador, -1, nuevosRegistros, null);
             }
         }
 
@@ -206,7 +210,8 @@ namespace ProyectoArqui.View
             }
             else
             {
-                // IMPLEMENTAR ESTO!
+                // Actualizar el cache en la interfaz
+                actualizarTuplasResultado(idProcesador, -1, null, palabrasCache);
             }
         }
 
@@ -252,10 +257,9 @@ namespace ProyectoArqui.View
         }
 
         /*
-         * Cuando un procesador empieza a simular un nuevo programa, se deben crear las tuplas que mostrarán los resultados
-         * de esa simulación, con valores iniciales.
+         * Cada vez que se actualiza la interfaz es un grid a la vez, dado un ID de procesador, se debe identificar cuál es el grid.
          */
-        public void crearTuplasResultado(int idProcesador, String nombrePrograma, int ticsRelojInicio, int[] registros, int[] cache)
+        public DataGridView identificarGridProcesador(int idProcesador)
         {
             DataGridView grid = null;
             switch (idProcesador)
@@ -270,6 +274,16 @@ namespace ProyectoArqui.View
                     grid = gridProcesador2;
                     break;
             }
+            return grid;
+        }
+
+        /*
+         * Cuando un procesador empieza a simular un nuevo programa, se deben crear las tuplas que mostrarán los resultados
+         * de esa simulación, con valores iniciales.
+         */
+        public void crearTuplasResultado(int idProcesador, String nombrePrograma, int ticsRelojInicio, int[] registros, int[] cache)
+        {
+            DataGridView grid = identificarGridProcesador(idProcesador);
             grid.Rows.Add(nombrePrograma);
             grid.Rows.Add("Reloj al inicio", ticsRelojInicio);
             grid.Rows.Add("Tics totales", 0);
@@ -278,11 +292,19 @@ namespace ProyectoArqui.View
                                             "R" + (i + 8) + ": " + registros[(i + 8)],
                                             "R" + (i + 16) + ": " + registros[(i + 16)],
                                             "R" + (i + 24) + ": " + registros[(i + 24)]);
-            for (short i = 0; i < 4; ++i)
-                grid.Rows.Add("Caché datos", cache[i],
-                                            cache[i + 4],
-                                            cache[i + 8],
-                                            cache[i + 12]);
+            if (cache != null)
+            {
+                for (short i = 0; i < 4; ++i)
+                    grid.Rows.Add("Caché datos", cache[i],
+                                                cache[i + 4],
+                                                cache[i + 8],
+                                                cache[i + 12]);
+            }
+            else
+            {
+                for (short i = 0; i < 4; ++i)
+                    grid.Rows.Add("Caché datos", 0, 0, 0, 0);
+            }
             grid.Rows.Add("-", "-", "-", "-", "-");
             cantidadProgramasPorGrid[idProcesador]++;
         }
@@ -293,34 +315,32 @@ namespace ProyectoArqui.View
          */
         public void actualizarTuplasResultado(int idProcesador, int ticsReloj, int[] registros, int[] cache)
         {
-            DataGridView grid = null;
-            switch (idProcesador)
+            DataGridView grid = identificarGridProcesador(idProcesador);
+            int tuplaInicial = (cantidadProgramasPorGrid[idProcesador] - 1) * 16; //28 tuplas por programa (3 titulo, 8 registros, 4 cache, 1 final)
+            
+            if (ticsReloj != -1) //si llega un valor válido, se actualiza
+                grid.Rows[tuplaInicial + 2].Cells[1].Value = (ticsReloj - (int)grid.Rows[tuplaInicial + 1].Cells[1].Value);
+
+            if (registros != null) //si llega un valor válido, se actualiza
             {
-                case 0:
-                    grid = gridProcesador0;
-                    break;
-                case 1:
-                    grid = gridProcesador1;
-                    break;
-                case 2:
-                    grid = gridProcesador2;
-                    break;
+                for (short i = 0; i < 8; ++i)
+                {
+                    grid.Rows[i + 3 + tuplaInicial].Cells[1].Value = "R" + i + ": " + registros[i];
+                    grid.Rows[i + 3 + tuplaInicial].Cells[2].Value = "R" + (i + 8) + ": " + registros[(i + 8)];
+                    grid.Rows[i + 3 + tuplaInicial].Cells[3].Value = "R" + (i + 16) + ": " + registros[(i + 16)];
+                    grid.Rows[i + 3 + tuplaInicial].Cells[4].Value = "R" + (i + 24) + ": " + registros[(i + 24)];
+                }
             }
-            int tuplaInicial = (cantidadProgramasPorGrid[idProcesador] - 1) * 16; //28 tuplas por programa (3 titulo, 8 registros, 4 cacheDatos, 1 final)
-            grid.Rows[tuplaInicial + 2].Cells[1].Value = (ticsReloj - (int)grid.Rows[tuplaInicial + 1].Cells[1].Value);
-            for (short i = 0; i < 8; ++i)
+
+            if (cache != null) //si llega un valor válido, se actualiza
             {
-                grid.Rows[i + 3 + tuplaInicial].Cells[1].Value = "R" + i + ": " + registros[i];
-                grid.Rows[i + 3 + tuplaInicial].Cells[2].Value = "R" + (i + 8) + ": " + registros[(i + 8)];
-                grid.Rows[i + 3 + tuplaInicial].Cells[3].Value = "R" + (i + 16) + ": " + registros[(i + 16)];
-                grid.Rows[i + 3 + tuplaInicial].Cells[4].Value = "R" + (i + 24) + ": " + registros[(i + 24)];
-            }
-            for (short i = 0; i < 4; ++i)
-            {
-                grid.Rows[i + 11 + tuplaInicial].Cells[1].Value = cache[i];
-                grid.Rows[i + 11 + tuplaInicial].Cells[2].Value = cache[i + 4];
-                grid.Rows[i + 11 + tuplaInicial].Cells[3].Value = cache[i + 8];
-                grid.Rows[i + 11 + tuplaInicial].Cells[4].Value = cache[i + 12];
+                for (short i = 0; i < 4; ++i)
+                {
+                    grid.Rows[i + 11 + tuplaInicial].Cells[1].Value = cache[i];
+                    grid.Rows[i + 11 + tuplaInicial].Cells[2].Value = cache[i + 4];
+                    grid.Rows[i + 11 + tuplaInicial].Cells[3].Value = cache[i + 8];
+                    grid.Rows[i + 11 + tuplaInicial].Cells[4].Value = cache[i + 12];
+                }
             }
         }
 

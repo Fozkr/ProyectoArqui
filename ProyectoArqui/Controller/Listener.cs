@@ -24,7 +24,7 @@ namespace ProyectoArqui.Controller
         /// </summary>
         /// <param name="newName">El nombre del programa que ahora se encuentra en ejecucion</param>
         /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
-        void onProgramNameChanged(String newName, int idProcesador);
+        void onProgramChanged(int idProcesador, String nombrePrograma, int ticksReloj, int[] registros, int[] cache);
 
         /// <summary>
         /// Indica que el pc de un procesador ha cambiado

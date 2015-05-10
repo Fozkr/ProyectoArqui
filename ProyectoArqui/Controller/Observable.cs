@@ -41,11 +41,11 @@ namespace ProyectoArqui.Controller
         /// </summary>
         /// <param name="newName">El nombre del programa que ahora se encuentra en ejecucion</param>
         /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
-        public void fireProgramNameChanged(String newName, int idProcesador)
+        public void fireProgramChanged(int idProcesador, String newName, int ticksRelojs, int[] registros, int[] cache)
         {
             foreach (Listener l in listeners)
             {
-                l.onProgramNameChanged(newName, idProcesador);
+                l.onProgramChanged(idProcesador, newName, ticksRelojs, registros, cache);
             }
         }
 
