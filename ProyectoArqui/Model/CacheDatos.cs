@@ -89,7 +89,7 @@ namespace ProyectoArqui.Model
         {
             int i = MapeoDirecto(numeroDeBloqueEnMemoria);
             // El numero del bloque es -1 en la primera corrida cuando la cache está vacía
-            if (numerosDeBloque[i] == numeroDeBloqueEnMemoria || numerosDeBloque[i] == -1)
+            if (numerosDeBloque[i] != numeroDeBloqueEnMemoria || numerosDeBloque[i] == -1)
             {
                 ReemplazarBloque(i, numeroDeBloqueEnMemoria);
             }
@@ -135,6 +135,7 @@ namespace ProyectoArqui.Model
             bloquesDeCache[indiceEnCache] = memoriaPrincipal.GetBloque(numeroDeBloqueEnMemoria);
             this.numerosDeBloque[indiceEnCache] = numeroDeBloqueEnMemoria;
             estadosDeBloque[indiceEnCache] = 'C';
+            Modificado = true; 
         }
 
         /// <summary>
