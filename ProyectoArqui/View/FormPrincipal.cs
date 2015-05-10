@@ -107,7 +107,7 @@ namespace ProyectoArqui.View
                 System.IO.TextReader lector = System.IO.File.OpenText(pathArchivo); //abre el archivo para Leer sus líneas una por una
                 while ((instruccionIndividual = lector.ReadLine()) != null)
                 {
-                    string[] partes = instruccionIndividual.Split(' '); //divide cada línea en partes, usando los espacios como token separador
+                    string[] partes = System.Text.RegularExpressions.Regex.Split(instruccionIndividual.Trim(), @"\s+");
                     if (partes.Length == 4)
                     {
                         for (short i = 0; i < 4; ++i)
