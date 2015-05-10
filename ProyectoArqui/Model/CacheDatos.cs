@@ -88,7 +88,8 @@ namespace ProyectoArqui.Model
         private int GetIndiceBloqueEnCache(int numeroDeBloqueEnMemoria)
         {
             int i = MapeoDirecto(numeroDeBloqueEnMemoria);
-            if (numerosDeBloque[i] == numeroDeBloqueEnMemoria)
+            // El numero del bloque es -1 en la primera corrida cuando la cache está vacía
+            if (numerosDeBloque[i] == numeroDeBloqueEnMemoria || numerosDeBloque[i] == -1)
             {
                 ReemplazarBloque(i, numeroDeBloqueEnMemoria);
             }

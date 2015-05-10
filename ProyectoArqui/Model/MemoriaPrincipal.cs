@@ -27,25 +27,26 @@ namespace ProyectoArqui.Model
         }
 
         /// <summary>
-        /// Devuelve un bloque de la memoria
+        /// Devuelve una copia de un bloque de la memoria
         /// </summary>
         /// <param name="palabra">Indice del bloque a modificar</param>
         /// <returns>Devuelve el bloque palabra de la memoria</returns>
         public Bloque GetBloque(int i)
         {
             // TODO Verificar si este metodo devuelve una copia del bloque
-            return bloquesDeMemoria[i];
+            return bloquesDeMemoria[i].CopiarBloque();
         }
 
         /// <summary>
-        /// Asigna un bloque nuevo en una posicion de la memoria
+        /// Asigna un bloque nuevo en una posicion de la memoria.
+        /// Copia el contenido del bloque antes de asignarlo
         /// Este bloque deberia venir de la cacheDatos de datos
         /// </summary>
         /// <param name="palabra">Indice donde se coloca el bloque nuevo</param>
         /// <param name="bloqueNuevo">Nuevo bloque a colocar</param>
         public void SetBloque(int i, Bloque bloqueNuevo)
         {
-            bloquesDeMemoria[i] = bloqueNuevo;
+            bloquesDeMemoria[i] = bloqueNuevo.CopiarBloque();
             Modificado = true;
         }
 

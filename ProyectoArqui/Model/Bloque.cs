@@ -54,5 +54,19 @@ namespace ProyectoArqui.Model
         {
             return palabrasDelBloque;
         }
+
+        /// <summary>
+        /// Devuelve una copia de este bloque
+        /// </summary>
+        /// <returns>Copia de bloque</returns>
+        public Bloque CopiarBloque()
+        {
+            Bloque copia = new Bloque();
+            for (int i = 0; i < palabrasDelBloque.Length; ++i)
+            {
+                copia.palabrasDelBloque[i] = this.palabrasDelBloque[i];
+            }
+            return copia;
+        }
     }
 }
