@@ -70,12 +70,12 @@ namespace ProyectoArqui.Model
                 procesadores[i] = new Procesador(i, cacheInstrucciones, cachesDatos[i], controlador);
             }
 
-            // Se inicializa el controlador que hasta el momento no conocia a nadie
-            controlador.Inicializar(procesadores, cachesDatos, cacheInstrucciones, memoriasPrincipales);
-            
             // Se agrega la interfaz como listener del controlador/modelo
             controlador.AddListener(interfaz);
 
+            // Se inicializa el controlador que hasta el momento no conocia a nadie
+            controlador.Inicializar(procesadores, cachesDatos, cacheInstrucciones, memoriasPrincipales);
+            
             // Se crean los hilos necesarios
             Thread[] hilosProcesadores = new Thread[numeroProcesadores];
             for (int i = 0; i < numeroProcesadores; ++i)

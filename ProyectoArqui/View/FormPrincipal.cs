@@ -168,9 +168,8 @@ namespace ProyectoArqui.View
                         labelProcesador2Corriendo.Text = nombrePrograma;
                         break;
                 }
+                crearTuplasResultado(idProcesador, nombrePrograma, ticksReloj, registros, cache);
             }
-            crearTuplasResultado(idProcesador, nombrePrograma, ticksReloj, registros, cache);
-            cantidadProgramasPorGrid[idProcesador]++;
         }
 
         public void onProgramCounterChanged(int newPc, int idProcesador)
@@ -317,9 +316,9 @@ namespace ProyectoArqui.View
         {
             DataGridView grid = identificarGridProcesador(idProcesador);
             int tuplaInicial = (cantidadProgramasPorGrid[idProcesador] - 1) * 16; //28 tuplas por programa (3 titulo, 8 registros, 4 cache, 1 final)
-            
+
             if (ticsReloj != -1) //si llega un valor válido, se actualiza
-                grid.Rows[tuplaInicial + 2].Cells[1].Value = (ticsReloj - (int)grid.Rows[tuplaInicial + 1].Cells[1].Value);
+                grid.Rows[tuplaInicial + 2].Cells[1].Value = ticsReloj;
 
             if (registros != null) //si llega un valor válido, se actualiza
             {
