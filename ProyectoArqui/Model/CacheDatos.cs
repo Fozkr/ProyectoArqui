@@ -135,6 +135,7 @@ namespace ProyectoArqui.Model
             bloquesDeCache[indiceEnCache] = memoriaPrincipal.GetBloque(numeroDeBloqueEnMemoria);
             this.numerosDeBloque[indiceEnCache] = numeroDeBloqueEnMemoria;
             estadosDeBloque[indiceEnCache] = 'C';
+            // Se trajo un bloque de memoria, las vistas deben ser notificadas
             Modificado = true; 
         }
 

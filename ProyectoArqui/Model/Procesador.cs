@@ -89,6 +89,18 @@ namespace ProyectoArqui.Model
         }
 
         /// <summary>
+        /// Cuando un programa termina y se carga otro
+        /// Los registros deben ponerse en 0
+        /// </summary>
+        public void ResetearRegistros()
+        {
+            for (int i = 0; i < 32; ++i)
+            {
+                registros[i] = 0;
+            }
+        }
+
+        /// <summary>
         /// Este es el metodo principal del procesador.
         /// 
         /// Cuando el procesador se envuelva en un hilo, este es el metodo que se ejecuta
