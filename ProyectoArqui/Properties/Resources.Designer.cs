@@ -188,5 +188,14 @@ namespace ProyectoArqui.Properties {
                 return ResourceManager.GetString("Hilo4", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to $(solutiondir).
+        /// </summary>
+        internal static string SolutionDirectory {
+            get {
+                return ResourceManager.GetString("SolutionDirectory", resourceCulture);
+            }
+        }
     }
 }

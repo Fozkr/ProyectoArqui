@@ -38,6 +38,21 @@ namespace ProyectoArqui.View
         {
             InitializeComponent();
             cantidadProgramasPorGrid = new short[3];
+
+#if DEBUG
+            
+            // Esto solo se ejecuta en modo Debug, En Release no se agrega
+
+            String dir = Application.ExecutablePath + "/../../..";
+            String[] paths = { "/Hilos/1.txt", "/Hilos/2.txt", "/Hilos/3.txt", "/Hilos/4.txt" };
+
+            foreach (String path in paths)
+            {
+                GridPaths.Rows.Add(dir + path);
+            }
+            TextBoxCantidadProgramas.Text = "4";
+            BotonIniciarSimulacion.Enabled = true;
+#endif
         }
 
         /*
