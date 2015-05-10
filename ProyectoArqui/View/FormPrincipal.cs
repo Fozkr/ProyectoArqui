@@ -91,6 +91,7 @@ namespace ProyectoArqui.View
             BotonAgregarArchivo.Enabled = false;
             BotonIniciarSimulacion.Enabled = false;
             panelProcesadores.Visible = true; //también hace este panel visible para ver los programas correr
+            panelMemoria.Visible = true; //también hace este panel visible para ver los programas correr
 
             //Lee todas las instrucciones y las guarda en una lista
             List<int> instrucciones = new List<int>();          //arreglo general que almacenará todas las instrucciones leídas
@@ -124,6 +125,8 @@ namespace ProyectoArqui.View
             Thread hiloSimulacion = new Thread(simulador.EjecutarSimulacion);
             hiloSimulacion.Start();
 
+            crearTuplasMemoriaCompartida(); //de una vez iniciarlizar las tuplas de la memoria compartida
+
             // NO hacer join al hiloSimulacion porque sino se detienen los eventos de la interfaz grafica
         }
 
@@ -155,17 +158,18 @@ namespace ProyectoArqui.View
             }
             else
             {
-                // Implementacion del metodo
+                // Actualizar label y crear tuplas
+                cantidadProgramasPorGrid[idProcesador]++;
                 switch (idProcesador)
                 {
                     case 0:
-                        labelProcesador0Corriendo.Text = nombrePrograma;
+                        labelProcesador0Corriendo.Text = "corriendo " + nombrePrograma + "...";
                         break;
                     case 1:
-                        labelProcesador1Corriendo.Text = nombrePrograma;
+                        labelProcesador1Corriendo.Text = "corriendo " + nombrePrograma + "...";
                         break;
                     case 2:
-                        labelProcesador2Corriendo.Text = nombrePrograma;
+                        labelProcesador2Corriendo.Text = "corriendo " + nombrePrograma + "...";
                         break;
                 }
                 crearTuplasResultado(idProcesador, nombrePrograma, ticksReloj, registros, cache);
@@ -181,7 +185,6 @@ namespace ProyectoArqui.View
             }
             else
             {
-                // IMPLEMENTAR ESTO!
                 // Por ahora nada
             }
         }
@@ -195,7 +198,7 @@ namespace ProyectoArqui.View
             }
             else
             {
-                // IMPLEMENTAR ESTO!
+                // Actualizar los registros
                 actualizarTuplasResultado(idProcesador, -1, nuevosRegistros, null);
             }
         }
@@ -223,7 +226,8 @@ namespace ProyectoArqui.View
             }
             else
             {
-                // IMPLEMENTAR ESTO!
+                // Actualiza la parte de la memoria compartida correspondiente a ese procesador
+                actualizarTuplasMemoriaCompartida(idProcesador, palabrasMemoria);
             }
         }
 
@@ -236,7 +240,7 @@ namespace ProyectoArqui.View
             }
             else
             {
-                // IMPLEMENTAR ESTO!
+                // Nada
             }
         }
 
@@ -249,8 +253,10 @@ namespace ProyectoArqui.View
             }
             else
             {
-                // IMPLEMENTAR ESTO!
-                // Habilitar el boton hasta que termine la simulacion
+                // Habilitar el botón para una nueva y actualizar los labels
+                labelProcesador0Corriendo.Text = "terminado";
+                labelProcesador1Corriendo.Text = "terminado";
+                labelProcesador2Corriendo.Text = "terminado";
                 BotonNuevaSimulacion.Enabled = true;
             }
         }
@@ -305,7 +311,6 @@ namespace ProyectoArqui.View
                     grid.Rows.Add("Caché datos", 0, 0, 0, 0);
             }
             grid.Rows.Add("-", "-", "-", "-", "-");
-            cantidadProgramasPorGrid[idProcesador]++;
         }
 
         /*
@@ -318,7 +323,7 @@ namespace ProyectoArqui.View
             int tuplaInicial = (cantidadProgramasPorGrid[idProcesador] - 1) * 16; //28 tuplas por programa (3 titulo, 8 registros, 4 cache, 1 final)
 
             if (ticsReloj != -1) //si llega un valor válido, se actualiza
-                grid.Rows[tuplaInicial + 2].Cells[1].Value = ticsReloj;
+                grid.Rows[tuplaInicial + 2].Cells[1].Value = ticsReloj - (int)(grid.Rows[tuplaInicial + 1].Cells[1].Value);
 
             if (registros != null) //si llega un valor válido, se actualiza
             {
@@ -343,6 +348,34 @@ namespace ProyectoArqui.View
             }
         }
 
+        /*
+         * 
+         */
+        private void crearTuplasMemoriaCompartida()
+        {
+            for (short i = 0; i < 12; ++i) //2 bloques por tupla, son 24 bloques en total, 4 tuplas por procesador
+                gridMemoriaCompartida.Rows.Add("Procesador " + (i/4), 0, 0, 0, 0, 0, 0, 0, 0);
+        }
+
+        /*
+         * 
+         */
+        private void actualizarTuplasMemoriaCompartida(int idProcesador, int[] palabrasMemoria)
+        {
+            int tuplaInicial = idProcesador * 4;
+            int palabra = 0;
+            for (short i = 0; i < 4; ++i)
+            {
+                gridMemoriaCompartida.Rows[i + tuplaInicial].Cells[1].Value = palabrasMemoria[palabra++];
+                gridMemoriaCompartida.Rows[i + tuplaInicial].Cells[2].Value = palabrasMemoria[palabra++];
+                gridMemoriaCompartida.Rows[i + tuplaInicial].Cells[3].Value = palabrasMemoria[palabra++];
+                gridMemoriaCompartida.Rows[i + tuplaInicial].Cells[4].Value = palabrasMemoria[palabra++];
+                gridMemoriaCompartida.Rows[i + tuplaInicial].Cells[5].Value = palabrasMemoria[palabra++];
+                gridMemoriaCompartida.Rows[i + tuplaInicial].Cells[6].Value = palabrasMemoria[palabra++];
+                gridMemoriaCompartida.Rows[i + tuplaInicial].Cells[7].Value = palabrasMemoria[palabra++];
+                gridMemoriaCompartida.Rows[i + tuplaInicial].Cells[8].Value = palabrasMemoria[palabra++];
+            }
+        }
     }
 
 }
