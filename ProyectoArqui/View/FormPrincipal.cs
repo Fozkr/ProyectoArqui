@@ -51,6 +51,7 @@ namespace ProyectoArqui.View
                 GridPaths.Rows.Add(dir + path);
             }
             TextBoxCantidadProgramas.Text = "4";
+            BotonNuevaSimulacion.Enabled = false;
             BotonIniciarSimulacion.Enabled = true;
 #endif
         }

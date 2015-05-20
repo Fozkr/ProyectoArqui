@@ -53,7 +53,7 @@ namespace ProyectoArqui.Model
             Debug.Flush();
 
             // Modificar aqui la cantidad de procesadores deseados!
-            int numeroProcesadores = 1;
+            int numeroProcesadores = 3;
 
             // Se crean vectores para todos los objetos necesarios
             Controlador controlador = new Controlador();
@@ -65,7 +65,7 @@ namespace ProyectoArqui.Model
             // Se inicializan todos los objetos relacionados a los procesadores
             for (int i = 0; i < numeroProcesadores; ++i)
             {
-                memoriasPrincipales[i] = new MemoriaPrincipal();
+                memoriasPrincipales[i] = new MemoriaPrincipal(controlador);
                 cachesDatos[i] = new CacheDatos(memoriasPrincipales[i], controlador);
                 procesadores[i] = new Procesador(i, cacheInstrucciones, cachesDatos[i], controlador);
             }

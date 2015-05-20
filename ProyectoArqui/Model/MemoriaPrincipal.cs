@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ProyectoArqui.Controller;
 
 namespace ProyectoArqui.Model
 {
@@ -10,15 +11,24 @@ namespace ProyectoArqui.Model
     /// Representa una memoria principal para un procesador.
     /// Se compone de 8 bloques.
     /// </summary>
-    class MemoriaPrincipal : Modificable
+    class MemoriaPrincipal : Bloqueable
     {
         private Bloque[] bloquesDeMemoria = new Bloque[8];
+
+        // Para actualizar o no la interfaz
+        private bool modificado = true;
+        public bool Modificado
+        {
+            get { return modificado; }
+            set { modificado = value; }
+        }
 
         /// <summary>
         /// Crea los bloques de la memoria principal
         /// Se inicializa en ceros
         /// </summary>
-        public MemoriaPrincipal()
+        public MemoriaPrincipal(Controlador controlador)
+            : base(controlador)
         {
             for (int i = 0; i < 8; ++i)
             {

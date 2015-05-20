@@ -14,7 +14,7 @@ namespace ProyectoArqui.Model
     /// Esta clase se convierte en un hilo de la simulacion!
     /// 
     /// </summary>
-    class Procesador : Modificable
+    class Procesador
     {
         //Atributos
         private Controlador controlador;
@@ -28,6 +28,14 @@ namespace ProyectoArqui.Model
         // Diccionario que almacena un entero con el metodo que tiene que ejecutar
         private delegate void inst(Instruccion i);
         private Dictionary<int, inst> mapa = new Dictionary<int, inst>();
+
+        // Para actualizar o no la interfaz
+        private bool modificado = true;
+        public bool Modificado
+        {
+            get { return modificado; }
+            set { modificado = value; }
+        }
 
         public int ProgramCounter
         {
