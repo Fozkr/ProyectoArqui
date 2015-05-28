@@ -53,7 +53,7 @@ namespace ProyectoArqui.Model
             Debug.Flush();
 
             // Modificar aqui la cantidad de procesadores deseados!
-            int numeroProcesadores = 3;
+            int numeroProcesadores = (cantidadProgramas > 2 ? 3 : cantidadProgramas); //para ajustar la cantidad según necesidad
 
             // Se crean vectores para todos los objetos necesarios
             Controlador controlador = new Controlador();

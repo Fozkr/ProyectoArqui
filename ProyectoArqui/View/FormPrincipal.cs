@@ -19,7 +19,8 @@ namespace ProyectoArqui.View
     public partial class FormPrincipal : Form, Listener
     {
         //Atributos
-        private short[] cantidadProgramasPorGrid;
+        private short[] cantidadProgramasPorGrid;   //Usado para saber cuáles filas de cada grid accesar
+        private int cantidadProcesadores;           //Usado para saber cuándo actualizar cuáles delos 3 grids
 
         // Estos delegates se ocupan para poder hacer ThreadSafe llamados a la interfaz
         private delegate void onTickChangedCallback(int newTick);
@@ -134,6 +135,7 @@ namespace ProyectoArqui.View
                     }
                 }
                 lector.Close();
+                cantidadProcesadores = (iniciosProgramas.Count > 2 ? 3 : iniciosProgramas.Count); //para no accesar grids inexistentes
             }
 
             //Enviar parámetros al simulador e iniciar la simulación
@@ -157,7 +159,8 @@ namespace ProyectoArqui.View
             {
                 // TODO La simulacion llama a este metodo cada vez que termina un tick de forma que en este metodo se puede actualizar la interfaz
                 // Por ahora actualiza los ticks de duración en cada grid (se podría quitar después si es demasiado lento)
-                actualizarTuplasResultado(0, newTick, null, null);
+                for (short i = 0; i < cantidadProcesadores; ++i) //por cada grid existente
+                    actualizarTuplasResultado(i, newTick, null, null);
             }
         }
 
@@ -269,7 +272,7 @@ namespace ProyectoArqui.View
             }
             else
             {
-                // Habilitar el botón para una nueva y actualizar los labels
+                // Habilitar el botón para una nueva simulación y actualizar los labels
                 labelProcesador0Corriendo.Text = "terminado";
                 labelProcesador1Corriendo.Text = "terminado";
                 labelProcesador2Corriendo.Text = "terminado";
@@ -336,7 +339,7 @@ namespace ProyectoArqui.View
         public void actualizarTuplasResultado(int idProcesador, int ticsReloj, int[] registros, int[] cache)
         {
             DataGridView grid = identificarGridProcesador(idProcesador);
-            int tuplaInicial = (cantidadProgramasPorGrid[idProcesador] - 1) * 16; //28 tuplas por programa (3 titulo, 8 registros, 4 cache, 1 final)
+            int tuplaInicial = (cantidadProgramasPorGrid[idProcesador] - 1) * 16; //16 tuplas por programa (3 titulo, 8 registros, 4 cache, 1 final)
 
             if (ticsReloj != -1) //si llega un valor válido, se actualiza
                 grid.Rows[tuplaInicial + 2].Cells[1].Value = ticsReloj - (int)(grid.Rows[tuplaInicial + 1].Cells[1].Value);
@@ -360,6 +363,8 @@ namespace ProyectoArqui.View
                     grid.Rows[i + 11 + tuplaInicial].Cells[2].Value = cache[i + 4];
                     grid.Rows[i + 11 + tuplaInicial].Cells[3].Value = cache[i + 8];
                     grid.Rows[i + 11 + tuplaInicial].Cells[4].Value = cache[i + 12];
+                    //TODO: mostrar números de bloque aquí
+                    //TODO: mostrar estados de los bloques aquí
                 }
             }
         }
