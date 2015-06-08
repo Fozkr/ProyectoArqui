@@ -45,7 +45,7 @@ namespace ProyectoArqui.Controller
         /// </summary>
         /// <param name="palabrasCache">Vector con las palabras de la cache</param>
         /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
-        void onCacheChanged(int[] palabrasCache, int idProcesador);
+        void onCacheChanged(int[] palabrasCache, int[] numerosBloquesCache, char[] estadosBloquesCache, int idProcesador);
 
         /// <summary>
         /// Indica que un estado de memoria principal ha cambiado

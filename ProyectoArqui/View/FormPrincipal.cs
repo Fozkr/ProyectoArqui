@@ -27,7 +27,7 @@ namespace ProyectoArqui.View
         private delegate void onProgramChangedCallback(int idProcesador, String nombrePrograma, int ticksReloj, int[] registros, int[] cache);
         private delegate void onProgramCounterChangedCallback(int newPc, int idProcesador);
         private delegate void onRegistersChangedCallback(int[] nuevosRegistros, int idProcesador);
-        private delegate void onCacheChangedCallback(int[] palabrasCache, int idProcesador);
+        private delegate void onCacheChangedCallback(int[] palabrasCache, int[] numerosBloquesCache, char[] estadosBloquesCache, int idProcesador);
         private delegate void onMemoryChangedCallback(int[] palabrasMemoria, int idProcesador);
         private delegate void onProgramEndedCallback(string nombrePrograma, int[] registrosFinales, int idProcesador);
         private delegate void onSimulationFinishedCallback();
@@ -160,7 +160,7 @@ namespace ProyectoArqui.View
                 // TODO La simulacion llama a este metodo cada vez que termina un tick de forma que en este metodo se puede actualizar la interfaz
                 // Por ahora actualiza los ticks de duración en cada grid (se podría quitar después si es demasiado lento)
                 for (short i = 0; i < cantidadProcesadores; ++i) //por cada grid existente
-                    actualizarTuplasResultado(i, newTick, null, null);
+                    actualizarTuplasResultado(i, newTick, null, null, null, null);
             }
         }
 
@@ -218,21 +218,21 @@ namespace ProyectoArqui.View
             else
             {
                 // Actualizar los registros
-                actualizarTuplasResultado(idProcesador, -1, nuevosRegistros, null);
+                actualizarTuplasResultado(idProcesador, -1, nuevosRegistros, null, null, null);
             }
         }
 
-        public void onCacheChanged(int[] palabrasCache, int idProcesador)
+        public void onCacheChanged(int[] palabrasCache, int[] numerosBloquesCache, char[] estadosBloquesCaches, int idProcesador)
         {
             if (this.InvokeRequired)
             {
                 onCacheChangedCallback callback = new onCacheChangedCallback(onCacheChanged);
-                this.Invoke(callback, new object[] { palabrasCache, idProcesador });
+                this.Invoke(callback, new object[] { palabrasCache, numerosBloquesCache, estadosBloquesCaches, idProcesador });
             }
             else
             {
                 // Actualizar el cache en la interfaz
-                actualizarTuplasResultado(idProcesador, -1, null, palabrasCache);
+                actualizarTuplasResultado(idProcesador, -1, null, palabrasCache, numerosBloquesCache, estadosBloquesCaches);
             }
         }
 
@@ -329,6 +329,8 @@ namespace ProyectoArqui.View
                 for (short i = 0; i < 4; ++i)
                     grid.Rows.Add("Caché datos", 0, 0, 0, 0);
             }
+            grid.Rows.Add("Números de bloque", -1, -1, -1, -1);     //caché
+            grid.Rows.Add("Estados de bloques", "", "", "", "");    //caché
             grid.Rows.Add("-", "-", "-", "-", "-");
         }
 
@@ -336,10 +338,10 @@ namespace ProyectoArqui.View
          * Conforme los procesadores simulan los programas, la interfaz va actualizando visualmente el estado
          * de los datos de interés de cada simulación.
          */
-        public void actualizarTuplasResultado(int idProcesador, int ticsReloj, int[] registros, int[] cache)
+        public void actualizarTuplasResultado(int idProcesador, int ticsReloj, int[] registros, int[] palabrasCache, int[] numerosBloquesCaches, char[] estadosBloquesCaches)
         {
             DataGridView grid = identificarGridProcesador(idProcesador);
-            int tuplaInicial = (cantidadProgramasPorGrid[idProcesador] - 1) * 16; //16 tuplas por programa (3 titulo, 8 registros, 4 cache, 1 final)
+            int tuplaInicial = (cantidadProgramasPorGrid[idProcesador] - 1) * 18; //18 tuplas por programa (3 titulo, 8 registros, 6 cache, 1 final)
 
             if (ticsReloj != -1) //si llega un valor válido, se actualiza
                 grid.Rows[tuplaInicial + 2].Cells[1].Value = ticsReloj - (int)(grid.Rows[tuplaInicial + 1].Cells[1].Value);
@@ -355,17 +357,25 @@ namespace ProyectoArqui.View
                 }
             }
 
-            if (cache != null) //si llega un valor válido, se actualiza
+            if (palabrasCache != null) //si llega un valor válido, se actualiza
             {
                 for (short i = 0; i < 4; ++i)
                 {
-                    grid.Rows[i + 11 + tuplaInicial].Cells[1].Value = cache[i];
-                    grid.Rows[i + 11 + tuplaInicial].Cells[2].Value = cache[i + 4];
-                    grid.Rows[i + 11 + tuplaInicial].Cells[3].Value = cache[i + 8];
-                    grid.Rows[i + 11 + tuplaInicial].Cells[4].Value = cache[i + 12];
-                    //TODO: mostrar números de bloque aquí
-                    //TODO: mostrar estados de los bloques aquí
+                    grid.Rows[i + 11 + tuplaInicial].Cells[1].Value = palabrasCache[i];
+                    grid.Rows[i + 11 + tuplaInicial].Cells[2].Value = palabrasCache[i + 4];
+                    grid.Rows[i + 11 + tuplaInicial].Cells[3].Value = palabrasCache[i + 8];
+                    grid.Rows[i + 11 + tuplaInicial].Cells[4].Value = palabrasCache[i + 12];
                 }
+                //actualizar los números de bloques
+                grid.Rows[15].Cells[1].Value = numerosBloquesCaches[0];
+                grid.Rows[15].Cells[2].Value = numerosBloquesCaches[1];
+                grid.Rows[15].Cells[3].Value = numerosBloquesCaches[2];
+                grid.Rows[15].Cells[4].Value = numerosBloquesCaches[3];
+                //actualizar los estados de los bloques
+                grid.Rows[16].Cells[1].Value = estadosBloquesCaches[0];
+                grid.Rows[16].Cells[2].Value = estadosBloquesCaches[1];
+                grid.Rows[16].Cells[3].Value = estadosBloquesCaches[2];
+                grid.Rows[16].Cells[4].Value = estadosBloquesCaches[3];
             }
         }
 

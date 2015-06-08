@@ -178,5 +178,15 @@ namespace ProyectoArqui.Model
             }
             return vector;
         }
+
+        public int[] Numeros
+        {
+            get { return numerosDeBloque; }
+        }
+
+        public char[] Estados
+        {
+            get { return estadosDeBloque; }
+        }
     }
 }

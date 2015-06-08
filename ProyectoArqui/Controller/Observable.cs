@@ -80,11 +80,11 @@ namespace ProyectoArqui.Controller
         /// </summary>
         /// <param name="palabrasCache">Vector con las palabras de la cache</param>
         /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
-        public void fireCacheChanged(int[] palabrasCache, int idProcesador)
+        public void fireCacheChanged(int[] palabrasCache, int[] numerosBloquesCache, char[] estadosBloquesCaches, int idProcesador)
         {
             foreach (Listener l in listeners)
             {
-                l.onCacheChanged(palabrasCache, idProcesador);
+                l.onCacheChanged(palabrasCache, numerosBloquesCache, estadosBloquesCaches, idProcesador);
             }
         }
 
