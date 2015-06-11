@@ -60,21 +60,24 @@ namespace ProyectoArqui.Model
             Procesador[] procesadores = new Procesador[numeroProcesadores];
             CacheInstrucciones cacheInstrucciones = new CacheInstrucciones(numeroProcesadores, instrucciones, iniciosProgramas, cantidadProgramas, nombresProgramas);
             CacheDatos[] cachesDatos = new CacheDatos[numeroProcesadores];
+            Directorio[] directorios = new Directorio[numeroProcesadores];
             MemoriaPrincipal[] memoriasPrincipales = new MemoriaPrincipal[numeroProcesadores];
 
             // Se inicializan todos los objetos relacionados a los procesadores
             for (int i = 0; i < numeroProcesadores; ++i)
             {
+                directorios[i] = new Directorio(controlador);
                 memoriasPrincipales[i] = new MemoriaPrincipal(controlador);
-                cachesDatos[i] = new CacheDatos(memoriasPrincipales[i], controlador);
+                cachesDatos[i] = new CacheDatos(directorios[i], memoriasPrincipales[i], controlador);
                 procesadores[i] = new Procesador(i, cacheInstrucciones, cachesDatos[i], controlador);
+                directorios[i].SetCacheDatos(cachesDatos[i]);
             }
 
             // Se agrega la interfaz como listener del controlador/modelo
             controlador.AddListener(interfaz);
 
             // Se inicializa el controlador que hasta el momento no conocia a nadie
-            controlador.Inicializar(procesadores, cachesDatos, cacheInstrucciones, memoriasPrincipales);
+            controlador.Inicializar(procesadores, cachesDatos, cacheInstrucciones, directorios, memoriasPrincipales);
             
             // Se crean los hilos necesarios
             Thread[] hilosProcesadores = new Thread[numeroProcesadores];

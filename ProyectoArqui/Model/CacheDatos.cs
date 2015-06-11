@@ -5,15 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using ProyectoArqui.Controller;
 
-namespace ProyectoArqui.Model
-{
+namespace ProyectoArqui.Model {
     /// <summary>
     /// Representa una cacheDatos de datos para un procesador.
     /// Se compone de 4 bloques.
     /// </summary>
-    class CacheDatos : Bloqueable
-    {
+    class CacheDatos : Bloqueable {
 
+        private Directorio directorio;
         private MemoriaPrincipal memoriaPrincipal;
         private Bloque[] bloquesDeCache = new Bloque[4];
 
@@ -28,8 +27,7 @@ namespace ProyectoArqui.Model
 
         // Para actualizar o no la interfaz
         private bool modificado = true;
-        public bool Modificado
-        {
+        public bool Modificado {
             get { return modificado; }
             set { modificado = value; }
         }
@@ -45,32 +43,33 @@ namespace ProyectoArqui.Model
         /// </summary>
         /// <param name="memoriaPrincipal">Memoria principal de la que se reciben y escriben bloques</param>
         /// <param name="controlador">controlador que controla el reloj de la simulacion</param>
-        public CacheDatos(MemoriaPrincipal memoriaPrincipal, Controlador controlador) : base(controlador)
-        {
+        public CacheDatos(Directorio directorio, MemoriaPrincipal memoriaPrincipal, Controlador controlador)
+            : base(controlador) {
+            this.directorio = directorio;
             this.memoriaPrincipal = memoriaPrincipal;
-            for (int i = 0; i < estadosDeBloque.Length; ++i)
-            {
+            for (int i = 0; i < estadosDeBloque.Length; ++i) {
                 this.bloquesDeCache[i] = new Bloque();
                 this.estadosDeBloque[i] = 'I';
                 this.numerosDeBloque[i] = -1; // Da error si se intenta acceder a la posicion -1
             }
         }
 
+
         /// <summary>
         /// Metodo para que el procesador escriba en una direccion de memoria una palabra
         /// </summary>
         /// <param name="direccionMemoria">Direccion de memoria donde se quiere escribir una palabra</param>
         /// <param name="palabra">Palabra que se quiere escribir</param>
-        public void Escribir(int direccionMemoria, int palabra)
-        {
+        public void Escribir(int direccionMemoria, int palabra) {
             this.Bloquear();
             int numeroDeBloque = direccionMemoria / 16;
             int numeroDePalabraEnBloque = (direccionMemoria % 16) / 4;
             int indiceEnCache = GetIndiceBloqueEnCache(numeroDeBloque);
+            directorio.InvalidarBloque(numeroDeBloque);
             bloquesDeCache[indiceEnCache].SetPalabra(numeroDePalabraEnBloque, palabra);
             estadosDeBloque[indiceEnCache] = 'M';
             Modificado = true; // Indica que hubo un cambio en un bloque de la cache
-            // TODO Aqui se deberia invalidar en las otras cachesDatos el bloque "numerosDeBloque" a traves del bus y del directorio
+            directorio.SetEstadoBloque(numeroDeBloque, 'M', true);
             this.Desbloquear();
         }
 
@@ -79,8 +78,7 @@ namespace ProyectoArqui.Model
         /// </summary>
         /// <param name="direccionMemoria">Direccion de memoria donde se quiere leer una palabra</param>
         /// <returns>Devuelve la palabra que se encuentra en la direccion de memoria</returns>
-        public int Leer(int direccionMemoria)
-        {
+        public int Leer(int direccionMemoria) {
             this.Bloquear();
             int numeroDeBloque = direccionMemoria / 16;
             int numeroDePalabraEnBloque = (direccionMemoria % 16) / 4;
@@ -96,12 +94,10 @@ namespace ProyectoArqui.Model
         /// </summary>
         /// <param name="numeroDeBloqueEnMemoria">Numero de bloque en el que se necesita escribir</param>
         /// <returns>Devuelve el indice en el cual se encuentra el bloque buscado en la cacheDatos</returns>
-        private int GetIndiceBloqueEnCache(int numeroDeBloqueEnMemoria)
-        {
+        private int GetIndiceBloqueEnCache(int numeroDeBloqueEnMemoria) {
             int i = MapeoDirecto(numeroDeBloqueEnMemoria);
             // El numero del bloque es -1 en la primera corrida cuando la cache está vacía
-            if (numerosDeBloque[i] != numeroDeBloqueEnMemoria || numerosDeBloque[i] == -1)
-            {
+            if (numerosDeBloque[i] != numeroDeBloqueEnMemoria || numerosDeBloque[i] == -1) {
                 ReemplazarBloque(i, numeroDeBloqueEnMemoria);
             }
             return i;
@@ -113,11 +109,10 @@ namespace ProyectoArqui.Model
         /// </summary>
         /// <param name="indiceEnCache">indice en cacheDatos donde se quiere traer un bloque</param>
         /// <param name="numeroDeBloqueEnMemoria">Numero de bloque en memoria que se quiere poner en indiceEnCache</param>
-        private void ReemplazarBloque(int indiceEnCache, int numeroDeBloqueEnMemoria)
-        {
-            if (estadosDeBloque[indiceEnCache] == 'M')
-            {
+        private void ReemplazarBloque(int indiceEnCache, int numeroDeBloqueEnMemoria) {
+            if (estadosDeBloque[indiceEnCache] == 'M') {
                 EnviarBloqueAMemoria(indiceEnCache);
+                directorio.SetEstadoBloque(numeroDeBloqueEnMemoria, 'U', true);
             }
             TraerBloqueDeMemoria(indiceEnCache, numeroDeBloqueEnMemoria);
         }
@@ -126,12 +121,12 @@ namespace ProyectoArqui.Model
         /// Escribe un bloque de memoria de la cacheDatos en su posicion respectiva en la memoria principal
         /// </summary>
         /// <param name="indiceDeCache">Indice del bloque que se quiere enviar a memoria principal</param>
-        private void EnviarBloqueAMemoria(int indiceDeCache)
-        {
+        private void EnviarBloqueAMemoria(int indiceDeCache) {
             // Se esperan 16 ticks de reloj del controlador
             controlador.Esperar(16);
             memoriaPrincipal.SetBloque(numerosDeBloque[indiceDeCache], bloquesDeCache[indiceDeCache]);
             estadosDeBloque[indiceDeCache] = 'C';
+            directorio.SetEstadoBloque(numerosDeBloque[indiceDeCache], 'C', true);
         }
 
         /// <summary>
@@ -139,15 +134,15 @@ namespace ProyectoArqui.Model
         /// Dura 16 ticks de reloj.
         /// </summary>
         /// <param name="numeroDeBloqueEnMemoria">Numero de bloque en memoria que se quiere traer</param>
-        private void TraerBloqueDeMemoria(int indiceEnCache, int numeroDeBloqueEnMemoria)
-        {
+        private void TraerBloqueDeMemoria(int indiceEnCache, int numeroDeBloqueEnMemoria) {
             // Se esperan 16 ticks de reloj del controlador
             controlador.Esperar(16);
             bloquesDeCache[indiceEnCache] = memoriaPrincipal.GetBloque(numeroDeBloqueEnMemoria);
             this.numerosDeBloque[indiceEnCache] = numeroDeBloqueEnMemoria;
             estadosDeBloque[indiceEnCache] = 'C';
             // Se trajo un bloque de memoria, las vistas deben ser notificadas
-            Modificado = true; 
+            Modificado = true;
+            directorio.SetEstadoBloque(numeroDeBloqueEnMemoria, 'C', true);
         }
 
         /// <summary>
@@ -155,37 +150,36 @@ namespace ProyectoArqui.Model
         /// </summary>
         /// <param name="numeroDeBloqueEnMemoria">Numero de bloque que se necesita saber su posible indice en cacheDatos</param>
         /// <returns>Devuelve el indice que el bloque deberia tener en la cacheDatos</returns>
-        private int MapeoDirecto(int numeroDeBloqueEnMemoria)
-        {
+        private int MapeoDirecto(int numeroDeBloqueEnMemoria) {
             // 4 es el numero de bloques de la cacheDatos
             return numeroDeBloqueEnMemoria % 4;
+        }
+
+        public void Invalidar(int numeroBloqueMemoria) {
+            int numeroBloqueCache = MapeoDirecto(numeroBloqueMemoria);
+            estadosDeBloque[numeroBloqueCache] = 'I';
         }
 
         /// <summary>
         /// Convierte los bloques de la Cache en un vector para las vistas
         /// </summary>
         /// <returns>Vector de datos</returns>
-        public int[] ToArray()
-        {
+        public int[] ToArray() {
             int[] vector = new int[16];
             int i = 0;
-            foreach (Bloque bloque in bloquesDeCache)
-            {
-                foreach (int palabra in bloque.ToArray())
-                {
+            foreach (Bloque bloque in bloquesDeCache) {
+                foreach (int palabra in bloque.ToArray()) {
                     vector[i++] = palabra;
                 }
             }
             return vector;
         }
 
-        public int[] Numeros
-        {
+        public int[] Numeros {
             get { return numerosDeBloque; }
         }
 
-        public char[] Estados
-        {
+        public char[] Estados {
             get { return estadosDeBloque; }
         }
     }

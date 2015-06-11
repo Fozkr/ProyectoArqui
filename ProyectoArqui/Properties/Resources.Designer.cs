@@ -62,11 +62,11 @@ namespace ProyectoArqui.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to 8 0 4 4
-        ///8 0 1 15 
-        ///8 0 20 24
-        ///8 0 2 0
+        ///8 0 1 1 
+        ///8 0 20 20
+        ///8 0 2 112
         ///8 0 5 1000
-        ///8 5 5 -1
+        ///34 5 1 5
         ///5 5 0 -2
         ///43 2 1 0
         ///43 2 1 4
@@ -76,13 +76,12 @@ namespace ProyectoArqui.Properties {
         ///8 2 2 16
         ///5 20 0 -10
         ///8 0 31 99
-        ///43 0 31 100
+        ///43 0 31 368
         ///35 0 13 92
         ///35 0 12 0
         ///35 0 14 28
-        ///35 0 15 120
-        ///63 0 0 0
-        ///.
+        ///35 0 15 364
+        ///63 0 0 0.
         /// </summary>
         internal static string Hilo1 {
             get {
@@ -91,26 +90,26 @@ namespace ProyectoArqui.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 8 0 4 5
-        ///8 0 2 -48
-        ///8 0 28 25
-        ///8 0 16 88
+        ///   Looks up a localized string similar to 8 0 4 4
+        ///8 0 2 2
+        ///8 0 28 28
+        ///8 0 16 160
         ///8 0 5 1000
         ///43 16 2 0
-        ///43 16 2 -4
-        ///43 16 2 -8
-        ///43 16 2 -12
+        ///43 16 2 4
+        ///43 16 2 8
+        ///43 16 2 12
         ///34 28 4 28
-        ///8 16 16 -16
+        ///8 16 16 16
         ///8 5 5 -1
         ///5 5 0 -2
         ///5 28 0 -10
-        ///8 0 31 77
+        ///8 0 31 88
         ///43 0 31 0
         ///35 0 13 92
-        ///35 0 11 100
+        ///35 0 11 368
         ///35 0 14 28
-        ///35 0 15 120
+        ///35 0 15 364
         ///63 0 0 0
         ///.
         /// </summary>
@@ -121,24 +120,26 @@ namespace ProyectoArqui.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 8 0 4 5
+        ///   Looks up a localized string similar to 8 0 4 4
         ///8 0 3 3
-        ///8 0 28 15
-        ///8 0 24 104
+        ///8 0 28 28
+        ///8 0 24 240
         ///8 0 5 1000
         ///43 24 3 0
         ///43 24 3 4
         ///8 5 5 -1
         ///5 5 0 -2
+        ///43 24 3 8
+        ///43 24 3 12
         ///34 28 4 28
-        ///8 24 24 8
-        ///5 28 0 -8
+        ///8 24 24 16
+        ///5 28 0 -10
         ///8 0 31 55
         ///43 0 31 92
-        ///35 0 11 96
-        ///35 0 12 104
+        ///35 0 11 368
+        ///35 0 12 0
         ///35 0 14 28
-        ///35 0 15 0
+        ///35 0 15 364
         ///63 0 0 0
         ///
         ///.
@@ -150,11 +151,11 @@ namespace ProyectoArqui.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 8 0 4 222
+        ///   Looks up a localized string similar to 8 0 4 4
         ///8 0 3 0
         ///34 30 30 30
         ///34 10 10 10
-        ///8 0 25 72
+        ///8 0 25 256
         ///8 0 8 8
         ///35 25 5 0
         ///35 25 6 4
@@ -176,16 +177,50 @@ namespace ProyectoArqui.Properties {
         ///43 0 25 24
         ///8 0 31 44
         ///43 0 31 28
-        ///35 0 11 100
+        ///35 0 11 368
         ///35 0 12 0
-        ///35 0 13 104
-        ///35 0 15 120
-        ///63 0 0 0
-        ///.
+        ///35 0 13 92
+        ///35 0 15 364
+        ///63 0 0 0.
         /// </summary>
         internal static string Hilo4 {
             get {
                 return ResourceManager.GetString("Hilo4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 32 0 0 1
+        ///8 0 4 4
+        ///8 0 2 96
+        ///8 0 3 64
+        ///8 0 5 1000
+        ///35 2 6 0
+        ///35 2 7 4
+        ///35 2 8 8
+        ///35 2 9 12
+        ///34 3 4 3
+        ///8 2 2 16
+        ///32 1 6 1
+        ///32 1 7 1
+        ///32 1 8  1
+        ///32 1 9 1
+        ///8 5 5 -1
+        ///5 5 0 -2
+        ///5 3 0 -14
+        ///43 0 1 380
+        ///8 0 31 33
+        ///43 0 31 364
+        ///35 0 11 368
+        ///35 0 12 0
+        ///35 0 13 92
+        ///35 0 14 28
+        ///63 0 0 0
+        ///.
+        /// </summary>
+        internal static string Hilo5 {
+            get {
+                return ResourceManager.GetString("Hilo5", resourceCulture);
             }
         }
         

@@ -21,6 +21,7 @@ namespace ProyectoArqui.Controller
         private Procesador[] procesadores;
         private CacheDatos[] cachesDatos;
         private CacheInstrucciones cacheInstrucciones;
+        private Directorio[] directorios;
         private MemoriaPrincipal[] memoriasPrincipales;
         private int ticksReloj;
 
@@ -54,7 +55,7 @@ namespace ProyectoArqui.Controller
         /// <param name="cachesDatos">Caches de Datos de la simulacion</param>
         /// <param name="cacheInstrucciones">Cache de instrucciones para todos los procesadores</param>
         /// <param name="memoriasPrincipales">Memorias Principales de todos los procesadores</param>
-        public void Inicializar(Procesador[] procesadores, CacheDatos[] cachesDatos, CacheInstrucciones cacheInstrucciones, MemoriaPrincipal[] memoriasPrincipales)
+        public void Inicializar(Procesador[] procesadores, CacheDatos[] cachesDatos, CacheInstrucciones cacheInstrucciones, Directorio[] directorios, MemoriaPrincipal[] memoriasPrincipales)
         {
             int numeroProcesadores = procesadores.Length;
             Debug.WriteLine("Controlador: Creando una barrera para " + numeroProcesadores + "procesadores");
@@ -62,6 +63,7 @@ namespace ProyectoArqui.Controller
             this.procesadores = procesadores;
             this.cachesDatos = cachesDatos;
             this.cacheInstrucciones = cacheInstrucciones;
+            this.directorios = directorios;
             this.memoriasPrincipales = memoriasPrincipales;
             this.ticksReloj = 1;
             // Se asigna el programa inicial a cada procesador
