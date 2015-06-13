@@ -12,7 +12,7 @@ namespace ProyectoArqui.Model {
     /// </summary>
     class Directorio : Bloqueable {
 
-        private CacheDatos cacheDeDatos;
+        private int idDirectorio;
 
         // Contiene el estado de cada bloque
         //      'U' Uncached
@@ -21,26 +21,20 @@ namespace ProyectoArqui.Model {
         private char[] estadosDeBloque = new char[8];
 
         //Matriz dinámica de control para saber cuál o cuáles cachés tienen cada uno de los bloques
-        private List<Directorio>[] usuariosDeBloque = new List<Directorio>[8];
+        private List<CacheDatos>[] usuariosDeBloque = new List<CacheDatos>[8];
 
         /// <summary>
         /// Se inicializa directorio 
         /// </summary>
         /// <param name="controlador">Se asigna controlador</param>
-        public Directorio(Controlador controlador)
+        public Directorio(Controlador controlador, int idProcesador)
             : base(controlador) {
+            this.idDirectorio = idProcesador;
+            this.Nombre = "Directorio " + idProcesador;
             for (int i = 0; i < estadosDeBloque.Length; i++) {
                 estadosDeBloque[i] = 'U';
-                usuariosDeBloque[i] = new List<Directorio>();
+                usuariosDeBloque[i] = new List<CacheDatos>();
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cacheDeDatos"></param>
-        public void SetCacheDatos(CacheDatos cacheDeDatos) {
-            this.cacheDeDatos = cacheDeDatos;
         }
 
         /// <summary>
@@ -70,8 +64,8 @@ namespace ProyectoArqui.Model {
         /// </summary>
         /// <param name="numeroBloque">Número de bloque que usará el directorio respectivo</param>
         /// <param name="directorio">Directorio que utilizará uno de los bloques</param>
-        public void AgregarUsuarioBloque(int numeroBloque, Directorio directorio) {
-            usuariosDeBloque[numeroBloque].Add(directorio);
+        public void AgregarUsuarioBloque(int numeroBloque, CacheDatos cache) {
+            usuariosDeBloque[numeroBloque].Add(cache);
         }
 
         /// <summary>
@@ -79,8 +73,8 @@ namespace ProyectoArqui.Model {
         /// </summary>
         /// <param name="numeroBloque">Número de bloque que dejará de usar el directorio respectivo</param>
         /// <param name="directorio">Directorio que dejará de utilizar uno de los bloques</param>
-        public void EliminarUsuarioBloque(int numeroBloque, Directorio directorio) {
-            usuariosDeBloque[numeroBloque].Remove(directorio);
+        public void EliminarUsuarioBloque(int numeroBloque, CacheDatos cache) {
+            usuariosDeBloque[numeroBloque].Remove(cache);
         }
 
         /// <summary>
@@ -100,8 +94,9 @@ namespace ProyectoArqui.Model {
         /// </summary>
         /// <param name="numeroBloque">Número de bloque a invalidar</param>
         public void InvalidarBloque(int numeroBloque) {
-            foreach(Directorio directorio in usuariosDeBloque[numeroBloque]){
-                directorio.cacheDeDatos.Invalidar(numeroBloque);
+            // TODO Implementar este metodo de acuerdo al diagrama, asi no funciona!
+            foreach (CacheDatos cache in usuariosDeBloque[numeroBloque]) {
+                cache.Invalidar(numeroBloque);
             }
         }
 

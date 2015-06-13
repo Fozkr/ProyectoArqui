@@ -12,9 +12,9 @@ namespace ProyectoArqui.Model {
     /// </summary>
     class CacheDatos : Bloqueable {
 
-        private Directorio directorio;
         private MemoriaPrincipal memoriaPrincipal;
         private Bloque[] bloquesDeCache = new Bloque[4];
+        private int idCache;
 
         // Contiene el estado de cada bloque
         //      'I' Invalido
@@ -25,11 +25,53 @@ namespace ProyectoArqui.Model {
         // Indica el numero de bloque en memoria principal
         private int[] numerosDeBloque = new int[4];
 
+        // Para conocer los otros directorios y las otras caches
+        // caches[idCache] es esta cache
+        // directorios[idCache] es el directorio de esta cache
+        private Directorio[] directorios;
+        private CacheDatos[] caches;
+
         // Para actualizar o no la interfaz
         private bool modificado = true;
         public bool Modificado {
-            get { return modificado; }
-            set { modificado = value; }
+            get {
+                return this.modificado;
+            }
+            set {
+                this.modificado = value;
+            }
+        }
+
+        // Para obtener los numerosDeBloque
+        public int[] Numeros {
+            get {
+                return this.numerosDeBloque;
+            }
+        }
+
+        // Para obtener los estadosDeBloque
+        public char[] Estados {
+            get {
+                return this.estadosDeBloque;
+            }
+        }
+
+        public CacheDatos[] Caches {
+            get {
+                return this.caches;
+            }
+            set {
+                this.caches = value;
+            }
+        }
+
+        public Directorio[] Directorios {
+            get {
+                return this.directorios;
+            }
+            set {
+                this.directorios = value;
+            }
         }
 
         // Numero de Bloque = direccionMemoria / 16
@@ -43,9 +85,10 @@ namespace ProyectoArqui.Model {
         /// </summary>
         /// <param name="memoriaPrincipal">Memoria principal de la que se reciben y escriben bloques</param>
         /// <param name="controlador">controlador que controla el reloj de la simulacion</param>
-        public CacheDatos(Directorio directorio, MemoriaPrincipal memoriaPrincipal, Controlador controlador)
+        public CacheDatos(Directorio directorio, MemoriaPrincipal memoriaPrincipal, Controlador controlador, int idProcesador)
             : base(controlador) {
-            this.directorio = directorio;
+            this.idCache = idProcesador;
+            this.Nombre = "Cache " + idProcesador;
             this.memoriaPrincipal = memoriaPrincipal;
             for (int i = 0; i < estadosDeBloque.Length; ++i) {
                 this.bloquesDeCache[i] = new Bloque();
@@ -61,15 +104,15 @@ namespace ProyectoArqui.Model {
         /// <param name="direccionMemoria">Direccion de memoria donde se quiere escribir una palabra</param>
         /// <param name="palabra">Palabra que se quiere escribir</param>
         public void Escribir(int direccionMemoria, int palabra) {
-            this.Bloquear();
+            //this.Bloquear();
             int numeroDeBloque = direccionMemoria / 16;
             int numeroDePalabraEnBloque = (direccionMemoria % 16) / 4;
             int indiceEnCache = GetIndiceBloqueEnCache(numeroDeBloque);
-            directorio.InvalidarBloque(numeroDeBloque);
+            //directorio.InvalidarBloque(numeroDeBloque);
             bloquesDeCache[indiceEnCache].SetPalabra(numeroDePalabraEnBloque, palabra);
             estadosDeBloque[indiceEnCache] = 'M';
             Modificado = true; // Indica que hubo un cambio en un bloque de la cache
-            directorio.SetEstadoBloque(numeroDeBloque, 'M', true);
+            //directorio.SetEstadoBloque(numeroDeBloque, 'M', true);
             this.Desbloquear();
         }
 
@@ -79,7 +122,7 @@ namespace ProyectoArqui.Model {
         /// <param name="direccionMemoria">Direccion de memoria donde se quiere leer una palabra</param>
         /// <returns>Devuelve la palabra que se encuentra en la direccion de memoria</returns>
         public int Leer(int direccionMemoria) {
-            this.Bloquear();
+            //this.Bloquear();
             int numeroDeBloque = direccionMemoria / 16;
             int numeroDePalabraEnBloque = (direccionMemoria % 16) / 4;
             int indiceEnCache = GetIndiceBloqueEnCache(numeroDeBloque);
@@ -112,7 +155,7 @@ namespace ProyectoArqui.Model {
         private void ReemplazarBloque(int indiceEnCache, int numeroDeBloqueEnMemoria) {
             if (estadosDeBloque[indiceEnCache] == 'M') {
                 EnviarBloqueAMemoria(indiceEnCache);
-                directorio.SetEstadoBloque(numeroDeBloqueEnMemoria, 'U', true);
+                //directorio.SetEstadoBloque(numeroDeBloqueEnMemoria, 'U', true);
             }
             TraerBloqueDeMemoria(indiceEnCache, numeroDeBloqueEnMemoria);
         }
@@ -126,7 +169,7 @@ namespace ProyectoArqui.Model {
             controlador.Esperar(16);
             memoriaPrincipal.SetBloque(numerosDeBloque[indiceDeCache], bloquesDeCache[indiceDeCache]);
             estadosDeBloque[indiceDeCache] = 'C';
-            directorio.SetEstadoBloque(numerosDeBloque[indiceDeCache], 'C', true);
+            //directorio.SetEstadoBloque(numerosDeBloque[indiceDeCache], 'C', true);
         }
 
         /// <summary>
@@ -142,7 +185,7 @@ namespace ProyectoArqui.Model {
             estadosDeBloque[indiceEnCache] = 'C';
             // Se trajo un bloque de memoria, las vistas deben ser notificadas
             Modificado = true;
-            directorio.SetEstadoBloque(numeroDeBloqueEnMemoria, 'C', true);
+            //directorio.SetEstadoBloque(numeroDeBloqueEnMemoria, 'C', true);
         }
 
         /// <summary>
@@ -175,12 +218,5 @@ namespace ProyectoArqui.Model {
             return vector;
         }
 
-        public int[] Numeros {
-            get { return numerosDeBloque; }
-        }
-
-        public char[] Estados {
-            get { return estadosDeBloque; }
-        }
     }
 }
