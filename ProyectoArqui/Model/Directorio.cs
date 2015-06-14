@@ -96,7 +96,7 @@ namespace ProyectoArqui.Model {
         public void InvalidarBloque(int numeroBloque) {
             // TODO Implementar este metodo de acuerdo al diagrama, asi no funciona!
             foreach (CacheDatos cache in usuariosDeBloque[numeroBloque]) {
-                cache.Invalidar(numeroBloque);
+                //cache.Invalidar(numeroBloque);
             }
         }
 

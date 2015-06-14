@@ -49,8 +49,10 @@
     <Compile Include="Model\Bus.cs" />
     <Compile Include="Model\CacheDatos.cs" />
     <Compile Include="Model\Directorio.cs" />
+    <Compile Include="Model\InformacionPalabra.cs" />
     <Compile Include="Model\Instruccion.cs" />
     <Compile Include="Model\MemoriaPrincipal.cs" />
+    <Compile Include="Model\RebootNeededException.cs" />
     <Compile Include="Model\Simulador.cs" />
     <Compile Include="View\FormPrincipal.cs">
       <SubType>Form</SubType>

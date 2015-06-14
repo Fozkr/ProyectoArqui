@@ -5,20 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using ProyectoArqui.Controller;
 
-namespace ProyectoArqui.Model
-{
+namespace ProyectoArqui.Model {
     /// <summary>
     /// Representa una memoria principal para un procesador.
     /// Se compone de 8 bloques.
     /// </summary>
-    class MemoriaPrincipal : Bloqueable
-    {
+    class MemoriaPrincipal : Bloqueable {
         private Bloque[] bloquesDeMemoria = new Bloque[8];
 
         // Para actualizar o no la interfaz
         private bool modificado = true;
-        public bool Modificado
-        {
+        public bool Modificado {
             get { return modificado; }
             set { modificado = value; }
         }
@@ -28,10 +25,8 @@ namespace ProyectoArqui.Model
         /// Se inicializa en ceros
         /// </summary>
         public MemoriaPrincipal(Controlador controlador)
-            : base(controlador)
-        {
-            for (int i = 0; i < 8; ++i)
-            {
+            : base(controlador) {
+            for (int i = 0; i < 8; ++i) {
                 bloquesDeMemoria[i] = new Bloque();
             }
         }
@@ -41,8 +36,7 @@ namespace ProyectoArqui.Model
         /// </summary>
         /// <param name="palabra">Indice del bloque a modificar</param>
         /// <returns>Devuelve el bloque palabra de la memoria</returns>
-        public Bloque GetBloque(int i)
-        {
+        public Bloque GetBloque(int i) {
             // TODO Verificar si este metodo devuelve una copia del bloque
             return bloquesDeMemoria[i].CopiarBloque();
         }
@@ -54,8 +48,7 @@ namespace ProyectoArqui.Model
         /// </summary>
         /// <param name="palabra">Indice donde se coloca el bloque nuevo</param>
         /// <param name="bloqueNuevo">Nuevo bloque a colocar</param>
-        public void SetBloque(int i, Bloque bloqueNuevo)
-        {
+        public void SetBloque(int i, Bloque bloqueNuevo) {
             bloquesDeMemoria[i] = bloqueNuevo.CopiarBloque();
             Modificado = true;
         }
@@ -64,14 +57,11 @@ namespace ProyectoArqui.Model
         /// Convierte los bloques de la Memoria en un vector para las vistas
         /// </summary>
         /// <returns>Vector de datos</returns>
-        public int[] ToArray()
-        {
+        public int[] ToArray() {
             int[] vector = new int[32];
             int i = 0;
-            foreach (Bloque bloque in bloquesDeMemoria)
-            {
-                foreach (int palabra in bloque.ToArray())
-                {
+            foreach (Bloque bloque in bloquesDeMemoria) {
+                foreach (int palabra in bloque.ToArray()) {
                     vector[i++] = palabra;
                 }
             }

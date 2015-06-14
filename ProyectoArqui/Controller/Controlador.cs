@@ -157,7 +157,7 @@ namespace ProyectoArqui.Controller
                 if (cachesDatos[i].Modificado)
                 {
                     cachesDatos[i].Modificado = false;
-                    fireCacheChanged(cachesDatos[i].ToArray(), cachesDatos[i].Numeros, cachesDatos[i].Estados, i);
+                    fireCacheChanged(cachesDatos[i].ToArray(), cachesDatos[i].NumerosDeBloque, cachesDatos[i].EstadosDeBloque, i);
                 }
             }
         }
