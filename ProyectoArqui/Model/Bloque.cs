@@ -4,67 +4,75 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProyectoArqui.Model
-{
+namespace ProyectoArqui.Model {
+
     /// <summary>
-    /// Esta clase representa un bloque de memoria para la bloquesDeCache o memoria principal.
-    /// Contiene 4 palabras.
-    /// Cada palabra es un int.
+    /// Esta clase representa un bloque de memoria para la bloques o memoria principal.
+    /// Contiene 4 palabras. Cada palabra es un int.
     /// </summary>
-    class Bloque
-    {
-        private int[] palabrasDelBloque = new int[4];
+    class Bloque : Constantes {
+
+        private int direccionInicial;
+        private int[] palabras = new int[PalabrasPorBloque];
 
         /// <summary>
         /// Crea un nuevo bloque inicializado en ceros.
         /// </summary>
-        public Bloque()
-        {
-            for (int i = 0; i < palabrasDelBloque.Length; ++i)
-            {
-                palabrasDelBloque[i] = 0;
+        public Bloque(int direccionInicial) {
+            this.direccionInicial = direccionInicial;
+            for (int i = 0; i < PalabrasPorBloque; ++i) {
+                palabras[i] = 0;
             }
         }
 
         /// <summary>
-        /// Devuelve una palabra del bloque.
+        /// Propiedad indexada para acceder directamente a las palabras de un bloque.
         /// </summary>
-        /// <param name="palabra">Indice de la palabra</param>
-        /// <returns>Devuelve la palabra palabra del bloque</returns>
-        public int GetPalabra(int i)
-        {
-            return palabrasDelBloque[i];
+        /// <param name="index">Índice de la palabra que se quiere accesar</param>
+        /// <returns>Palabra que se quiere accesar</returns>
+        public int this[int index] {
+            get {
+                return palabras[index];
+            }
+            set {
+                palabras[index] = value;
+            }
         }
 
         /// <summary>
-        /// Asigna una palabra nueva en una posicion del bloque
+        /// Propiedad para acceder a la estructura interna del Bloque.
+        /// Devuelve una copia.
         /// </summary>
-        /// <param name="palabra">Indice donde se coloca la palabra nueva</param>
-        /// <param name="nuevaPalabra">Nueva palabra a colocar</param>
-        public void SetPalabra(int i, int nuevaPalabra)
-        {
-            palabrasDelBloque[i] = nuevaPalabra;
+        public int[] Array {
+            get {
+                int[] copia = new int[PalabrasPorBloque];
+                for (int i = 0; i < PalabrasPorBloque; i++) {
+                    copia[i] = palabras[i];
+                }
+                return copia;
+            }
         }
 
         /// <summary>
-        /// Convierte las palabras del Bloque en un vector para las vistas
+        /// Devuelve la direccion inicial de este bloque. Esto es 
+        /// utilizado por las caches para saber cual bloque contienen.
+        /// Específicamente para saber si contienen un bloque local
+        /// o uno remoto.
         /// </summary>
-        /// <returns>Vector de datos</returns>
-        public int[] ToArray()
-        {
-            return palabrasDelBloque;
+        public int DireccionBloque {
+            get {
+                return direccionInicial;
+            }
         }
 
         /// <summary>
-        /// Devuelve una copia de este bloque
+        /// Devuelve una copia de este bloque.
         /// </summary>
         /// <returns>Copia de bloque</returns>
-        public Bloque CopiarBloque()
-        {
-            Bloque copia = new Bloque();
-            for (int i = 0; i < palabrasDelBloque.Length; ++i)
-            {
-                copia.palabrasDelBloque[i] = this.palabrasDelBloque[i];
+        public Bloque Copiar() {
+            Bloque copia = new Bloque(this.direccionInicial);
+            for (int i = 0; i < PalabrasPorBloque; ++i) {
+                copia.palabras[i] = this.palabras[i];
             }
             return copia;
         }

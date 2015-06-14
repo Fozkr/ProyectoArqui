@@ -36,11 +36,11 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
-        /// Indica que un procesador ha terminado de ejecutar un programa
+        /// Indica que un procesador ha palabraLeida de ejecutar un programa
         /// Y ahora se encuentra ejecutando otro
         /// </summary>
         /// <param name="newName">El nombre del programa que ahora se encuentra en ejecucion</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         public void fireProgramChanged(int idProcesador, String newName, int ticksRelojs, int[] registros, int[] cache)
         {
             foreach (Listener l in listeners)
@@ -53,7 +53,7 @@ namespace ProyectoArqui.Controller
         /// Indica que el pc de un procesador ha cambiado
         /// </summary>
         /// <param name="newPc">Nuevo pc del procesador</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         public void fireProgramCounterChanged(int newPc, int idProcesador)
         {
             foreach (Listener l in listeners)
@@ -66,7 +66,7 @@ namespace ProyectoArqui.Controller
         /// Indica que un estado de registros ha cambiado
         /// </summary>
         /// <param name="nuevosRegistros">Vector con las palabras de los registros del procesador</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         public void fireRegistersChanged(int[] nuevosRegistros, int idProcesador)
         {
             foreach (Listener l in listeners)
@@ -79,7 +79,7 @@ namespace ProyectoArqui.Controller
         /// Indica que un estado de cache ha cambiado
         /// </summary>
         /// <param name="palabrasCache">Vector con las palabras de la cache</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         public void fireCacheChanged(int[] palabrasCache, int[] numerosBloquesCache, char[] estadosBloquesCaches, int idProcesador)
         {
             foreach (Listener l in listeners)
@@ -92,7 +92,7 @@ namespace ProyectoArqui.Controller
         /// Indica que un estado de memoria principal ha cambiado
         /// </summary>
         /// <param name="palabrasMemoria">Vector con las palabras de la memroria</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         public void fireMemoryChanged(int[] palabrasMemoria, int idProcesador)
         {
             foreach (Listener l in listeners)
@@ -107,7 +107,7 @@ namespace ProyectoArqui.Controller
         /// </summary>
         /// <param name="nombrePrograma">Nombre del programa finalizado</param>
         /// <param name="registrosFinales">Vector con los registros finales del programa</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         public void fireProgramEnded(string nombrePrograma, int[] registrosFinales, int idProcesador)
         {
             foreach (Listener l in listeners)
@@ -117,7 +117,7 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
-        /// Indica que la simulacion ha terminado
+        /// Indica que la simulacion ha palabraLeida
         /// </summary>
         public void fireSimulationFinished()
         {

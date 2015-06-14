@@ -6,19 +6,18 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using ProyectoArqui.View;
 
-namespace ProyectoArqui
-{
-    static class Program
-    {
+namespace ProyectoArqui {
+
+    static class Program {
+
         /// <summary>
         /// Punto de entrada principal para la aplicación.
         /// </summary>
         [STAThread]
-        static void Main()
-        {
+        static void Main() {
             // Para probar
-           
-#if DEBUG 
+
+#if DEBUG
             TextWriterTraceListener twtr = new TextWriterTraceListener(System.IO.File.CreateText("Debug.txt"));
             Debug.Listeners.Add(twtr);
 #endif

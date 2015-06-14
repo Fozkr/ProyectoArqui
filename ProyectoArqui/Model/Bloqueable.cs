@@ -6,17 +6,22 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ProyectoArqui.Controller;
+using ProyectoArqui.Model.Exceptions;
 
 namespace ProyectoArqui.Model {
+
     /// <summary>
     /// Esta clase sirve para darle la habilidad de bloquearse a las caches y a los directorios
     /// </summary>
-    class Bloqueable {
+    abstract class Bloqueable : Constantes {
 
         protected Controlador controlador;
         private Object candado;
         private String nombre;
 
+        /// <summary>
+        /// Propiedad que indica el nombre del objeto que es bloqueable
+        /// </summary>
         public String Nombre {
             get {
                 return nombre;
@@ -30,9 +35,10 @@ namespace ProyectoArqui.Model {
         /// Construye un bloqueable, requiere un controlador para ser capaz de esperar ciclos antes de intentar volver a bloquear.
         /// </summary>
         /// <param name="controlador">Controlador para poder esperar ciclos</param>
-        public Bloqueable(Controlador controlador) {
+        public Bloqueable(Controlador controlador, string nombre) {
             this.controlador = controlador;
             this.candado = new Object();
+            this.Nombre = nombre;
         }
 
 

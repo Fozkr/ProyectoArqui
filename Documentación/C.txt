@@ -1,0 +1,8 @@
+Cambios:
+?	Se crea una clase Constantes y se pone en lo más alto de cada jerarquía de clases para que todas las clases puedan accedar a las mismas clases. Esto mejora la legibilidad del código.
+?	Se implementan propiedas indexadas para acceder más fácilmente a los bloques y palabras.
+?	Se cambian todos los get y set por propiedades. Esto reduce la cantidad de código y documentación
+?	Se crea una Interfaz IModificable
+?	Se centraliza más el controlador. Ahora la cache no conoce ni a los directorios, ni las otras caches, ni las memorias, ni la suya propia. Tiene que consultar todo con el controlador. Para modificar su propia memoria o directorio, puede utilizar su propio id. Sin embargo, se crean algunas propiedades que consultan el controlador para facilidad
+?	Se organiza el código en atributos -> constructor -> propiedades indexadas -> propiedades -> métodos.
+?	Se utilizan enumeraciones para programar los estados de la cache y de los directorios. Se colocan junto a las constantes

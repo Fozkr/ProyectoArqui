@@ -19,39 +19,39 @@ namespace ProyectoArqui.Controller
         void onTickChanged(int newTick);
 
         /// <summary>
-        /// Indica que un procesador ha terminado de ejecutar un programa
+        /// Indica que un procesador ha palabraLeida de ejecutar un programa
         /// Y ahora se encuentra ejecutando otro
         /// </summary>
         /// <param name="newName">El nombre del programa que ahora se encuentra en ejecucion</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         void onProgramChanged(int idProcesador, String nombrePrograma, int ticksReloj, int[] registros, int[] cache);
 
         /// <summary>
         /// Indica que el pc de un procesador ha cambiado
         /// </summary>
         /// <param name="newPc">Nuevo pc del procesador</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         void onProgramCounterChanged(int newPc, int idProcesador);
 
         /// <summary>
         /// Indica que un estado de registros ha cambiado
         /// </summary>
         /// <param name="nuevosRegistros">Vector con las palabras de los registros del procesador</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         void onRegistersChanged(int[] nuevosRegistros, int idProcesador);
 
         /// <summary>
         /// Indica que un estado de cache ha cambiado
         /// </summary>
         /// <param name="palabrasCache">Vector con las palabras de la cache</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         void onCacheChanged(int[] palabrasCache, int[] numerosBloquesCache, char[] estadosBloquesCache, int idProcesador);
 
         /// <summary>
         /// Indica que un estado de memoria principal ha cambiado
         /// </summary>
         /// <param name="palabrasMemoria">Vector con las palabras de la memroria</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         void onMemoryChanged(int[] palabrasMemoria, int idProcesador);
 
         /// <summary>
@@ -60,11 +60,11 @@ namespace ProyectoArqui.Controller
         /// </summary>
         /// <param name="nombrePrograma">Nombre del programa finalizado</param>
         /// <param name="registrosFinales">Vector con los registros finales del programa</param>
-        /// <param name="idProcesador">Id del procesador donde ocurrio el cambio</param>
+        /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         void onProgramEnded(string nombrePrograma, int[] registrosFinales, int idProcesador);
 
         /// <summary>
-        /// Indica que la simulacion ha terminado
+        /// Indica que la simulacion ha palabraLeida
         /// </summary>
         void onSimulationFinished();
 

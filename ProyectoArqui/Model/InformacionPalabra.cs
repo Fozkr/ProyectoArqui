@@ -3,117 +3,128 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ProyectoArqui.Controller;
 
 namespace ProyectoArqui.Model {
-    class InformacionPalabra {
 
-        private int idDirectorioNecesitado;
-        private int direccionMemoria;
-        private int direccionMemoriaLocal;
-        private int numeroDeBloque;
-        private int numeroDePalabraEnBloque;
-        private CacheDatos cachePeticion;
-        private int indiceBloqueCacheDatos;
-        private Directorio[] directorios;
+    /// <summary>
+    /// El propósito de esta clase es sintetizar la información
+    /// necesitada con respecto a una palabra. Principalmente:
+    ///    ¿En cual memoria está?
+    ///    ¿Cual directorio hay que consultar?
+    ///    ¿Se encuentra en alguna cache?
+    /// </summary>
+    class InformacionPalabra : Constantes {
 
-        public int NumeroDelBloque {
+        private Controlador controlador;
+        private CacheDatos solicitante;
+        private int id;
+        private int direccionPalabraLocal;
+        private int direccionBloque;
+        private int indiceBloqueMemoria;
+        private int indicePalabra;
+
+        /// <summary>
+        /// Obtiene la informacion necesaria con respecto a la operacion que se quiere leer
+        /// </summary>
+        /// <param name="controlador"></param>
+        /// <param name="solicitante"></param>
+        /// <param name="direccionPalabra"></param>
+        public InformacionPalabra(Controlador controlador, CacheDatos solicitante, int direccionPalabra) {
+            this.controlador = controlador;
+            this.solicitante = solicitante;
+            this.id = direccionPalabra / BytesPorMemoria;
+            this.direccionPalabraLocal = direccionPalabra % BytesPorMemoria;
+            this.indiceBloqueMemoria = this.direccionPalabraLocal / BytesPorBloque;
+            this.indicePalabra = this.direccionPalabraLocal % BytesPorBloque;
+            // Los bloques guardan su direccion inicial, se puede generar con una formula
+            // pero es mas facil ir y consultarla al bloque directamente.
+            this.direccionBloque = controlador.MemoriasPrincipales[id][indiceBloqueMemoria].DireccionBloque;
+        }
+
+        /// <summary>
+        /// Devuelve el id de la memoria dueña de la palabra
+        /// </summary>
+        public int ID {
             get {
-                return numeroDeBloque;
-            }
-            set {
-                this.numeroDeBloque = value;
+                return id;
             }
         }
 
-        public int NumeroDePalabraEnBloque {
+        /// <summary>
+        /// Devuelve el directorio dueño de la palabra buscada.
+        /// En este directorio debe consultarse quien tiene la palabra buscada
+        /// </summary>
+        public Directorio Directorio {
             get {
-                return numeroDePalabraEnBloque;
-            }
-            set {
-                this.numeroDePalabraEnBloque = value;
+                return controlador.Directorios[id];
             }
         }
 
-        public int IndiceBloqueCacheDatos {
+        /// <summary>
+        /// Devuelve la memoria principal dueña de la palbra buscada.
+        /// </summary>
+        public MemoriaPrincipal MemoriaPrincipal {
             get {
-                return indiceBloqueCacheDatos;
-            }
-            set {
-                this.indiceBloqueCacheDatos = value;
+                return controlador.MemoriasPrincipales[id];
             }
         }
 
-        ///  Tiene que ser hit para que esto funcione
-        public int Palabra {
+        /// <summary>
+        /// Devuelve el numero de palabra de la palabra buscada
+        /// dentro del bloque donde se encuentra.
+        /// </summary>
+        public int IndicePalabra {
             get {
-                return cachePeticion.Bloques[indiceBloqueCacheDatos].GetPalabra(numeroDePalabraEnBloque);
-            }
-            set {
-                cachePeticion.Bloques[indiceBloqueCacheDatos].SetPalabra(numeroDePalabraEnBloque, value);
-                cachePeticion.EstadosDeBloque[indiceBloqueCacheDatos] = 'M';
+                return indicePalabra;
             }
         }
 
-        public Bloque Bloque {
+        /// <summary>
+        /// Devuelve la posicion en cache donde debe ubicarse el bloque
+        /// que contiene a la palabra buscada
+        /// </summary>
+        public int IndiceCache {
             get {
-                return cachePeticion.Bloques[indiceBloqueCacheDatos];
+                return MapeoDirecto(indiceBloqueMemoria);
             }
         }
 
-        public int NumeroBloque {
+        /// <summary>
+        /// Devuelve la posicion en memoria donde debe ubicarse el bloque
+        /// que contiene a la palabra buscada.
+        /// </summary>
+        public int IndiceMemoria {
             get {
-                return cachePeticion.NumerosDeBloque[indiceBloqueCacheDatos];
-            }
-            set {
-                cachePeticion.NumerosDeBloque[indiceBloqueCacheDatos] = value;
+                return indiceBloqueMemoria;
             }
         }
 
-        public char EstadoBloque {
+        /// <summary>
+        /// Devuelve la direccion del bloque donde debe ubicarse el bloque
+        /// que contiene a la palabra buscada.
+        /// </summary>
+        public int DireccionBloque {
             get {
-                return cachePeticion.EstadosDeBloque[indiceBloqueCacheDatos];
-            }
-            set {
-                cachePeticion.EstadosDeBloque[indiceBloqueCacheDatos] = value;
+                return direccionBloque;
             }
         }
 
-        public Directorio DirectorioNecesitado {
-            get {
-                return directorios[idDirectorioNecesitado];
-            }
-        }
-
-        public InformacionPalabra(int direccionMemoria, CacheDatos cachePeticion, Directorio[] directorios) {
-            this.idDirectorioNecesitado = direccionMemoria / 128;
-            this.direccionMemoria = direccionMemoria;
-            this.direccionMemoriaLocal = direccionMemoria % 128;
-            this.numeroDeBloque = direccionMemoriaLocal / 16;
-            this.numeroDePalabraEnBloque = (direccionMemoriaLocal % 16) / 4;
-            this.cachePeticion = cachePeticion;
-            this.indiceBloqueCacheDatos = MapeoDirecto(numeroDeBloque);
-            this.directorios = directorios;
-        }
-
+        /// <summary>
+        /// Averigua si el bloque donde se encuentra la cache está en la cache de datos del solicitante
+        /// </summary>
+        /// <returns>true si es Hit, false si es Miss</returns>
         public bool EsHit() {
-            return cachePeticion.NumerosDeBloque[indiceBloqueCacheDatos] == direccionMemoria;
+            return solicitante.Direcciones[IndiceCache] == direccionBloque;
         }
-
-
-
-
-
-
 
         /// <summary>
         /// Indica donde deberia ubicarse determinado bloque de memoria principal en la cacheDatos
         /// </summary>
-        /// <param name="numeroDeBloqueEnMemoria">Numero de bloque que se necesita saber su posible indice en cacheDatos</param>
+        /// <param name="indiceBloqueMemoria">Numero de bloque en Memoria que se necesita saber su indice respectivo en cacheDatos</param>
         /// <returns>Devuelve el indice que el bloque deberia tener en la cacheDatos</returns>
-        private int MapeoDirecto(int numeroDeBloqueEnMemoria) {
-            // 4 es el numero de bloques de la cacheDatos
-            return numeroDeBloqueEnMemoria % 4;
+        private int MapeoDirecto(int indiceBloqueMemoria) {
+            return indiceBloqueMemoria % BloquesPorCache;
         }
-
     }
 }

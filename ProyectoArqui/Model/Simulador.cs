@@ -9,30 +9,32 @@ using System.Windows.Forms;
 using ProyectoArqui.Controller;
 
 namespace ProyectoArqui.Model {
-    /*
-     * 
-     */
+
+    /// <summary>
+    /// La clase simulador recibe todos los parámetros de la Interfaz y 
+    /// se encarga de crear todos los objetos necesarios para la simulación
+    /// </summary>
     class Simulador {
-        //Atributos
+
         private int cantidadProgramas;
-        private List<int> instrucciones;
-        private List<int> iniciosProgramas;
         private Listener interfaz;
         private String[] nombresProgramas;
+        private int[] instrucciones;
+        private int[] iniciosProgramas;
 
         /// <summary>
         /// Constructor de la simulacion
         /// </summary>
-        /// <param name="instrucciones">Lista de instrucciones de todos los programas</param>
-        /// <param name="iniciosProgramas">Indica el inicio de cada programa</param>
-        /// <param name="nombresProgramasRecibidos">Indica el nombre de cada programa</param>
         /// <param name="interfaz">Vista que va a recibir los datos que el modelo emite</param>
+        /// <param name="iniciosProgramas">Indica el inicio de cada programa</param>
+        /// <param name="instrucciones">Lista de instrucciones de todos los programas</param>
+        /// <param name="nombresProgramasRecibidos">Indica el nombre de cada programa</param>
         public Simulador(List<int> instrucciones, List<int> iniciosProgramas, List<string> nombresProgramasRecibidos, Listener interfaz) {
             this.cantidadProgramas = iniciosProgramas.Count;
-            this.instrucciones = instrucciones;
-            this.iniciosProgramas = iniciosProgramas;
-            this.nombresProgramas = nombresProgramasRecibidos.ToArray();
             this.interfaz = interfaz;
+            this.iniciosProgramas = iniciosProgramas.ToArray();
+            this.instrucciones = instrucciones.ToArray();
+            this.nombresProgramas = nombresProgramasRecibidos.ToArray();
         }
 
         /// <summary>
@@ -42,14 +44,13 @@ namespace ProyectoArqui.Model {
         /// 
         /// Este metodo esta pensado en que se va a envolver en un hilo cuando se
         /// cree desde la vista!
-        /// 
         /// </summary>
         public void EjecutarSimulacion() {
             Debug.WriteLine("Simulador: Iniciando...");
             Debug.Flush();
 
             // Modificar aqui la cantidad de procesadores deseados!
-            int numeroProcesadores = (cantidadProgramas > 2 ? 3 : cantidadProgramas); //para ajustar la cantidad según necesidad
+            int numeroProcesadores = cantidadProgramas > 2 ? 3 : cantidadProgramas; //para ajustar la cantidad según necesidad
 
             // Se crean vectores para todos los objetos necesarios
             Controlador controlador = new Controlador();
@@ -62,15 +63,9 @@ namespace ProyectoArqui.Model {
             // Se inicializan todos los objetos relacionados a los procesadores
             for (int i = 0; i < numeroProcesadores; ++i) {
                 directorios[i] = new Directorio(controlador, i);
-                memoriasPrincipales[i] = new MemoriaPrincipal(controlador);
-                cachesDatos[i] = new CacheDatos(directorios[i], memoriasPrincipales[i], controlador, i);
-                procesadores[i] = new Procesador(i, cacheInstrucciones, cachesDatos[i], controlador);
-            }
-
-            // Se reparten caches y directorios a todas las caches
-            for (int i = 0; i < numeroProcesadores; ++i) {
-                cachesDatos[i].Directorios = directorios;
-                cachesDatos[i].Caches = cachesDatos;
+                memoriasPrincipales[i] = new MemoriaPrincipal(controlador, i);
+                cachesDatos[i] = new CacheDatos(controlador, i);
+                procesadores[i] = new Procesador(controlador, i);
             }
 
             // Se agrega la interfaz como listener del controlador/modelo

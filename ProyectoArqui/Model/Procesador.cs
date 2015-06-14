@@ -6,62 +6,30 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using ProyectoArqui.Controller;
 
-namespace ProyectoArqui.Model
-{
+namespace ProyectoArqui.Model {
+
     /// <summary>
     /// Representa un procesador simulado. Ejecuta instrucciones hasta que llega a una instruccion Fin.
-    /// 
     /// Esta clase se convierte en un hilo de la simulacion!
-    /// 
     /// </summary>
-    class Procesador
-    {
-        //Atributos
+    class Procesador : Constantes, IModificable{
+
         private Controlador controlador;
         private int programCounter;
         private int[] registros = new int[32];
-        private CacheDatos cacheDatos;
-        private CacheInstrucciones cacheInstrucciones;
-        private int idProcesador;
+        private int id;
         private bool finalizado;
+        private bool modificado = true;
 
         // Diccionario que almacena un entero con el metodo que tiene que ejecutar
         private delegate void inst(Instruccion i);
         private Dictionary<int, inst> mapa = new Dictionary<int, inst>();
 
-        // Para actualizar o no la interfaz
-        private bool modificado = true;
-        public bool Modificado
-        {
-            get { return modificado; }
-            set { modificado = value; }
-        }
-
-        public int ProgramCounter
-        {
-            get { return programCounter; }
-            set { programCounter = value; }
-        }
-
-        public int ID
-        {
-            get { return idProcesador; }
-        }
-
-        public bool Finalizado
-        {
-            set { finalizado = value; }
-            get { return finalizado; }
-        }
-
         /// <summary>
-        /// Crea un procesador con el id indicado y una cacheDatos de instrucciones de la cual extrae 
-        /// las instrucciones que ejecutar
+        /// Crea un procesador y se le indica el controlador donde debe consultar la informacion
         /// </summary>
-        /// <param name="idProcesador">Id del procesador</param>
-        /// <param name="cacheInstrucciones">Cache de Instrucciones para todos los procesadores</param>
-        public Procesador(int idProcesador, CacheInstrucciones cacheInstrucciones, CacheDatos cacheDatos, Controlador controlador)
-        {
+        /// <param name="controlador">Controlador de la simulación</param>
+        public Procesador(Controlador controlador, int id) {
             mapa.Add(8, Daddi);
             mapa.Add(32, Dadd);
             mapa.Add(34, Dsub);
@@ -71,10 +39,8 @@ namespace ProyectoArqui.Model
             mapa.Add(5, Bnez);
             mapa.Add(63, Fin);
 
+            this.id = id;
             this.programCounter = 0;
-            this.cacheInstrucciones = cacheInstrucciones;
-            this.cacheDatos = cacheDatos;
-            this.idProcesador = idProcesador;
             this.controlador = controlador;
 
             // finalizado debe ser true para que el inicializador
@@ -83,14 +49,57 @@ namespace ProyectoArqui.Model
         }
 
         /// <summary>
+        /// Implementación de la interfaz IModificable.
+        /// </summary>
+        public bool Modificado {
+            get {
+                return modificado;
+            }
+            set {
+                modificado = value;
+            }
+        }
+
+        /// <summary>
+        /// Para acceder al PC
+        /// </summary>
+        public int ProgramCounter {
+            get {
+                return programCounter;
+            }
+            set {
+                programCounter = value;
+            }
+        }
+
+        /// <summary>
+        /// Id del procesador
+        /// </summary>
+        public int ID {
+            get {
+                return id;
+            }
+        }
+
+        /// <summary>
+        /// Indica si este procesador ya terminó o no
+        /// </summary>
+        public bool Finalizado {
+            set {
+                finalizado = value;
+            }
+            get {
+                return finalizado;
+            }
+        }
+
+        /// <summary>
         /// Devuelve una copia de los registros del procesador
         /// </summary>
         /// <returns>Una copia de los registros</returns>
-        public int[] GetRegistros()
-        {
+        public int[] GetRegistros() {
             int[] registrosCopy = new int[32];
-            for (int i = 0; i < 32; ++i)
-            {
+            for (int i = 0; i < 32; ++i) {
                 registrosCopy[i] = registros[i];
             }
             return registrosCopy;
@@ -100,10 +109,8 @@ namespace ProyectoArqui.Model
         /// Cuando un programa termina y se carga otro
         /// Los registros deben ponerse en 0
         /// </summary>
-        public void ResetearRegistros()
-        {
-            for (int i = 0; i < 32; ++i)
-            {
+        public void ResetearRegistros() {
+            for (int i = 0; i < 32; ++i) {
                 registros[i] = 0;
             }
         }
@@ -115,12 +122,10 @@ namespace ProyectoArqui.Model
         /// 
         /// Basicamente mientras hayan instrucciones que ejecutar el hilo continua ejecutandose
         /// </summary>
-        public void Procesar()
-        {
-            while (!Finalizado)
-            {
+        public void Procesar() {
+            while (!Finalizado) {
                 Debug.WriteLine("Procesador: PC = " + programCounter);
-                Instruccion i = cacheInstrucciones.ObtenerInstruccion(programCounter);
+                Instruccion i = controlador.CacheInstrucciones.ObtenerInstruccion(programCounter);
                 procesarInstruccion(i);
                 Debug.Flush();
             }
@@ -131,8 +136,7 @@ namespace ProyectoArqui.Model
         /// Se encarga de hacer la decodificacion de la instruccion y llamar al metodo de procesamiento correcto.
         /// </summary>
         /// <param name="palabra">Instruccion cuyo codigo se decodifica</param>
-        private void procesarInstruccion(Instruccion inst)
-        {
+        private void procesarInstruccion(Instruccion inst) {
             mapa[inst.GetCodigo()](inst);
             programCounter += 4; // Se modifica el pc para que la proxima instruccion arranque donde debe
             Debug.WriteLine("Procesador: Esperando 1 tick luego de ejecutar una instruccion");
@@ -143,8 +147,7 @@ namespace ProyectoArqui.Model
         /// Metodo que ejecuta la instruccion de Daddi
         /// </summary>
         /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
-        private void Daddi(Instruccion i)
-        {
+        private void Daddi(Instruccion i) {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
             Debug.WriteLine("Procesador: DADDI R" + x + " = R" + y + " + " + n);
             Debug.WriteLine("Procesador: DADDI R" + x + " = " + registros[y] + " + " + n);
@@ -157,8 +160,7 @@ namespace ProyectoArqui.Model
         /// Metodo que ejecuta la instruccion de Dadd
         /// </summary>
         /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
-        private void Dadd(Instruccion i)
-        {
+        private void Dadd(Instruccion i) {
             int y = i.GetParametro(1), z = i.GetParametro(2), x = i.GetParametro(3);
             Debug.WriteLine("Procesador: DADD R" + x + " = R" + y + " + R" + z);
             Debug.WriteLine("Procesador: DADD R" + x + " = " + registros[y] + " + " + registros[z]);
@@ -171,8 +173,7 @@ namespace ProyectoArqui.Model
         /// Metodo que ejecuta la instruccion de Dsub
         /// </summary>
         /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
-        private void Dsub(Instruccion i)
-        {
+        private void Dsub(Instruccion i) {
             int y = i.GetParametro(1), z = i.GetParametro(2), x = i.GetParametro(3);
             Debug.WriteLine("Procesador: DSUB R" + x + " = R" + y + " - R" + z);
             Debug.WriteLine("Procesador: DSUB R" + x + " = " + registros[y] + " - " + registros[z]);
@@ -185,10 +186,9 @@ namespace ProyectoArqui.Model
         /// Metodo que ejecuta la instruccion de Lw
         /// </summary>
         /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param
-        private void Lw(Instruccion i)
-        {
+        private void Lw(Instruccion i) {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
-            registros[x] = cacheDatos.Leer(n + registros[y]);
+            registros[x] = controlador.CachesDatos[id].Leer(n + registros[y]);
             this.Modificado = true; // Indica que hubo un cambio en un registro
             Debug.WriteLine("Procesador: LW R" + x + " = MEM(" + n + " + R" + y + ")");
             Debug.WriteLine("Procesador: LW R" + x + " = MEM(" + (n + registros[y]) + ")");
@@ -199,10 +199,9 @@ namespace ProyectoArqui.Model
         /// Metodo que ejecuta la instruccion de Sw
         /// </summary>
         /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
-        private void Sw(Instruccion i)
-        {
+        private void Sw(Instruccion i) {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
-            cacheDatos.Escribir(n + registros[y], registros[x]);
+            controlador.CachesDatos[id].Escribir(n + registros[y], registros[x]);
             Debug.WriteLine("Procesador: SW MEM(" + n + " + R" + y + ") = R" + x);
             Debug.WriteLine("Procesador: SW MEM(" + (n + registros[y]) + ") = " + registros[x]);
         }
@@ -211,17 +210,13 @@ namespace ProyectoArqui.Model
         /// Metodo que ejecuta la instruccion de Beqz
         /// </summary>
         /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
-        private void Beqz(Instruccion i)
-        {
+        private void Beqz(Instruccion i) {
             int x = i.GetParametro(1), n = i.GetParametro(3);
-            if (registros[x] == 0)
-            {
+            if (registros[x] == 0) {
                 programCounter = (programCounter + 4) + n * 4;
                 Debug.WriteLine("Procesador: BEQZ Salto a " + programCounter);
                 programCounter -= 4;
-            }
-            else
-            {
+            } else {
                 Debug.WriteLine("Procesador: BEQZ No salto");
             }
             // Despues el metodo que llama a este aumenta en 4 el pc
@@ -231,17 +226,13 @@ namespace ProyectoArqui.Model
         /// Metodo que ejecuta la instruccion de Bnez
         /// </summary>
         /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
-        private void Bnez(Instruccion i)
-        {
+        private void Bnez(Instruccion i) {
             int x = i.GetParametro(1), n = i.GetParametro(3);
-            if (registros[x] != 0)
-            {
+            if (registros[x] != 0) {
                 programCounter = (programCounter + 4) + n * 4;
                 Debug.WriteLine("Procesador: BNEZ Salto a " + programCounter);
                 programCounter -= 4;
-            }
-            else
-            {
+            } else {
                 Debug.WriteLine("Procesador: BNEZ No salto");
             }
             // Despues el metodo que llama a este aumenta en 4 el pc
@@ -251,8 +242,7 @@ namespace ProyectoArqui.Model
         /// Metodo que ejecuta la instruccion de Fin
         /// </summary>
         /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
-        private void Fin(Instruccion i)
-        {
+        private void Fin(Instruccion i) {
             // A pesar de que se asigna true a finalizado cada vez que llega a un final de programa
             // El controlador revisa entre ciclos de reloj si hay un siguiente programa
             // Si lo hay entonces modifica Finalizado a false para que el procesador no deje de hacer su procesamiento

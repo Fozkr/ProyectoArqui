@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProyectoArqui.Model {
+namespace ProyectoArqui.Model.Exceptions {
     class RebootNeededException : Exception {
         public RebootNeededException() : base("Se necesita reinicar la operacion") {
         }

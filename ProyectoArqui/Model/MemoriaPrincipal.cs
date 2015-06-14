@@ -6,66 +6,80 @@ using System.Threading.Tasks;
 using ProyectoArqui.Controller;
 
 namespace ProyectoArqui.Model {
+
     /// <summary>
     /// Representa una memoria principal para un procesador.
     /// Se compone de 8 bloques.
     /// </summary>
-    class MemoriaPrincipal : Bloqueable {
-        private Bloque[] bloquesDeMemoria = new Bloque[8];
+    class MemoriaPrincipal : Constantes, IModificable {
 
-        // Para actualizar o no la interfaz
+        private Bloque[] bloques = new Bloque[BloquesPorMemoria];
         private bool modificado = true;
-        public bool Modificado {
-            get { return modificado; }
-            set { modificado = value; }
-        }
+        private int id;
 
         /// <summary>
-        /// Crea los bloques de la memoria principal
+        /// Crea los bloques de la memoria principal.
         /// Se inicializa en ceros
         /// </summary>
-        public MemoriaPrincipal(Controlador controlador)
-            : base(controlador) {
-            for (int i = 0; i < 8; ++i) {
-                bloquesDeMemoria[i] = new Bloque();
+        public MemoriaPrincipal(Controlador controlador, int id) {
+            this.id = id;
+            for (int i = 0; i < BloquesPorMemoria; ++i) {
+                bloques[i] = new Bloque(id * BytesPorMemoria + i * BytesPorBloque);
             }
         }
 
         /// <summary>
-        /// Devuelve una copia de un bloque de la memoria
+        /// Propiedad indexada para acceder directamente a los bloques de la memoria principal.
+        /// Devuelve y asigna copias de objetos.
         /// </summary>
-        /// <param name="palabra">Indice del bloque a modificar</param>
-        /// <returns>Devuelve el bloque palabra de la memoria</returns>
-        public Bloque GetBloque(int i) {
-            // TODO Verificar si este metodo devuelve una copia del bloque
-            return bloquesDeMemoria[i].CopiarBloque();
+        /// <param name="index">Índice del bloque a accesar</param>
+        /// <returns>Bloque que se quiere accesar</returns>
+        public Bloque this[int index] {
+            get {
+                return bloques[index].Copiar();
+            }
+            set {
+                bloques[index] = value.Copiar();
+                this.Modificado = true;
+            }
         }
 
         /// <summary>
-        /// Asigna un bloque nuevo en una posicion de la memoria.
-        /// Copia el contenido del bloque antes de asignarlo
-        /// Este bloque deberia venir de la cacheDatos de datos
+        /// Implementación de la interfaz IModificable.
         /// </summary>
-        /// <param name="palabra">Indice donde se coloca el bloque nuevo</param>
-        /// <param name="bloqueNuevo">Nuevo bloque a colocar</param>
-        public void SetBloque(int i, Bloque bloqueNuevo) {
-            bloquesDeMemoria[i] = bloqueNuevo.CopiarBloque();
-            Modificado = true;
+        public bool Modificado {
+            get {
+                return modificado;
+            }
+            set {
+                modificado = value;
+            }
         }
 
         /// <summary>
-        /// Convierte los bloques de la Memoria en un vector para las vistas
+        /// Id de esta memoria principal
         /// </summary>
-        /// <returns>Vector de datos</returns>
-        public int[] ToArray() {
-            int[] vector = new int[32];
-            int i = 0;
-            foreach (Bloque bloque in bloquesDeMemoria) {
-                foreach (int palabra in bloque.ToArray()) {
-                    vector[i++] = palabra;
+        public int ID {
+            get {
+                return id;
+            }
+        }
+
+        /// <summary>
+        /// Propiedad para acceder a la estructura interna de la Memoria Principal.
+        /// Devuelve una copia.
+        /// </summary>
+        public int[] Array {
+            get {
+                int[] vector = new int[PalabrasPorMemoria];
+                int k = 0;
+                foreach (Bloque bloque in bloques) {
+                    foreach (int palabra in bloque.Array) {
+                        vector[k++] = palabra;
+                    }
                 }
+                return vector;
             }
-            return vector;
         }
 
     }

@@ -8,14 +8,12 @@ using System.Diagnostics;
 using ProyectoArqui.Model;
 using ProyectoArqui.View;
 
-namespace ProyectoArqui.Controller
-{
+namespace ProyectoArqui.Controller {
     /// <summary>
     /// Funciona como mecanismo de sincronizacion entre los diferentes procesadores, actuando como una barrera
     /// Asimismo informa a las vistas cuando ocurre un cambio
     /// </summary>
-    class Controlador : Observable
-    {
+    class Controlador : Observable {
         //Atributos
         private Barrier barrier;
         private Procesador[] procesadores;
@@ -29,8 +27,7 @@ namespace ProyectoArqui.Controller
         /// El contructor del controlador.
         /// No inicializa ningun atributo para obligar al programador a llamar 
         /// </summary>
-        public Controlador()
-        {
+        public Controlador() {
             // * IMPORTANTE *
             // No se inicializa ningun atributo para que el programador
             // llame obligatoriamente al metodo inicializa antes de ejecutar la simulacion!
@@ -52,11 +49,10 @@ namespace ProyectoArqui.Controller
         /// 
         /// </summary>
         /// <param name="procesadores">Procesadores de la simulacion</param>
-        /// <param name="cachesDatos">Caches de Datos de la simulacion</param>
+        /// <param name="cachesDatos">CachesDatos de Datos de la simulacion</param>
         /// <param name="cacheInstrucciones">Cache de instrucciones para todos los procesadores</param>
-        /// <param name="memoriasPrincipales">Memorias Principales de todos los procesadores</param>
-        public void Inicializar(Procesador[] procesadores, CacheDatos[] cachesDatos, CacheInstrucciones cacheInstrucciones, Directorio[] directorios, MemoriaPrincipal[] memoriasPrincipales)
-        {
+        /// <param name="memoriasPrincipales">MemoriasPrincipales Principales de todos los procesadores</param>
+        public void Inicializar(Procesador[] procesadores, CacheDatos[] cachesDatos, CacheInstrucciones cacheInstrucciones, Directorio[] directorios, MemoriaPrincipal[] memoriasPrincipales) {
             int numeroProcesadores = procesadores.Length;
             Debug.WriteLine("Controlador: Creando una barrera para " + numeroProcesadores + "procesadores");
             this.barrier = new Barrier(numeroProcesadores, entreCiclosDeReloj);
@@ -73,6 +69,43 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
+        /// Directorios de la Simulación
+        /// </summary>
+        public Directorio[] Directorios {
+            get {
+                return directorios;
+            }
+        }
+
+        /// <summary>
+        /// Caches de Datos de la simulación
+        /// </summary>
+        public CacheDatos[] CachesDatos {
+            get {
+                return cachesDatos;
+            }
+        }
+
+        /// <summary>
+        /// Cache de Instrucciones de la simulación.
+        /// </summary>
+        public CacheInstrucciones CacheInstrucciones {
+            get {
+                return cacheInstrucciones;
+            }
+        }
+
+        /// <summary>
+        /// Memorias Principales de la simulación
+        /// </summary>
+        public MemoriaPrincipal[] MemoriasPrincipales {
+            get {
+                return memoriasPrincipales;
+            }
+        }
+
+
+        /// <summary>
         /// Este es el metodo que los procesadores, cachesDatos y otros objetos llaman
         /// cuando deben Esperar cierta cantidad de ticks de reloj
         /// 
@@ -81,10 +114,8 @@ namespace ProyectoArqui.Controller
         /// 
         /// </summary>
         /// <param name="ticksDeRelojPorEsperar">Ticks de reloj que se deben Esperar</param>
-        public void Esperar(int ticksDeRelojPorEsperar)
-        {
-            for (int i = 0; i < ticksDeRelojPorEsperar; ++i)
-            {
+        public void Esperar(int ticksDeRelojPorEsperar) {
+            for (int i = 0; i < ticksDeRelojPorEsperar; ++i) {
                 // Esta barrera es donde esperan los hilos de los procesadores
                 barrier.SignalAndWait();
             }
@@ -92,8 +123,7 @@ namespace ProyectoArqui.Controller
 
         // Este metodo se ejecuta entre ciclos de controlador
         // Aqui se pueden Procesar mensajes de cachesDatos, etc
-        public void entreCiclosDeReloj(Barrier b)
-        {
+        public void entreCiclosDeReloj(Barrier b) {
             // Se notifica a las vistas del tick de reloj que acaba de terminar
             // Se realiza cuando el tick termine
             fireTickChanged(ticksReloj);
@@ -106,7 +136,7 @@ namespace ProyectoArqui.Controller
             NotificarCambioCaches();
             NotificarCambioMemorias();
 
-            // Ver si los procesadres han terminado de Procesar un programa
+            // Ver si los procesadres han palabraLeida de Procesar un programa
             AsignarProgramasAProcesadores();
 
             // Ver si ya se termino la simulacion
@@ -120,10 +150,8 @@ namespace ProyectoArqui.Controller
         /// <summary>
         /// Notifica a las vistas que hubo un cambio en el PC 
         /// </summary>
-        private void NotificarCambioPC()
-        {
-            foreach (Procesador p in procesadores)
-            {
+        private void NotificarCambioPC() {
+            foreach (Procesador p in procesadores) {
                 fireProgramCounterChanged(p.ProgramCounter, p.ID);
             }
         }
@@ -131,14 +159,11 @@ namespace ProyectoArqui.Controller
         /// <summary>
         /// Notifica a las vistas si hubo un cambio en los registros del procesador
         /// </summary>
-        private void NotificarCambioRegistros()
-        {
-            foreach (Procesador p in procesadores)
-            {
+        private void NotificarCambioRegistros() {
+            foreach (Procesador p in procesadores) {
                 // p.Modificado == true si los registros se modificaron en el ultimo
                 // ciclo de reloj
-                if (p.Modificado)
-                {
+                if (p.Modificado) {
                     p.Modificado = false;
                     fireRegistersChanged(p.GetRegistros(), p.ID);
                 }
@@ -148,16 +173,13 @@ namespace ProyectoArqui.Controller
         /// <summary>
         /// Notifica a las vistas si hubo un cambio en los bloques de las cachesDatos
         /// </summary>
-        private void NotificarCambioCaches()
-        {
-            for (int i = 0; i < procesadores.Length; ++i)
-            {
+        private void NotificarCambioCaches() {
+            for (int i = 0; i < procesadores.Length; ++i) {
                 // p.Modificado == true si los bloques de las cachesDatos se modificaron en el ultimo
                 // ciclo de reloj
-                if (cachesDatos[i].Modificado)
-                {
+                if (cachesDatos[i].Modificado) {
                     cachesDatos[i].Modificado = false;
-                    fireCacheChanged(cachesDatos[i].ToArray(), cachesDatos[i].NumerosDeBloque, cachesDatos[i].EstadosDeBloque, i);
+                    fireCacheChanged(cachesDatos[i].Array, cachesDatos[i].Direcciones, cachesDatos[i].EstadosArray, i);
                 }
             }
         }
@@ -165,16 +187,13 @@ namespace ProyectoArqui.Controller
         /// <summary>
         /// Notifica a las vistas si hubo un cambio en los bloques de las memoriasPrincipales 
         /// </summary>
-        private void NotificarCambioMemorias()
-        {
-            for (int i = 0; i < procesadores.Length; ++i)
-            {
+        private void NotificarCambioMemorias() {
+            for (int i = 0; i < procesadores.Length; ++i) {
                 // p.Modificado == true si las memoriasPrincipales se modificaron en el ultimo
                 // ciclo de reloj
-                if (memoriasPrincipales[i].Modificado)
-                {
+                if (memoriasPrincipales[i].Modificado) {
                     memoriasPrincipales[i].Modificado = false;
-                    fireMemoryChanged(memoriasPrincipales[i].ToArray(), i);
+                    fireMemoryChanged(memoriasPrincipales[i].Array, i);
                 }
             }
         }
@@ -187,22 +206,16 @@ namespace ProyectoArqui.Controller
         /// Si un programa se cambia, entonces se le avisa a las vistas que un programa se modifico
         /// 
         /// </summary>
-        private void AsignarProgramasAProcesadores()
-        {
-            for (int i = 0; i < procesadores.Length; ++i)
-            {
-                if (procesadores[i].Finalizado)
-                {
+        private void AsignarProgramasAProcesadores() {
+            for (int i = 0; i < procesadores.Length; ++i) {
+                if (procesadores[i].Finalizado) {
                     String nombreProgramaAnterior = cacheInstrucciones.GetNombreProgramaAsignado(procesadores[i]);
-                    if (cacheInstrucciones.AsignarPrograma(procesadores[i]))
-                    {
+                    if (cacheInstrucciones.AsignarPrograma(procesadores[i])) {
                         procesadores[i].Finalizado = false;
                         fireProgramEnded(nombreProgramaAnterior, procesadores[i].GetRegistros(), procesadores[i].ID);
                         String nombreProgramaNuevo = cacheInstrucciones.GetNombrePrograma(procesadores[i].ProgramCounter);
-                        fireProgramChanged(i, nombreProgramaNuevo, ticksReloj, procesadores[i].GetRegistros(), cachesDatos[i].ToArray());
-                    }
-                    else
-                    {
+                        fireProgramChanged(i, nombreProgramaNuevo, ticksReloj, procesadores[i].GetRegistros(), cachesDatos[i].Array);
+                    } else {
                         // Cuando un procesador ya termina de ejecutarse, 
                         // no hace falta mantenerlo vivo
                         // Simplemente se le anuncia a la barrera que dicho "participante"
@@ -219,15 +232,12 @@ namespace ProyectoArqui.Controller
         /// Este metodo pregunta si ya termino la simulacion
         /// Si la simulacion esta terminada, se le avisa a todas las vistas
         /// </summary>
-        private void VerificarSimulacionTerminada()
-        {
+        private void VerificarSimulacionTerminada() {
             bool todosFinalizados = true;
-            for (int i = 0; i < procesadores.Length; ++i)
-            {
+            for (int i = 0; i < procesadores.Length; ++i) {
                 todosFinalizados = todosFinalizados && procesadores[i].Finalizado;
             }
-            if (todosFinalizados)
-            {
+            if (todosFinalizados) {
                 fireSimulationFinished();
             }
         }

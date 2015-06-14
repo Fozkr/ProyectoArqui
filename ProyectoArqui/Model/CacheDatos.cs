@@ -3,37 +3,68 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using ProyectoArqui.Controller;
+using ProyectoArqui.Model.Exceptions;
 
 namespace ProyectoArqui.Model {
+
     /// <summary>
     /// Representa una cacheDatos de datos para un procesador.
     /// Se compone de 4 bloques.
     /// </summary>
-    class CacheDatos : Bloqueable {
+    class CacheDatos : Bloqueable, IModificable {
 
-        private MemoriaPrincipal memoriaPrincipal;
-        private Bloque[] bloquesDeCache = new Bloque[4];
-        private int idCache;
-        private Directorio directorio;
+        private int id;
+        private bool modificado = true;
+        private Bloque[] bloques = new Bloque[BloquesPorCache];
 
         // Contiene el estado de cada bloque
-        //      'I' Invalido
-        //      'C' Compartido
-        //      'M' Modificado
-        private char[] estadosDeBloque = new char[4];
+        private EstadosB[] estados = new EstadosB[BloquesPorCache];
 
-        // Indica el numero de bloque en memoria principal
-        private int[] numerosDeBloque = new int[4];
+        // Indica la direccion de memoria inicial de cada bloque de la cache
+        private int[] direcciones = new int[BloquesPorCache];
 
-        // Para conocer los otros directorios y las otras caches
-        // caches[idCache] es esta cache
-        // directorios[idCache] es el directorio de esta cache
-        private Directorio[] directorios;
-        private CacheDatos[] caches;
+        // Indica cual es el id del dueño de los bloques
+        // Para saber cual memoria consultar
+        private int[] idDueños = new int[BloquesPorMemoria];
 
-        // Para actualizar o no la interfaz
-        private bool modificado = true;
+        /// <summary>
+        /// Crea una nueva cacheDatos de datos. Utiliza el controlador 
+        /// para acceder a otros objetos de la simulación
+        /// </summary>
+        /// <param name="controlador">Controlador de la simulación</param>
+        /// <param name="id">Id de la cache</param>
+        public CacheDatos(Controlador controlador, int id)
+            : base(controlador, "Cache " + id) {
+            this.id = id;
+            for (int i = 0; i < BloquesPorCache; ++i) {
+                this.bloques[i] = new Bloque(-1);
+                this.estados[i] = EstadosB.Invalido;
+                this.direcciones[i] = -1; // Da error si se intenta acceder a la posicion -1
+                this.idDueños[i] = -1;
+            }
+        }
+
+        /// <summary>
+        /// Propiedad indexada para acceder directamente a los bloques de la cache de datos.
+        /// Devuelve y asigna copias de objetos.
+        /// </summary>
+        /// <param name="index">Índice del bloque a accesar</param>
+        /// <returns>Bloque que se quiere accesar</returns>
+        public Bloque this[int index] {
+            get {
+                return bloques[index].Copiar();
+            }
+            set {
+                bloques[index] = value.Copiar();
+                this.Modificado = true;
+            }
+        }
+
+        /// <summary>
+        /// Implementación de la interfaz IModificable.
+        /// </summary>
         public bool Modificado {
             get {
                 return this.modificado;
@@ -43,133 +74,254 @@ namespace ProyectoArqui.Model {
             }
         }
 
-        public Bloque[] Bloques {
+        /// <summary>
+        /// Guarda la direccion de memoria de la primera palabra de cada bloque.
+        /// </summary>
+        public int[] Direcciones {
             get {
-                return bloquesDeCache;
+                return this.direcciones;
             }
         }
-
-        // Para obtener los numerosDeBloque
-        public int[] NumerosDeBloque {
-            get {
-                return this.numerosDeBloque;
-            }
-        }
-
-        // Para obtener los estadosDeBloque
-        public char[] EstadosDeBloque {
-            get {
-                return this.estadosDeBloque;
-            }
-        }
-
-        public CacheDatos[] Caches {
-            get {
-                return this.caches;
-            }
-            set {
-                this.caches = value;
-            }
-        }
-
-        public Directorio[] Directorios {
-            get {
-                return this.directorios;
-            }
-            set {
-                this.directorios = value;
-            }
-        }
-
-        // Numero de Bloque = direccionMemoria / 16
-        // Numeros de Palabra = (direccionMemoria % 16) / 4
 
         /// <summary>
-        /// Crea una nueva cacheDatos de datos.
-        /// Recibe una memoria principal para la cual sirve de cacheDatos y
-        /// un controlador que utiliza para Esperar cierta cantidad de ticks 
-        /// cuando ocurren fallos de cacheDatos
+        /// Para obtener el estado de cada bloque
         /// </summary>
-        /// <param name="memoriaPrincipal">Memoria principal de la que se reciben y escriben bloques</param>
-        /// <param name="controlador">controlador que controla el reloj de la simulacion</param>
-        public CacheDatos(Directorio directorio, MemoriaPrincipal memoriaPrincipal, Controlador controlador, int idProcesador)
-            : base(controlador) {
-            this.idCache = idProcesador;
-            this.Nombre = "Cache " + idProcesador;
-            this.memoriaPrincipal = memoriaPrincipal;
-            this.directorio = directorios[idProcesador];
-            for (int i = 0; i < estadosDeBloque.Length; ++i) {
-                this.bloquesDeCache[i] = new Bloque();
-                this.estadosDeBloque[i] = 'I';
-                this.numerosDeBloque[i] = -1; // Da error si se intenta acceder a la posicion -1
+        public EstadosB[] Estados {
+            get {
+                return this.estados;
             }
         }
 
-        public void Escribir(int direccionMemoria, int palabra) {
+        /// <summary>
+        /// Se convierten los estados en un vector de chars para 
+        /// mantener compatibilidad con la interfaz
+        /// </summary>
+        public char[] EstadosArray {
+            get {
+                char[] tmp = new char[BloquesPorCache];
+                for (int i = 0; i < BloquesPorCache; i++) {
+                    switch (estados[i]) {
+                    case EstadosB.Invalido:
+                    tmp[i] = 'I';
+                    break;
+                    case EstadosB.Compartido:
+                    tmp[i] = 'C';
+                    break;
+                    case EstadosB.Modificado:
+                    tmp[i] = 'M';
+                    break;
+                    }
+                }
+                return tmp;
+            }
+        }
+
+        /// <summary>
+        /// Para obtener la memoria principal de esta cache.
+        /// </summary>
+        public MemoriaPrincipal MemoriaPrincipal {
+            get {
+                return controlador.MemoriasPrincipales[id];
+            }
+        }
+
+        /// <summary>
+        /// Para obtener el directorio de esta cache.
+        /// </summary>
+        public Directorio Directorio {
+            get {
+                return controlador.Directorios[id];
+            }
+        }
+
+        /// <summary>
+        /// Propiedad para acceder a la estructura interna de la cache de datos.
+        /// Devuelve una copia.
+        /// </summary>
+        public int[] Array {
+            get {
+                int[] vector = new int[PalabrasPorCache];
+                int k = 0;
+                foreach (Bloque bloque in bloques) {
+                    foreach (int palabra in bloque.Array) {
+                        vector[k++] = palabra;
+                    }
+                }
+                return vector;
+            }
+        }
+
+        /// <summary>
+        /// Metodo para que el procesador escriba en una direccion de memoria una palabra
+        /// </summary>
+        /// <param name="direccionMemoria">Direccion de memoria donde se quiere escribir una palabra</param>
+        /// <param name="palabra">Palabra que se quiere escribir</param>
+        public void Escribir(int direccionPalabra, int palabra) {
             throw new NotImplementedException();
         }
 
-        public int Leer(int direccionMemoria) {
-            int palabraLeida = -1;
-            bool terminado = false;
-            while (!terminado) {
+        /// <summary>
+        /// Metodo para que el procesador lea una palabra en una direccion de memoria
+        /// Si ocurre una excepción del tipo RebootNeededException, entonces se reinicia el proceso de leer el dato.
+        /// </summary>
+        /// <param name="direccionPalabra">Direccion de memoria donde se quiere leer una palabra</param>
+        /// <returns>Devuelve la palabra que se encuentra en la direccion de memoria</returns>
+        public int Leer(int direccionPalabra) {
+            int palabra = -1;
+            bool palabraLeida = false;
+            while (!palabraLeida) {
                 try {
-                    palabraLeida = Leer(new InformacionPalabra(direccionMemoria, this, directorios));
-                    terminado = true;
+                    palabra = Leer(new InformacionPalabra(controlador, this, direccionPalabra));
+                    palabraLeida = true;
                 } catch (RebootNeededException) {
-                    terminado = false;
                 }
             }
-            return palabraLeida;
+            return palabra;
         }
 
+        /// <summary>
+        /// Método que realmente se encarga de ejecutar la lógica de leer una palabra.
+        /// Si no puede bloquear algo, tira una excepción del tipo RebootNeededException.
+        /// </summary>
+        /// <param name="info">Información de la palabra que se quiere leer</param>
+        /// <returns>Palabra que se quiere leer</returns>
         private int Leer(InformacionPalabra info) {
             int palabraLeida = -1;
+
+            // Se bloquea la cache
             this.Bloquear();
+
+            // Se pregunta si es Hit
             if (info.EsHit()) {
-                palabraLeida = info.Palabra;
+
+                // Si es Hit se lee la palabra
+                palabraLeida = this[info.IndiceCache][info.IndicePalabra];
+
             } else {
-                if (info.EstadoBloque == 'M') {
-                    directorio.Bloquear();
-                    EnviarBloqueAMemoria(info, this);
-                    directorio.Desbloquear();
+
+                // Se pregunta si el bloque a reemplazar en mi cache está modificado
+                if (estados[info.IndiceCache] == EstadosB.Modificado) {
+
+                    // Bloqueo mi directorio
+                    Directorio.Bloquear();
+
+                    // Envio el bloque a memoria
+                    controlador.Esperar(EsperaEnvioMemoriaLocal);
+                    MemoriaPrincipal[info.IndiceCache] = this[info.IndiceCache];
+
+                    // Invalido la cache
+                    estados[info.IndiceCache] = EstadosB.Invalido;
+
+                    // Pongo uncached en directorio
+                    Directorio.EliminarUsuarioBloque(info.IndiceMemoria, this);
+                    Directorio.SetEstadoBloque(info.IndiceMemoria, EstadosD.Uncached, id);
+
+                    // Desbloqueo mi directorio
+                    Directorio.Desbloquear();
                 }
 
+                // Bloqueo el directorio que contiene la palabra que busco
+                info.Directorio.Bloquear();
 
+                // Consulto la lista de usuarios del bloque que contiene la palabra que busco
+                // para ver si alguna cache lo tiene modificado
+                List<CacheDatos> usuarios = info.Directorio.GetUsuariosBloque(info.IndiceMemoria);
+                usuarios = GetUsuariosBloque(usuarios, info, EstadosB.Modificado);
 
+                // Si el tamaño de la lista es 0, ninguna cache tiene el bloque modificado
+                if (usuarios.Count == 0) {
+
+                    // Copio el bloque desde memoria remota
+                    controlador.Esperar(EsperaTraerMemoriaRemota);
+                    this[info.IndiceCache] = info.MemoriaPrincipal[info.IndiceMemoria];
+                    idDueños[info.IndiceCache] = info.MemoriaPrincipal.ID; // Indico en la cache quien es el dueño del bloque
+
+                    // Pongo C en mi Cache
+                    estados[info.IndiceCache] = EstadosB.Compartido;
+
+                    // Agrego C en directorio
+                    info.Directorio.SetEstadoBloque(info.IndiceMemoria, EstadosD.Compartido, id);
+                    info.Directorio.AgregarUsuarioBloque(info.IndiceMemoria, this);
+
+                    // Se lee la palabra
+                    palabraLeida = this[info.IndiceCache][info.IndicePalabra];
+
+                    // Desbloqueo el directorio
+                    info.Directorio.Desbloquear();
+
+                } else {
+
+                    // Bloqueo la cache remota
+                    CacheDatos remota = usuarios[0];
+                    remota.Bloquear();
+
+                    // Obtengo la memoria dueña del bloque modificado
+                    int idMemoria = remota.idDueños[info.IndiceCache];
+                    MemoriaPrincipal memoria = controlador.MemoriasPrincipales[idMemoria];
+
+                    // Envio el dato de la cache remota a la memoria correspondiente
+                    // que podría o no ser la memoria principal de la misma cache
+                    if (remota.id == idMemoria) {
+                        controlador.Esperar(EsperaEnvioMemoriaLocal);
+                    } else {
+                        controlador.Esperar(EsperaEnvioMemoriaRemota);
+                    }
+                    memoria[info.IndiceMemoria] = remota[info.IndiceCache];
+
+                    // Copio el dato en mi cache
+                    controlador.Esperar(EsperaTraerCacheRemota);
+                    this[info.IndiceCache] = remota[info.IndiceCache];
+                    idDueños[info.IndiceCache] = idMemoria;
+
+                    // Pongo C en 2 caches
+                    this.Estados[info.IndiceCache] = EstadosB.Compartido;
+                    remota.Estados[info.IndiceCache] = EstadosB.Compartido;
+
+                    // Pongo C en directorio
+                    info.Directorio.SetEstadoBloque(info.IndiceMemoria, EstadosD.Compartido, id);
+
+                    // Me agrego a la lista de usuarios
+                    // No agrego la cache remota porque ya está en la lista
+                    info.Directorio.AgregarUsuarioBloque(info.IndiceMemoria, this);
+
+                    // Se lee la palabra
+                    palabraLeida = this[info.IndiceCache][info.IndicePalabra];
+
+                    // Desbloqueo el directorio
+                    info.Directorio.Desbloquear();
+
+                }
             }
+
+            // Desbloqueo la cache
+            this.Desbloquear();
+
+            // Devuelvo la palabra leída
             return palabraLeida;
         }
 
         /// <summary>
-        /// Escribe un bloque de memoria de la cacheDatos en su posicion respectiva en la memoria principal
+        /// Procesa una lista de caches en busqueda de las caches que tienen un bloque
+        /// modificado o compartido. Si el bloque está modificado, entonces este método 
+        /// debería devolver una lista de tamaño 1. Para pruebas se coloca un Assert en 
+        /// el método que verifica esto.
         /// </summary>
-        /// <param name="indiceDeCache">Indice del bloque que se quiere enviar a memoria principal</param>
-        private void EnviarBloqueAMemoria(InformacionPalabra info, CacheDatos cachePeticion) {
-            if (this == cachePeticion) {
-                controlador.Esperar(16);
-            } else {
-                controlador.Esperar(32);
-            }
-            memoriaPrincipal.SetBloque(info.NumeroBloque, info.Bloque);
-            info.EstadoBloque = 'I';
-            // TODO Mejorar el llamado en la parte de local
-            directorio.SetEstadoBloque(info.NumeroBloque, 'U', this == cachePeticion);
-        }
-
-        /// <summary>
-        /// Convierte los bloques de la Cache en un vector para las vistas
-        /// </summary>
-        /// <returns>Vector de datos</returns>
-        public int[] ToArray() {
-            int[] vector = new int[16];
-            int i = 0;
-            foreach (Bloque bloque in bloquesDeCache) {
-                foreach (int palabra in bloque.ToArray()) {
-                    vector[i++] = palabra;
+        /// <param name="usuarios">Lista de Caches</param>
+        /// <param name="info">Información de la palabra buscada</param>
+        /// <param name="estado">Estado que se busca</param>
+        /// <returns></returns>
+        public List<CacheDatos> GetUsuariosBloque(List<CacheDatos> usuarios, InformacionPalabra info, EstadosB estado) {
+            List<CacheDatos> resultado = new List<CacheDatos>();
+            foreach (CacheDatos cache in usuarios) {
+                if (cache.Estados[info.IndiceCache] == estado) {
+                    resultado.Add(cache);
                 }
             }
-            return vector;
+            // El propósito de este assert es verificar que la lista de usuarios solo
+            // puede contener una cache con el dato modificado.
+            // Si este assert da errores, debe haber un error en algún sitio del código.
+            Debug.Assert(estado == EstadosB.Modificado && resultado.Count == 1);
+            return resultado;
         }
 
     }

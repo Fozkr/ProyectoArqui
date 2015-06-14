@@ -44,7 +44,5 @@ namespace ProyectoArqui.Model
         {
             return instruccion[i];
         }
-
-
     }
 }
