@@ -17,47 +17,33 @@ namespace ProyectoArqui.Model {
 
         private int id;
         private bool modificado = true;
-        private Bloque[] bloques = new Bloque[BloquesPorCache];
-
-        // Contiene el estado de cada bloque
-        private EstadosB[] estados = new EstadosB[BloquesPorCache];
-
-        // Indica la direccion de memoria inicial de cada bloque de la cache
-        private int[] direcciones = new int[BloquesPorCache];
-
-        // Indica cual es el id del dueño de los bloques
-        // Para saber cual memoria consultar
-        private int[] idDueños = new int[BloquesPorMemoria];
+        private BloqueCacheDatos[] bloques = new BloqueCacheDatos[BloquesPorCache];
 
         /// <summary>
         /// Crea una nueva cacheDatos de datos. Utiliza el controlador 
         /// para acceder a otros objetos de la simulación
         /// </summary>
         /// <param name="controlador">Controlador de la simulación</param>
-        /// <param name="id">Id de la cache</param>
+        /// <param name="id">Id de la solicitante</param>
         public CacheDatos(Controlador controlador, int id)
             : base(controlador, "Cache " + id) {
             this.id = id;
             for (int i = 0; i < BloquesPorCache; ++i) {
-                this.bloques[i] = new Bloque(-1);
-                this.estados[i] = EstadosB.Invalido;
-                this.direcciones[i] = -1; // Da error si se intenta acceder a la posicion -1
-                this.idDueños[i] = -1;
+                this.bloques[i] = new BloqueCacheDatos(controlador, this);
             }
         }
 
         /// <summary>
-        /// Propiedad indexada para acceder directamente a los bloques de la cache de datos.
-        /// Devuelve y asigna copias de objetos.
+        /// Propiedad indexada para acceder directamente a los bloques de la solicitante de datos.
         /// </summary>
-        /// <param name="index">Índice del bloque a accesar</param>
+        /// <param name="index">Índice del bloqueMemoria a accesar</param>
         /// <returns>Bloque que se quiere accesar</returns>
-        public Bloque this[int index] {
+        public BloqueCacheDatos this[int index] {
             get {
-                return bloques[index].Copiar();
+                return bloques[index];
             }
             set {
-                bloques[index] = value.Copiar();
+                bloques[index] = value;
                 this.Modificado = true;
             }
         }
@@ -75,20 +61,25 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Guarda la direccion de memoria de la primera palabra de cada bloque.
+        /// ID de esta solicitante
         /// </summary>
-        public int[] Direcciones {
+        public int ID {
             get {
-                return this.direcciones;
+                return id;
             }
         }
 
         /// <summary>
-        /// Para obtener el estado de cada bloque
+        /// Se convierten las direcciones en un vector de ints para 
+        /// mantener compatibilidad con la interfaz
         /// </summary>
-        public EstadosB[] Estados {
+        public int[] DireccionesArray {
             get {
-                return this.estados;
+                int[] tmp = new int[BloquesPorCache];
+                for (int i = 0; i < BloquesPorCache; i++) {
+                    tmp[i] = bloques[i].Direccion;
+                }
+                return tmp;
             }
         }
 
@@ -100,7 +91,7 @@ namespace ProyectoArqui.Model {
             get {
                 char[] tmp = new char[BloquesPorCache];
                 for (int i = 0; i < BloquesPorCache; i++) {
-                    switch (estados[i]) {
+                    switch (bloques[i].Estado) {
                     case EstadosB.Invalido:
                     tmp[i] = 'I';
                     break;
@@ -117,7 +108,7 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Para obtener la memoria principal de esta cache.
+        /// Para obtener la memoriaPrincipal memoriaPrincipal de esta solicitante.
         /// </summary>
         public MemoriaPrincipal MemoriaPrincipal {
             get {
@@ -126,7 +117,7 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Para obtener el directorio de esta cache.
+        /// Para obtener el directorio de esta solicitante.
         /// </summary>
         public Directorio Directorio {
             get {
@@ -135,7 +126,7 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Propiedad para acceder a la estructura interna de la cache de datos.
+        /// Propiedad para acceder a la estructura interna de la solicitante de datos.
         /// Devuelve una copia.
         /// </summary>
         public int[] Array {
@@ -152,20 +143,20 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Metodo para que el procesador escriba en una direccion de memoria una palabra
+        /// Metodo para que el procesador escriba en una direccion de memoriaPrincipal una palabra
         /// </summary>
-        /// <param name="direccionMemoria">Direccion de memoria donde se quiere escribir una palabra</param>
+        /// <param name="direccionMemoria">Direccion de memoriaPrincipal donde se quiere escribir una palabra</param>
         /// <param name="palabra">Palabra que se quiere escribir</param>
         public void Escribir(int direccionPalabra, int palabra) {
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Metodo para que el procesador lea una palabra en una direccion de memoria
+        /// Metodo para que el procesador lea una palabra en una direccion de memoriaPrincipal
         /// Si ocurre una excepción del tipo RebootNeededException, entonces se reinicia el proceso de leer el dato.
         /// </summary>
-        /// <param name="direccionPalabra">Direccion de memoria donde se quiere leer una palabra</param>
-        /// <returns>Devuelve la palabra que se encuentra en la direccion de memoria</returns>
+        /// <param name="direccionPalabra">Direccion de memoriaPrincipal donde se quiere leer una palabra</param>
+        /// <returns>Devuelve la palabra que se encuentra en la direccion de memoriaPrincipal</returns>
         public int Leer(int direccionPalabra) {
             int palabra = -1;
             bool palabraLeida = false;
@@ -192,29 +183,21 @@ namespace ProyectoArqui.Model {
             this.Bloquear();
 
             // Se pregunta si es Hit
-            if (info.EsHit()) {
-
-                // Si es Hit se lee la palabra
-                palabraLeida = this[info.IndiceCache][info.IndicePalabra];
-
-            } else {
+            if (!info.EsHit()) {
 
                 // Se pregunta si el bloque a reemplazar en mi cache está modificado
-                if (estados[info.IndiceCache] == EstadosB.Modificado) {
+                if (this[info.IndiceCache].Estado == EstadosB.Modificado) {
 
                     // Bloqueo mi directorio
                     Directorio.Bloquear();
 
                     // Envio el bloque a memoria
-                    controlador.Esperar(EsperaEnvioMemoriaLocal);
-                    MemoriaPrincipal[info.IndiceCache] = this[info.IndiceCache];
+                    // Este método modifica tanto la cache como el directorio y pone ambos en compartido
+                    this[info.IndiceCache].EnviarAMemoria();
 
-                    // Invalido la cache
-                    estados[info.IndiceCache] = EstadosB.Invalido;
-
-                    // Pongo uncached en directorio
-                    Directorio.EliminarUsuarioBloque(info.IndiceMemoria, this);
-                    Directorio.SetEstadoBloque(info.IndiceMemoria, EstadosD.Uncached, id);
+                    // Invalido el bloqueMemoria
+                    // FIXME Creo que esto es innecesario porque el bloqueMemoria simplemente se comparte
+                    // this[info.IndiceCache].Estado = EstadosB.Invalido;
 
                     // Desbloqueo mi directorio
                     Directorio.Desbloquear();
@@ -223,75 +206,37 @@ namespace ProyectoArqui.Model {
                 // Bloqueo el directorio que contiene la palabra que busco
                 info.Directorio.Bloquear();
 
-                // Consulto la lista de usuarios del bloque que contiene la palabra que busco
+                // Consulto el directorio del bloqueMemoria que contiene la palabra que busco
                 // para ver si alguna cache lo tiene modificado
-                List<CacheDatos> usuarios = info.Directorio.GetUsuariosBloque(info.IndiceMemoria);
-                usuarios = GetUsuariosBloque(usuarios, info, EstadosB.Modificado);
+                CacheDatos modificante = info.Directorio.GetUsuarioQueModifica(this, info.Bloque);
 
-                // Si el tamaño de la lista es 0, ninguna cache tiene el bloque modificado
-                if (usuarios.Count == 0) {
-
-                    // Copio el bloque desde memoria remota
-                    controlador.Esperar(EsperaTraerMemoriaRemota);
-                    this[info.IndiceCache] = info.MemoriaPrincipal[info.IndiceMemoria];
-                    idDueños[info.IndiceCache] = info.MemoriaPrincipal.ID; // Indico en la cache quien es el dueño del bloque
-
-                    // Pongo C en mi Cache
-                    estados[info.IndiceCache] = EstadosB.Compartido;
-
-                    // Agrego C en directorio
-                    info.Directorio.SetEstadoBloque(info.IndiceMemoria, EstadosD.Compartido, id);
-                    info.Directorio.AgregarUsuarioBloque(info.IndiceMemoria, this);
-
-                    // Se lee la palabra
-                    palabraLeida = this[info.IndiceCache][info.IndicePalabra];
-
-                    // Desbloqueo el directorio
-                    info.Directorio.Desbloquear();
+                if (modificante == null) {
+                
+                    // Traigo el bloqueMemoria de memoria
+                    this[info.IndiceCache] = new BloqueCacheDatos(info.Bloque, controlador, this, true);
 
                 } else {
 
-                    // Bloqueo la cache remota
-                    CacheDatos remota = usuarios[0];
-                    remota.Bloquear();
+                    // Bloqueo la cache que modificó el dato
+                    modificante.Bloquear();
 
-                    // Obtengo la memoria dueña del bloque modificado
-                    int idMemoria = remota.idDueños[info.IndiceCache];
-                    MemoriaPrincipal memoria = controlador.MemoriasPrincipales[idMemoria];
+                    // Se envía el bloque en la cache modificante a memoria
+                    modificante[info.IndiceCache].EnviarAMemoria();
 
-                    // Envio el dato de la cache remota a la memoria correspondiente
-                    // que podría o no ser la memoria principal de la misma cache
-                    if (remota.id == idMemoria) {
-                        controlador.Esperar(EsperaEnvioMemoriaLocal);
-                    } else {
-                        controlador.Esperar(EsperaEnvioMemoriaRemota);
-                    }
-                    memoria[info.IndiceMemoria] = remota[info.IndiceCache];
+                    // Traigo el dato de la cache modificante
+                    this[info.IndiceCache] = new BloqueCacheDatos(modificante[info.IndiceCache], controlador, this, false);
 
-                    // Copio el dato en mi cache
-                    controlador.Esperar(EsperaTraerCacheRemota);
-                    this[info.IndiceCache] = remota[info.IndiceCache];
-                    idDueños[info.IndiceCache] = idMemoria;
-
-                    // Pongo C en 2 caches
-                    this.Estados[info.IndiceCache] = EstadosB.Compartido;
-                    remota.Estados[info.IndiceCache] = EstadosB.Compartido;
-
-                    // Pongo C en directorio
-                    info.Directorio.SetEstadoBloque(info.IndiceMemoria, EstadosD.Compartido, id);
-
-                    // Me agrego a la lista de usuarios
-                    // No agrego la cache remota porque ya está en la lista
-                    info.Directorio.AgregarUsuarioBloque(info.IndiceMemoria, this);
-
-                    // Se lee la palabra
-                    palabraLeida = this[info.IndiceCache][info.IndicePalabra];
-
-                    // Desbloqueo el directorio
-                    info.Directorio.Desbloquear();
-
+                    // Desbloqueo la cache que modificó el dato
+                    modificante.Desbloquear();
                 }
+
+                // Desbloqueo el directorio
+                info.Directorio.Desbloquear();
+
             }
+
+            // Leo la palabra
+            palabraLeida = this[info.IndiceCache][info.IndicePalabra];
 
             // Desbloqueo la cache
             this.Desbloquear();
@@ -299,30 +244,5 @@ namespace ProyectoArqui.Model {
             // Devuelvo la palabra leída
             return palabraLeida;
         }
-
-        /// <summary>
-        /// Procesa una lista de caches en busqueda de las caches que tienen un bloque
-        /// modificado o compartido. Si el bloque está modificado, entonces este método 
-        /// debería devolver una lista de tamaño 1. Para pruebas se coloca un Assert en 
-        /// el método que verifica esto.
-        /// </summary>
-        /// <param name="usuarios">Lista de Caches</param>
-        /// <param name="info">Información de la palabra buscada</param>
-        /// <param name="estado">Estado que se busca</param>
-        /// <returns></returns>
-        public List<CacheDatos> GetUsuariosBloque(List<CacheDatos> usuarios, InformacionPalabra info, EstadosB estado) {
-            List<CacheDatos> resultado = new List<CacheDatos>();
-            foreach (CacheDatos cache in usuarios) {
-                if (cache.Estados[info.IndiceCache] == estado) {
-                    resultado.Add(cache);
-                }
-            }
-            // El propósito de este assert es verificar que la lista de usuarios solo
-            // puede contener una cache con el dato modificado.
-            // Si este assert da errores, debe haber un error en algún sitio del código.
-            Debug.Assert(estado == EstadosB.Modificado && resultado.Count == 1);
-            return resultado;
-        }
-
     }
 }

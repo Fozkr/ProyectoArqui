@@ -7,26 +7,43 @@ using System.Threading.Tasks;
 namespace ProyectoArqui.Model {
 
     /// <summary>
-    /// Esta clase representa un bloque de memoria para la bloques o memoria principal.
+    /// Esta clase representa un bloqueMemoria de memoriaPrincipal para la bloques o memoriaPrincipal memoriaPrincipal.
     /// Contiene 4 palabras. Cada palabra es un int.
     /// </summary>
     class Bloque : Constantes {
 
-        private int direccionInicial;
-        private int[] palabras = new int[PalabrasPorBloque];
+        protected int id;
+        protected int direccionInicial;
+        protected int indiceMemoriaPrincipal;
+        protected int[] palabras = new int[PalabrasPorBloque];
 
         /// <summary>
-        /// Crea un nuevo bloque inicializado en ceros.
+        /// Crea un nuevo bloqueMemoria inicializado en ceros.
         /// </summary>
-        public Bloque(int direccionInicial) {
+        /// <param name="id">Id del dueño del bloqueMemoria</param>
+        /// <param name="direccionInicial">Dirección de la primera palabra del bloqueMemoria</param>
+        public Bloque(int id, int direccionInicial, int indiceMemoriaPrincipal) {
+            this.id = id;
             this.direccionInicial = direccionInicial;
+            this.indiceMemoriaPrincipal = indiceMemoriaPrincipal;
             for (int i = 0; i < PalabrasPorBloque; ++i) {
                 palabras[i] = 0;
             }
         }
 
         /// <summary>
-        /// Propiedad indexada para acceder directamente a las palabras de un bloque.
+        /// Constrctor por copia para los hijos
+        /// </summary>
+        /// <param name="bloqueMemoria">Bloque a copiar</param>
+        protected Bloque(Bloque bloque) {
+            this.id = bloque.id;
+            this.direccionInicial = bloque.direccionInicial;
+            this.indiceMemoriaPrincipal = bloque.indiceMemoriaPrincipal;
+            this.palabras = bloque.Array;
+        }
+
+        /// <summary>
+        /// Propiedad indexada para acceder directamente a las palabras de un bloqueMemoria.
         /// </summary>
         /// <param name="index">Índice de la palabra que se quiere accesar</param>
         /// <returns>Palabra que se quiere accesar</returns>
@@ -54,27 +71,55 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Devuelve la direccion inicial de este bloque. Esto es 
-        /// utilizado por las caches para saber cual bloque contienen.
-        /// Específicamente para saber si contienen un bloque local
-        /// o uno remoto.
+        /// Devuelve el id del dueño del bloqueMemoria.
         /// </summary>
-        public int DireccionBloque {
+        public int ID {
+            get {
+                return id;
+            }
+        }
+
+        /// <summary>
+        /// Devuelve la direccion inicial de este bloqueMemoria. 
+        /// </summary>
+        public int Direccion {
             get {
                 return direccionInicial;
             }
         }
 
         /// <summary>
-        /// Devuelve una copia de este bloque.
+        /// Devuelve donde debería ubicarse el bloqueMemoria en la cache
         /// </summary>
-        /// <returns>Copia de bloque</returns>
-        public Bloque Copiar() {
-            Bloque copia = new Bloque(this.direccionInicial);
-            for (int i = 0; i < PalabrasPorBloque; ++i) {
-                copia.palabras[i] = this.palabras[i];
+        public int IndiceCache {
+            get {
+                return MapeoDirecto();
             }
-            return copia;
+        }
+
+        /// <summary>
+        /// Devuelve el indice de este bloqueMemoria en memoria principal
+        /// </summary>
+        public int IndiceMemoriaPrincipal {
+            get {
+                return indiceMemoriaPrincipal;
+            }
+        }
+
+        /// <summary>
+        /// Devuelve una copia de este bloqueMemoria.
+        /// </summary>
+        /// <returns>Copia de bloqueMemoria</returns>
+        public Bloque Copiar() {
+            return new Bloque(this);
+        }
+
+        /// <summary>
+        /// Indica donde deberia ubicarse el bloqueMemoria en la cache de datos
+        /// </summary>
+        /// <returns>Devuelve el indice que el bloqueMemoria deberia tener en la cacheDatos</returns>
+        private int MapeoDirecto() {
+            return IndiceMemoriaPrincipal % BloquesPorCache;
         }
     }
 }

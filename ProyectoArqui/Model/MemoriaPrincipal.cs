@@ -8,7 +8,7 @@ using ProyectoArqui.Controller;
 namespace ProyectoArqui.Model {
 
     /// <summary>
-    /// Representa una memoria principal para un procesador.
+    /// Representa una memoriaPrincipal memoriaPrincipal para un procesador.
     /// Se compone de 8 bloques.
     /// </summary>
     class MemoriaPrincipal : Constantes, IModificable {
@@ -18,21 +18,21 @@ namespace ProyectoArqui.Model {
         private int id;
 
         /// <summary>
-        /// Crea los bloques de la memoria principal.
+        /// Crea los bloques de la memoriaPrincipal memoriaPrincipal.
         /// Se inicializa en ceros
         /// </summary>
         public MemoriaPrincipal(Controlador controlador, int id) {
             this.id = id;
             for (int i = 0; i < BloquesPorMemoria; ++i) {
-                bloques[i] = new Bloque(id * BytesPorMemoria + i * BytesPorBloque);
+                bloques[i] = new Bloque(id, id * BytesPorMemoria + i * BytesPorBloque, i);
             }
         }
 
         /// <summary>
-        /// Propiedad indexada para acceder directamente a los bloques de la memoria principal.
+        /// Propiedad indexada para acceder directamente a los bloques de la memoriaPrincipal memoriaPrincipal.
         /// Devuelve y asigna copias de objetos.
         /// </summary>
-        /// <param name="index">Índice del bloque a accesar</param>
+        /// <param name="index">Índice del bloqueMemoria a accesar</param>
         /// <returns>Bloque que se quiere accesar</returns>
         public Bloque this[int index] {
             get {
@@ -57,7 +57,7 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Id de esta memoria principal
+        /// Id de esta memoriaPrincipal memoriaPrincipal
         /// </summary>
         public int ID {
             get {
@@ -80,6 +80,23 @@ namespace ProyectoArqui.Model {
                 }
                 return vector;
             }
+        }
+
+        /// <summary>
+        /// Devuelve el índice donde se encuentra un bloqueMemoria a partir de 
+        /// una dirección inicial de un bloqueMemoria. Si el bloqueMemoria con dicha
+        /// direccion no se encuentra en esta memoria, devuelve -1.
+        /// </summary>
+        /// <param name="direccionInicialBloque">Dirección Inicial del bloqueMemoria que se busca</param>
+        /// <returns>Índice del bloqueMemoria o -1 si no se encuentra</returns>
+        public int GetIndice(int direccionInicialBloque) {
+            int indice = -1;
+            for (int i = 0; i < BloquesPorMemoria && indice == -1; i++) {
+                if (this[id].Direccion == direccionInicialBloque) {
+                    indice = i;
+                }
+            }
+            return indice;
         }
 
     }

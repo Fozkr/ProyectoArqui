@@ -47,6 +47,7 @@
     <Compile Include="Constantes\Constantes.cs" />
     <Compile Include="Model\Bloque.cs" />
     <Compile Include="Model\Bloqueable.cs" />
+    <Compile Include="Model\BloqueCacheDatos.cs" />
     <Compile Include="Model\CacheDatos.cs" />
     <Compile Include="Model\Directorio.cs" />
     <Compile Include="Model\IModificable.cs" />

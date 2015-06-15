@@ -15,7 +15,7 @@ namespace ProyectoArqui.Controller
         List<Listener> listeners = new List<Listener>();
 
         /// <summary>
-        /// Agrega un listener a este objeto
+        /// Agrega un listener a este objeto.
         /// </summary>
         /// <param name="listener">Nuevo listener</param>
         public void AddListener(Listener listener)
@@ -24,7 +24,7 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
-        /// Indica que el tick de reloj ha cambiado
+        /// Se llama cuando el reloj cambia.
         /// </summary>
         /// <param name="newTick">Nuevo tick de reloj</param>
         public void fireTickChanged(int newTick)
@@ -36,8 +36,7 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
-        /// Indica que un procesador ha palabraLeida de ejecutar un programa
-        /// Y ahora se encuentra ejecutando otro
+        /// Se llama cuando un procesador ejecuta un nuevo programa.
         /// </summary>
         /// <param name="newName">El nombre del programa que ahora se encuentra en ejecucion</param>
         /// <param name="id">Id del procesador donde ocurrio el cambio</param>
@@ -50,7 +49,7 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
-        /// Indica que el pc de un procesador ha cambiado
+        /// Se llama cuando se modifica el pc de un procesador.
         /// </summary>
         /// <param name="newPc">Nuevo pc del procesador</param>
         /// <param name="id">Id del procesador donde ocurrio el cambio</param>
@@ -63,7 +62,7 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
-        /// Indica que un estado de registros ha cambiado
+        /// Se llama cuando se modifican los registros de un procesador
         /// </summary>
         /// <param name="nuevosRegistros">Vector con las palabras de los registros del procesador</param>
         /// <param name="id">Id del procesador donde ocurrio el cambio</param>
@@ -76,9 +75,9 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
-        /// Indica que un estado de cache ha cambiado
+        /// Se llama cuando se modifica algún bloque de una cache
         /// </summary>
-        /// <param name="palabrasCache">Vector con las palabras de la cache</param>
+        /// <param name="palabrasCache">Vector con las palabras de la solicitante</param>
         /// <param name="id">Id del procesador donde ocurrio el cambio</param>
         public void fireCacheChanged(int[] palabrasCache, int[] numerosBloquesCache, char[] estadosBloquesCaches, int idProcesador)
         {
@@ -89,7 +88,7 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
-        /// Indica que un estado de memoria principal ha cambiado
+        /// Se llama cuando se modifica una memoria principal
         /// </summary>
         /// <param name="palabrasMemoria">Vector con las palabras de la memroria</param>
         /// <param name="id">Id del procesador donde ocurrio el cambio</param>
@@ -102,8 +101,7 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
-        /// Indica que un programa ha termiando su ejecucion
-        /// Envia los registros finales en el procesador de dicho programa
+        /// Se llama cuando termina de ejecutarse un programa.
         /// </summary>
         /// <param name="nombrePrograma">Nombre del programa finalizado</param>
         /// <param name="registrosFinales">Vector con los registros finales del programa</param>
@@ -117,7 +115,7 @@ namespace ProyectoArqui.Controller
         }
 
         /// <summary>
-        /// Indica que la simulacion ha palabraLeida
+        /// Se llama cuando la simulación termina
         /// </summary>
         public void fireSimulationFinished()
         {

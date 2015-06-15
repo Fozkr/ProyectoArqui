@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using ProyectoArqui.Controller;
 
 namespace ProyectoArqui.Model {
 
     /// <summary>
-    /// Contiene quien está utilizando cada uno de los bloques de memoria local.
+    /// Contiene quien está utilizando cada uno de los bloques de memoriaPrincipal local.
     /// </summary>
     class Directorio : Bloqueable {
 
         private int id;
 
-        // Contiene el estado de cada bloque
+        // Contiene el estado de cada bloqueMemoria
         private EstadosD[] estados = new EstadosD[BloquesPorMemoria];
 
         //Matriz dinámica de control para saber cuál o cuáles cachés tienen cada uno de los bloques
@@ -35,73 +36,108 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Modifica el estado de un bloque en específico.
+        /// Devuelve los estados del directorio
         /// </summary>
-        /// <param name="indiceBloqueMemoria">Número de bloque al que le voy a modificar el estado</param>
-        /// <param name="estado">Nuevo estado.</param>
-        /// <param name="idSolicitante">ID del solicitante</param>
-        public void SetEstadoBloque(int indiceBloque, EstadosD estado, int idSolicitante) {
-            this.Esperar(idSolicitante);
-            estados[indiceBloque] = estado;
+        public EstadosD[] Estados {
+            get {
+                return estados;
+            }
         }
 
         /// <summary>
-        /// Obtengo el estado de un bloque en específico.
+        /// Agrega una solicitante como usuaria de un bloqueMemoria. Modifica el estado del 
+        /// directorio de acuerdo al estado del bloqueMemoria. Si se va agregar un 
+        /// bloqueMemoria modificado, debe estar modificado previamente a
+        /// insertarlo en el directorio!!!
         /// </summary>
-        /// <param name="indiceBloqueMemoria">Número de bloque del que voy a revisar el estado</param>
-        /// <param name="idSolicitante">ID del solicitante</param>
-        /// <returns>Retorna el estado del bloque correspondiente</returns>
-        public EstadosD GetEstadoBloque(int indiceBloque, int idSolicitante) {
-            this.Esperar(idSolicitante);
-            return estados[indiceBloque];
+        /// <param name="solicitante">Cache de datos usuaria del bloqueMemoria</param>
+        /// <param name="bloqueMemoria">Bloque siendo utilizado</param>
+        public void AgregarUsuarioBloque(CacheDatos solicitante, BloqueCacheDatos bloque) {
+            // Si se va a agregar un bloqueMemoria cuyo estado es modificado al directorio, entonces la lista correspondiente debería estar vacía
+            Debug.Assert(bloque.Estado == EstadosB.Modificado && usuarios[bloque.IndiceMemoriaPrincipal].Count == 0);
+            Esperar(solicitante);
+            usuarios[bloque.IndiceMemoriaPrincipal].Add(solicitante);
+            if (bloque.Estado == EstadosB.Modificado) {
+                estados[bloque.IndiceMemoriaPrincipal] = EstadosD.Modificado;
+            } else {
+                estados[bloque.IndiceMemoriaPrincipal] = EstadosD.Compartido;
+            }
         }
 
         /// <summary>
-        /// Se agrega directorio a la lista respectiva
+        /// Se cambia el estado del directorio de Modificado a Compartido.
+        /// Esto es cuando se envia un bloqueMemoria a memoria.
         /// </summary>
-        /// <param name="indiceBloque">Indice del bloque a utilizar</param>
-        /// <param name="cache">Cache que utilizará el bloque</param>
-        public void AgregarUsuarioBloque(int indiceBloque, CacheDatos cache) {
-            usuarios[indiceBloque].Add(cache);
+        /// <param name="solicitante">Solicitante del cambio</param>
+        /// <param name="bloqueMemoria">Bloque para obtener el id</param>
+        public void CompartirBloque(CacheDatos solicitante, Bloque bloque) {
+            Debug.Assert(usuarios[bloque.IndiceMemoriaPrincipal].Count == 1);
+            Esperar(solicitante);
+            Estados[bloque.IndiceMemoriaPrincipal] = EstadosD.Compartido;
         }
 
         /// <summary>
-        /// Devuelve los usuarios de un bloque en específico.
+        /// Método que devuelve la cache que modificó un bloqueMemoria.
+        /// Devuelve null si nadie ha modificado el bloqueMemoria.
         /// </summary>
-        /// <param name="indiceBloque">Número del bloque del cual se consultan los usuarios</param>
-        /// <returns>Lista de usuarios</returns>
-        public List<CacheDatos> GetUsuariosBloque(int indiceBloque) {
-            return usuarios[indiceBloque];
+        /// <param name="solicitante">Solicitante del cambio</param>
+        /// <param name="bloqueMemoria">Bloque para obtener el id</param>
+        /// <returns>Cache que modificó una palabra del bloqueMemoria</returns>
+        public CacheDatos GetUsuarioQueModifica(CacheDatos solicitante, Bloque bloque) {
+            Esperar(solicitante);
+            CacheDatos cache = null;
+            int indice = bloque.IndiceMemoriaPrincipal;
+            if (estados[indice] == EstadosD.Modificado && usuarios[indice].Count == 1) {
+                cache = usuarios[indice][0];
+            }
+            return cache;
         }
 
         /// <summary>
-        /// Se elimina directorio de la lista respectiva
+        /// Método que devuelve los usuarios que comparten un bloqueMemoria
         /// </summary>
-        /// <param name="indiceBloqueMemoria">Número de bloque que dejará de usar el directorio respectivo</param>
-        /// <param name="directorio">Directorio que dejará de utilizar uno de los bloques</param>
-        public void EliminarUsuarioBloque(int indiceBloque, CacheDatos cache) {
-            usuarios[indiceBloque].Remove(cache);
+        /// <param name="bloqueMemoria">Bloque para obtener el índice de memoria principal</param>
+        /// <returns>Lista de Caches que comparten el bloqueMemoria</returns>
+        public List<CacheDatos> GetUsuariosQueComparten(CacheDatos solicitante, Bloque bloque) {
+            Esperar(solicitante);
+            return usuarios[bloque.IndiceMemoriaPrincipal];
+        }
+
+        /// <summary>
+        /// Se elimina cache de la lista respectiva
+        /// </summary>
+        /// <param name="solicitante">Cache de datos que ya no es usuaria del bloqueMemoria</param>
+        /// <param name="bloqueMemoria">Bloque ya no utilizado</param>
+        public void EliminarUsuarioBloque(CacheDatos solicitante, BloqueCacheDatos bloque) {
+            Esperar(solicitante);
+            usuarios[bloque.IndiceMemoriaPrincipal].Remove(solicitante);
+            if (usuarios[bloque.IndiceMemoriaPrincipal].Count == 0) {
+                estados[bloque.IndiceMemoriaPrincipal] = EstadosD.Uncached;
+            }
+        }
+
+        /// <summary>
+        /// Se invalida el bloqueMemoria en todas las cachés que lo usen
+        /// </summary>
+        /// <param name="solicitante">Cache de Datos solicitante</param>
+        /// <param name="bloqueMemoria">Bloque para obtener la dirección</param>
+        public void InvalidarBloque(CacheDatos solicitante, Bloque bloque) {
+            Esperar(solicitante);
+            // Solo se puede invalidar un bloqueMemoria si alguien lo está compartiendo
+            Debug.Assert(estados[bloque.IndiceMemoriaPrincipal] == EstadosD.Compartido);
+            throw new NotImplementedException();
         }
 
         /// <summary>
         /// Cantidad de ciclos a esperar en caso de que se trate de una operación local o remota
         /// </summary>
-        /// <param name="idSolicitante">Para saber si es un directorio local o remoto</param>
-        private void Esperar(int idSolicitante) {
-            if (id == idSolicitante) {
+        /// <param name="solicitante">Cache de Datos solicitante</param>
+        private void Esperar(CacheDatos solicitante) {
+            if (id == solicitante.ID) {
                 controlador.Esperar(EsperaOperacionDirectorioLocal);
             } else {
                 controlador.Esperar(EsperaOperacionDirectorioRemoto);
             }
         }
-
-        /// <summary>
-        /// Se invalida el bloque en todas las cachés que lo usen
-        /// </summary>
-        /// <param name="indiceBloqueMemoria">Número de bloque a invalidar</param>
-        public void InvalidarBloque(int numeroBloque) {
-            throw new NotImplementedException();
-         }
-
     }
 }

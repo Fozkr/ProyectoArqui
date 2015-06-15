@@ -9,9 +9,10 @@ using ProyectoArqui.Model;
 using ProyectoArqui.View;
 
 namespace ProyectoArqui.Controller {
+
     /// <summary>
     /// Funciona como mecanismo de sincronizacion entre los diferentes procesadores, actuando como una barrera
-    /// Asimismo informa a las vistas cuando ocurre un cambio
+    /// Asimismo informa a las vistas cuando ocurre un cambio.
     /// </summary>
     class Controlador : Observable {
         //Atributos
@@ -25,12 +26,9 @@ namespace ProyectoArqui.Controller {
 
         /// <summary>
         /// El contructor del controlador.
-        /// No inicializa ningun atributo para obligar al programador a llamar 
+        /// No inicializa ningún atributo para obligar al programador a llamar al método inicializar
         /// </summary>
         public Controlador() {
-            // * IMPORTANTE *
-            // No se inicializa ningun atributo para que el programador
-            // llame obligatoriamente al metodo inicializa antes de ejecutar la simulacion!
             this.barrier = null;
             this.procesadores = null;
             this.cachesDatos = null;
@@ -104,7 +102,6 @@ namespace ProyectoArqui.Controller {
             }
         }
 
-
         /// <summary>
         /// Este es el metodo que los procesadores, cachesDatos y otros objetos llaman
         /// cuando deben Esperar cierta cantidad de ticks de reloj
@@ -160,36 +157,36 @@ namespace ProyectoArqui.Controller {
         /// Notifica a las vistas si hubo un cambio en los registros del procesador
         /// </summary>
         private void NotificarCambioRegistros() {
-            foreach (Procesador p in procesadores) {
-                // p.Modificado == true si los registros se modificaron en el ultimo
+            foreach (Procesador procesador in procesadores) {
+                // procesador.Modificado == true si los registros se modificaron en el último
                 // ciclo de reloj
-                if (p.Modificado) {
-                    p.Modificado = false;
-                    fireRegistersChanged(p.GetRegistros(), p.ID);
+                if (procesador.Modificado) {
+                    procesador.Modificado = false;
+                    fireRegistersChanged(procesador.GetRegistros(), procesador.ID);
                 }
             }
         }
 
         /// <summary>
-        /// Notifica a las vistas si hubo un cambio en los bloques de las cachesDatos
+        /// Notifica a las vistas si hubo un cambio en los bloques de las Caches de Datos
         /// </summary>
         private void NotificarCambioCaches() {
             for (int i = 0; i < procesadores.Length; ++i) {
-                // p.Modificado == true si los bloques de las cachesDatos se modificaron en el ultimo
+                // cachesDatos[i].Modificado == true si los bloques de las cachesDatos se modificaron en el último
                 // ciclo de reloj
                 if (cachesDatos[i].Modificado) {
                     cachesDatos[i].Modificado = false;
-                    fireCacheChanged(cachesDatos[i].Array, cachesDatos[i].Direcciones, cachesDatos[i].EstadosArray, i);
+                    fireCacheChanged(cachesDatos[i].Array, cachesDatos[i].DireccionesArray, cachesDatos[i].EstadosArray, i);
                 }
             }
         }
 
         /// <summary>
-        /// Notifica a las vistas si hubo un cambio en los bloques de las memoriasPrincipales 
+        /// Notifica a las vistas si hubo un cambio en los bloques de las Memorias Principales 
         /// </summary>
         private void NotificarCambioMemorias() {
             for (int i = 0; i < procesadores.Length; ++i) {
-                // p.Modificado == true si las memoriasPrincipales se modificaron en el ultimo
+                // procesador.Modificado == true si las memoriasPrincipales se modificaron en el ultimo
                 // ciclo de reloj
                 if (memoriasPrincipales[i].Modificado) {
                     memoriasPrincipales[i].Modificado = false;
@@ -199,12 +196,10 @@ namespace ProyectoArqui.Controller {
         }
 
         /// <summary>
-        /// Este metodo revisa todos los procesadores en busqueda de alguno finalizado
-        /// Si algun procesador esta finalizado entonces le asigna un nuevo programa si hay
+        /// Este método revisa todos los procesadores en busqueda de alguno finalizado
+        /// Si algún procesador está finalizado entonces le asigna un nuevo programa si hay
         /// Si no hay mas programas lo deja finalizar en el proximo tick de reloj.
-        /// 
         /// Si un programa se cambia, entonces se le avisa a las vistas que un programa se modifico
-        /// 
         /// </summary>
         private void AsignarProgramasAProcesadores() {
             for (int i = 0; i < procesadores.Length; ++i) {
