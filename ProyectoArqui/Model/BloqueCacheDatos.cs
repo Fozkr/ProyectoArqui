@@ -111,11 +111,11 @@ namespace ProyectoArqui.Model {
             int indice = MemoriaPrincipal.GetIndice(Direccion);
             MemoriaPrincipal[indice] = this;
 
-            // Se cambia el estado del bloqueMemoria a compartido
-            this.Estado = EstadosB.Compartido;
+            // Se cambia el estado del bloqueMemoria a invalido
+            this.Estado = EstadosB.Invalido;
 
             // Se refleja el cambio en el directorio
-            Directorio.CompartirBloque(cache, this);     
+            Directorio.EliminarUsuarioBloque(cache, this);     
         }
 
         /// <summary>

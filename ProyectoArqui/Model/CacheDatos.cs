@@ -148,7 +148,124 @@ namespace ProyectoArqui.Model {
         /// <param name="direccionMemoria">Direccion de memoriaPrincipal donde se quiere escribir una palabra</param>
         /// <param name="palabra">Palabra que se quiere escribir</param>
         public void Escribir(int direccionPalabra, int palabra) {
-            throw new NotImplementedException();
+            bool palabraEscrita = false;
+            while (!palabraEscrita) {
+                try {
+                    Escribir(new InformacionPalabra(controlador, this, direccionPalabra), palabra);
+                    palabraEscrita = true;
+                } catch (RebootNeededException) {
+                }
+            }
+        }
+
+        public void Escribir(InformacionPalabra info, int palabra) {
+
+            //Se bloquea mi cache
+            this.Bloquear();
+
+            // Si es hit
+            if (info.EsHit()) {
+
+                BloqueCacheDatos bloqueN = this[info.IndiceCache];
+
+                if (bloqueN.Estado == EstadosB.Modificado) {
+
+                    // Si está en mi cache modificado nada más lo escribo
+                    bloqueN[info.IndicePalabra] = palabra;
+                    bloqueN.Estado = EstadosB.Modificado;
+                    info.Directorio.ModificarBloque(this, bloqueN);
+
+                } else {
+
+                    // Si lo tengo compartido, bloqueo el directorio correspondiente
+                    info.Directorio.Bloquear();
+
+                    // Invalido a todos quienes compartan el bloque
+                    info.Directorio.InvalidarBloque(this, info.Bloque);
+
+                    // Escribo la palabra
+                    bloqueN[info.IndicePalabra] = palabra;
+                    bloqueN.Estado = EstadosB.Modificado;
+                    info.Directorio.ModificarBloque(this, bloqueN);
+
+                    // Desbloqueo el directorio
+                    info.Directorio.Desbloquear();
+                }
+
+            } else {
+
+                BloqueCacheDatos bloqueV = this[info.IndiceCache];
+
+                // Se pregunta si el bloque a reemplazar en mi cache está modificado
+                if (bloqueV.Estado == EstadosB.Modificado) {
+
+                    // Bloqueo directorio de BloqueV
+                    bloqueV.Directorio.Bloquear();
+
+                    // Envio el bloque a memoria
+                    // Este método modifica tanto la cache como el directorio (U en directorio e I en Cache)
+                    bloqueV.EnviarAMemoria();
+
+                    // Desbloqueo el directorio del BloqueV
+                    bloqueV.Directorio.Desbloquear();
+                }
+
+                // Bloqueo el directorio que contiene la palabra que busco
+                info.Directorio.Bloquear();
+
+                // Consulto el directorio del bloqueMemoria que contiene la palabra que busco
+                // para ver si alguna cache lo tiene modificado
+                CacheDatos modificante = info.Directorio.GetUsuarioQueModifica(this, info.Bloque);
+
+                if (modificante == null) {  //Si no hay nadie que esté modificando en bloque
+
+                    List<CacheDatos> compartidores = info.Directorio.GetUsuariosQueComparten(this, info.Bloque);
+
+                    if (compartidores.Count != 0) {
+
+                        //Se les invalida el BloqueN a todas las caches que lo tengan compartido
+                        info.Directorio.InvalidarBloque(this, info.Bloque);
+
+                    }
+
+                    // Traigo el bloqueMemoria de memoria
+                    BloqueCacheDatos bloqueN = new BloqueCacheDatos(info.Bloque, controlador, this, true);
+                    this[info.Bloque.IndiceCache] = bloqueN;
+
+                    // Escribo la palabra
+                    bloqueN[info.IndicePalabra] = palabra;
+                    bloqueN.Estado = EstadosB.Modificado;
+                    info.Directorio.ModificarBloque(this, bloqueN);
+
+                } else {
+
+                    // Bloqueo la cache que modificó el dato
+                    modificante.Bloquear();
+
+                    // Se envía el bloque en la cache modificante a memoria
+                    modificante[info.IndiceCache].EnviarAMemoria();
+
+                    // Desbloqueo la cache que modificó el dato
+                    modificante.Desbloquear();
+
+                    // Traigo el dato de la cache modificante
+                    BloqueCacheDatos bloqueN = new BloqueCacheDatos(modificante[info.IndiceCache], controlador, this, false);
+                    this[info.Bloque.IndiceCache] = bloqueN;
+
+                    // Escribo la palabra
+                    bloqueN[info.IndicePalabra] = palabra;
+                    bloqueN.Estado = EstadosB.Modificado;
+                    info.Directorio.ModificarBloque(this, bloqueN);
+
+                }
+
+                // Desbloqueo el directorio
+                info.Directorio.Desbloquear();
+
+            }
+
+            // Desbloqueo mi cache
+            Desbloquear();
         }
 
         /// <summary>
@@ -185,22 +302,20 @@ namespace ProyectoArqui.Model {
             // Se pregunta si es Hit
             if (!info.EsHit()) {
 
-                // Se pregunta si el bloque a reemplazar en mi cache está modificado
-                if (this[info.IndiceCache].Estado == EstadosB.Modificado) {
+                BloqueCacheDatos bloqueV = this[info.IndiceCache];
 
-                    // Bloqueo mi directorio
-                    Directorio.Bloquear();
+                // Se pregunta si el bloque a reemplazar en mi cache está modificado
+                if (bloqueV.Estado == EstadosB.Modificado) {
+
+                    // Bloqueo directorio de BloqueV
+                    bloqueV.Directorio.Bloquear();
 
                     // Envio el bloque a memoria
-                    // Este método modifica tanto la cache como el directorio y pone ambos en compartido
-                    this[info.IndiceCache].EnviarAMemoria();
+                    // Este método modifica tanto la cache como el directorio (U en directorio e I en Cache)
+                    bloqueV.EnviarAMemoria();
 
-                    // Invalido el bloqueMemoria
-                    // FIXME Creo que esto es innecesario porque el bloqueMemoria simplemente se comparte
-                    // this[info.IndiceCache].Estado = EstadosB.Invalido;
-
-                    // Desbloqueo mi directorio
-                    Directorio.Desbloquear();
+                    // Desbloqueo el directorio del BloqueV
+                    bloqueV.Directorio.Desbloquear();
                 }
 
                 // Bloqueo el directorio que contiene la palabra que busco
@@ -211,7 +326,7 @@ namespace ProyectoArqui.Model {
                 CacheDatos modificante = info.Directorio.GetUsuarioQueModifica(this, info.Bloque);
 
                 if (modificante == null) {
-                
+
                     // Traigo el bloqueMemoria de memoria
                     this[info.IndiceCache] = new BloqueCacheDatos(info.Bloque, controlador, this, true);
 
@@ -244,5 +359,6 @@ namespace ProyectoArqui.Model {
             // Devuelvo la palabra leída
             return palabraLeida;
         }
+
     }
 }

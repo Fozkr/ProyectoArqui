@@ -90,7 +90,7 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Averigua si el bloqueMemoria donde se encuentra la solicitante está en la solicitante de datos del solicitante
+        /// Averigua si la cache solicitante tiene el bloque buscado
         /// </summary>
         /// <returns>true si es Hit, false si es Miss</returns>
         public bool EsHit() {

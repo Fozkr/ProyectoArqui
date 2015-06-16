@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using ProyectoArqui.Controller;
+using ProyectoArqui.Model.Exceptions;
 
 namespace ProyectoArqui.Model {
 
@@ -70,10 +71,16 @@ namespace ProyectoArqui.Model {
         /// </summary>
         /// <param name="solicitante">Solicitante del cambio</param>
         /// <param name="bloqueMemoria">Bloque para obtener el id</param>
-        public void CompartirBloque(CacheDatos solicitante, Bloque bloque) {
+        public void CompartirBloque(CacheDatos solicitante, BloqueCacheDatos bloque) {
             Debug.Assert(usuarios[bloque.IndiceMemoriaPrincipal].Count == 1);
             Esperar(solicitante);
             Estados[bloque.IndiceMemoriaPrincipal] = EstadosD.Compartido;
+        }
+
+        public void ModificarBloque(CacheDatos solicitante, BloqueCacheDatos bloque) {
+            Debug.Assert(usuarios[bloque.IndiceMemoriaPrincipal].Count == 1);
+            Esperar(solicitante);
+            Estados[bloque.IndiceMemoriaPrincipal] = EstadosD.Modificado;
         }
 
         /// <summary>
@@ -123,9 +130,52 @@ namespace ProyectoArqui.Model {
         /// <param name="bloqueMemoria">Bloque para obtener la dirección</param>
         public void InvalidarBloque(CacheDatos solicitante, Bloque bloque) {
             Esperar(solicitante);
+            
             // Solo se puede invalidar un bloqueMemoria si alguien lo está compartiendo
             Debug.Assert(estados[bloque.IndiceMemoriaPrincipal] == EstadosD.Compartido);
-            throw new NotImplementedException();
+
+            //Obtengo quienes son las caches que tienen bloqueN compartido
+            List<CacheDatos> lectores = usuarios[bloque.IndiceMemoriaPrincipal];
+
+            // Cuenta la cantidad de veces que se falla con una cache
+            int intentosFallidos = 0;
+
+            // Mientras no se falle consecutivamente con todas las caches de la lista
+            while (intentosFallidos != lectores.Count) {
+
+                foreach (CacheDatos cache in new List<CacheDatos>(lectores)) {
+
+                    if (cache.ID != solicitante.ID) {
+
+                        // Se intenta invalidar cada una
+                        try {
+
+                            // Bloque la cache
+                            cache.Bloquear();
+
+                            BloqueCacheDatos bloqueCache = cache[bloque.IndiceCache];
+
+                            // Invalido el bloque
+                            bloqueCache.Estado = EstadosB.Invalido;
+
+                            // Quito del directorio
+                            EliminarUsuarioBloque(cache, bloqueCache);
+
+                            // Debloqueo la cache
+                            cache.Desbloquear();
+
+                        } catch (RebootNeededException) {
+                            intentosFallidos++;
+                        }
+                    }
+                }
+            }
+
+            // Si se falló con todas las caches, se reinicia la instrucción.
+            if (intentosFallidos == lectores.Count) {
+                throw new RebootNeededException();
+            }
+
         }
 
         /// <summary>
