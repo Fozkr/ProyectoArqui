@@ -94,7 +94,7 @@ namespace ProyectoArqui.Model {
         /// </summary>
         /// <returns>true si es Hit, false si es Miss</returns>
         public bool EsHit() {
-            return solicitante[Bloque.IndiceCache].Direccion == Bloque.Direccion;
+            return solicitante[Bloque.IndiceCache].Direccion == Bloque.Direccion && solicitante[Bloque.IndiceCache].Estado !=  EstadosB.Invalido;
         }
 
     }

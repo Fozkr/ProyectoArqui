@@ -171,7 +171,7 @@ namespace ProyectoArqui.Model {
                 if (bloqueN.Estado == EstadosB.Modificado) {
 
                     // Si está en mi cache modificado nada más lo escribo
-                    bloqueN[info.IndicePalabra] = palabra;
+                    bloqueN[info.IndicePalabra] = palabra;  
                     bloqueN.Estado = EstadosB.Modificado;
                     info.Directorio.ModificarBloque(this, bloqueN);
 
