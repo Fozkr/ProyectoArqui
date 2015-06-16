@@ -54,6 +54,8 @@ namespace ProyectoArqui.View
             TextBoxCantidadProgramas.Text = "5";
             BotonNuevaSimulacion.Enabled = false;
             BotonIniciarSimulacion.Enabled = true;
+
+            BotonIniciarSimulacion_Click(null, null);
 #endif
         }
 
