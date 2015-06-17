@@ -32,33 +32,44 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Constructor de la clase BloqueCacheDatos.
-        /// "Trae" el bloqueMemoria de la memoria correspondiente.
-        /// Por defecto los bloques se traen con estado compartido.
+        /// Trae un bloque de memoria o desde otra cache
         /// </summary>
-        /// <param name="bloqueMemoria">Bloque a copiar</param>
-        /// <param name="controlador">Controlador de la simulación</param>
-        /// <param name="solicitante">Cache dueña de este bloqueMemoria</param>
-        /// <param name="vieneDeMemoria">Indica si el bloqueMemoria viene de memoria (true) o de otra solicitante (false)</param>
-        public BloqueCacheDatos(Bloque bloque, Controlador controlador, CacheDatos cache, bool vieneDeMemoria)
-            : base(bloque) {
+        /// <param name="bloque">Bloque</param>
+        /// <param name="controlador">Controlador</param>
+        /// <param name="cache">Cache dueña del bloque</param>
+        /// <param name="vieneDeMemoria">Indica si viene de memoria (true) o de otra cache (false)</param>
+        public static BloqueCacheDatos TraerBloqueCacheDatos(Bloque bloque, Controlador controlador, CacheDatos cache, bool vieneDeMemoria) {
+
+            // Se copian los datos del bloque
+            BloqueCacheDatos bloqueCache = new BloqueCacheDatos(controlador, cache);
+            bloqueCache.id = bloque.ID;
+            bloqueCache.direccionInicial = bloque.Direccion;
+            bloqueCache.indiceMemoriaPrincipal = bloque.IndiceMemoriaPrincipal;
+            for (int i = 0; i < PalabrasPorBloque; ++i) {
+                bloqueCache.palabras[i] = bloque[i];
+            }
 
             // Asigna el controlador y la cache
-            this.controlador = controlador;
-            this.cache = cache;
+            bloqueCache.controlador = controlador;
+            bloqueCache.cache = cache;
 
             Debug.Assert(cache.EstaBloqueado());
-            Debug.Assert(Directorio.EstaBloqueado());
+            Debug.Assert(bloqueCache.Directorio.EstaBloqueado());
 
-            // espera que el bloque venga de memoria
-            EsperarTraida(vieneDeMemoria);
+            // Se espera que el bloque venga de memoria
+            bloqueCache.EsperarTraida(vieneDeMemoria);
 
             // Se pone el bloque como compartido
-            this.estado = EstadosB.Compartido;
+            bloqueCache.estado = EstadosB.Compartido;
+
+            // Me pongo en la cache
+            cache[bloqueCache.IndiceCache] = bloqueCache;
 
             // Se refleja el cambio en el directorio
             // Se pone como compartido en el directorio
-            Directorio.AgregarUsuarioBloque(cache, this);
+            bloqueCache.Directorio.AgregarUsuarioBloque(cache, bloqueCache);
+
+            return bloqueCache;
         }
 
         /// <summary>

@@ -20,8 +20,9 @@ namespace ProyectoArqui.Model {
         private CacheDatos solicitante;
         private Bloque bloqueMemoria;
         private int id;
+        private int indiceBloqueMemoria;
         private int indicePalabra;
- 
+
         /// <summary>
         /// Obtiene la informacion necesaria con respecto a la operacion que se quiere leer
         /// </summary>
@@ -33,9 +34,9 @@ namespace ProyectoArqui.Model {
             this.solicitante = solicitante;
             this.id = direccionPalabra / BytesPorMemoria;
             int direccionPalabraLocal = direccionPalabra % BytesPorMemoria;
-            int indiceBloqueMemoria = direccionPalabraLocal / BytesPorBloque;
+            this.indiceBloqueMemoria = direccionPalabraLocal / BytesPorBloque;
             this.indicePalabra = (direccionPalabraLocal % BytesPorBloque) / BytesPorPalabra;
-            this.bloqueMemoria = controlador.MemoriasPrincipales[id][indiceBloqueMemoria];
+            ActualizarBloque();
         }
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Devuelve la memoriaPrincipal memoriaPrincipal dueña de la palbra buscada.
+        /// Devuelve la memoriaPrincipal memoriaPrincipal dueña de la palabra buscada.
         /// </summary>
         public MemoriaPrincipal MemoriaPrincipal {
             get {
@@ -66,12 +67,18 @@ namespace ProyectoArqui.Model {
             }
         }
 
+        /// <summary>
+        /// Devuelve el índice donde debería estar la palabra
+        /// </summary>
         public int IndicePalabra {
             get {
                 return indicePalabra;
             }
         }
 
+        /// <summary>
+        /// Devuelve el índice donde debería estar el bloque en la cache
+        /// </summary>
         public int IndiceCache {
             get {
                 return bloqueMemoria.IndiceCache;
@@ -90,11 +97,18 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
+        /// Actualiza la información del bloque con lo último que se tiene desde memoria principal
+        /// </summary>
+        public void ActualizarBloque() {
+            this.bloqueMemoria = controlador.MemoriasPrincipales[id][indiceBloqueMemoria];
+        }
+
+        /// <summary>
         /// Averigua si la cache solicitante tiene el bloque buscado
         /// </summary>
         /// <returns>true si es Hit, false si es Miss</returns>
         public bool EsHit() {
-            return solicitante[Bloque.IndiceCache].Direccion == Bloque.Direccion && solicitante[Bloque.IndiceCache].Estado !=  EstadosB.Invalido;
+            return solicitante[Bloque.IndiceCache].Direccion == Bloque.Direccion && solicitante[Bloque.IndiceCache].Estado != EstadosB.Invalido;
         }
 
     }

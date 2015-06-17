@@ -20,7 +20,7 @@ namespace ProyectoArqui.Model {
         private EstadosD[] estados = new EstadosD[BloquesPorMemoria];
 
         //Matriz dinámica de control para saber cuál o cuáles cachés tienen cada uno de los bloques
-        private List<CacheDatos>[] usuarios = new List<CacheDatos>[BloquesPorMemoria];
+        private List<int>[] usuarios = new List<int>[BloquesPorMemoria];
 
         /// <summary>
         /// Se inicializa directorio 
@@ -32,7 +32,7 @@ namespace ProyectoArqui.Model {
             this.id = id;
             for (int i = 0; i < BloquesPorMemoria; i++) {
                 estados[i] = EstadosD.Uncached;
-                usuarios[i] = new List<CacheDatos>();
+                usuarios[i] = new List<int>();
             }
         }
 
@@ -56,28 +56,14 @@ namespace ProyectoArqui.Model {
             // Debido a la implementación los bloques siempre se agregan como compartidos al directorio
             // Si la cache los modifica, luego llama al método de ModificarBloque del directorio
             Debug.Assert(EstaBloqueado());
+            Debug.Assert(estados[bloque.IndiceMemoriaPrincipal] != EstadosD.Modificado);
             Debug.Assert(bloque.Estado != EstadosB.Modificado);
-            Debug.Assert(!usuarios[bloque.IndiceMemoriaPrincipal].Contains(solicitante));
+            Debug.Assert(!usuarios[bloque.IndiceMemoriaPrincipal].Contains(solicitante.ID));
             Debug.Assert(bloque.ID == this.id);
+            Debug.Assert(solicitante[bloque.IndiceCache].Direccion == bloque.Direccion);
 
-
-            usuarios[bloque.IndiceMemoriaPrincipal].Add(solicitante);
+            usuarios[bloque.IndiceMemoriaPrincipal].Add(solicitante.ID);
             estados[bloque.IndiceMemoriaPrincipal] = EstadosD.Compartido;
-        }
-
-        /// <summary>
-        /// Se cambia el estado del directorio de Modificado a Compartido.
-        /// Esto es cuando se envia un bloqueMemoria a memoria.
-        /// </summary>
-        /// <param name="solicitante">Solicitante del cambio</param>
-        /// <param name="bloqueMemoria">Bloque para obtener el id</param>
-        public void CompartirBloque(CacheDatos solicitante, BloqueCacheDatos bloque) {
-            Esperar(solicitante);
-
-            Debug.Assert(EstaBloqueado());
-            Debug.Assert(usuarios[bloque.IndiceMemoriaPrincipal].Count == 1);
-            
-            Estados[bloque.IndiceMemoriaPrincipal] = EstadosD.Compartido;
         }
 
         public void ModificarBloque(CacheDatos solicitante, BloqueCacheDatos bloque) {
@@ -104,22 +90,25 @@ namespace ProyectoArqui.Model {
             CacheDatos cache = null;
             int indice = bloque.IndiceMemoriaPrincipal;
             if (estados[indice] == EstadosD.Modificado && usuarios[indice].Count == 1) {
-                cache = usuarios[indice][0];
+                cache = controlador.CachesDatos[usuarios[indice][0]];
             }
             return cache;
         }
 
         /// <summary>
-        /// Método que devuelve los usuarios que comparten un bloqueMemoria
+        /// Método que devuelve cuantos usuarios comparten un bloque menos yo
         /// </summary>
         /// <param name="bloqueMemoria">Bloque para obtener el índice de memoria principal</param>
         /// <returns>Lista de Caches que comparten el bloqueMemoria</returns>
-        public List<CacheDatos> GetUsuariosQueComparten(CacheDatos solicitante, Bloque bloque) {
+        public int CountUsuariosQueComparten(CacheDatos solicitante, Bloque bloque) {
             Esperar(solicitante);
 
             Debug.Assert(EstaBloqueado());
 
-            return usuarios[bloque.IndiceMemoriaPrincipal];
+            List<int> tmp = new List<int>(usuarios[bloque.IndiceMemoriaPrincipal]);
+            tmp.Remove(solicitante.ID);
+
+            return tmp.Count;
         }
 
         /// <summary>
@@ -131,10 +120,10 @@ namespace ProyectoArqui.Model {
             Esperar(solicitante);
 
             Debug.Assert(EstaBloqueado());
-            Debug.Assert(usuarios[bloque.IndiceMemoriaPrincipal].Contains(solicitante));
+            Debug.Assert(usuarios[bloque.IndiceMemoriaPrincipal].Contains(solicitante.ID));
             Debug.Assert(bloque.ID == this.id);
 
-            usuarios[bloque.IndiceMemoriaPrincipal].Remove(solicitante);
+            usuarios[bloque.IndiceMemoriaPrincipal].Remove(solicitante.ID);
             if (usuarios[bloque.IndiceMemoriaPrincipal].Count == 0) {
                 estados[bloque.IndiceMemoriaPrincipal] = EstadosD.Uncached;
             }
@@ -154,21 +143,25 @@ namespace ProyectoArqui.Model {
             Debug.WriteLine("Cache " + solicitante.ID + ": Invalidando a quienes comparten el bloque " + bloque.Direccion);
 
             //Obtengo quienes son las caches que tienen bloqueN compartido
-            List<CacheDatos> lectores = usuarios[bloque.IndiceMemoriaPrincipal];
+            List<int> lectores = usuarios[bloque.IndiceMemoriaPrincipal];
 
             // Creo una copia de la lista de lectores sin la cache solicitante
             // Si es que se encuentra
-            List<CacheDatos> tmp = new List<CacheDatos>(lectores);
-            tmp.Remove(solicitante);
+            List<int> tmp = new List<int>(lectores);
+            tmp.Remove(solicitante.ID);
 
             // TODO Mejorar este código para que reintente sobre las caches
             // Mientras no falle consecutivamente en todas
-            foreach (CacheDatos cache in tmp) {
+            foreach (int id in tmp) {
 
-                // Bloque la cache
+                CacheDatos cache = controlador.CachesDatos[id];
+
+                // Bloqueo la cache
                 cache.Bloquear(this.Nombre);
 
                 BloqueCacheDatos bloqueCache = cache[bloque.IndiceCache];
+
+                Debug.Assert(bloqueCache.Direccion == bloque.Direccion);
 
                 // Invalido el bloque
                 bloqueCache.Invalidar();
@@ -178,7 +171,7 @@ namespace ProyectoArqui.Model {
             }
 
             // O no hay nadie compartiendo el bloque o la solicitante es la unica que lo comparte
-            Debug.Assert(lectores.Count == 0 || lectores[0].ID == solicitante.ID && lectores.Count == 1);
+            Debug.Assert(lectores.Count == 0 || lectores[0] == solicitante.ID && lectores.Count == 1);
         }
 
         /// <summary>

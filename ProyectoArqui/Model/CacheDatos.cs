@@ -113,24 +113,6 @@ namespace ProyectoArqui.Model {
         }
 
         /// <summary>
-        /// Para obtener la memoriaPrincipal memoriaPrincipal de esta solicitante.
-        /// </summary>
-        public MemoriaPrincipal MemoriaPrincipal {
-            get {
-                return controlador.MemoriasPrincipales[id];
-            }
-        }
-
-        /// <summary>
-        /// Para obtener el directorio de esta solicitante.
-        /// </summary>
-        public Directorio Directorio {
-            get {
-                return controlador.Directorios[id];
-            }
-        }
-
-        /// <summary>
         /// Propiedad para acceder a la estructura interna de la solicitante de datos.
         /// Devuelve una copia.
         /// </summary>
@@ -189,6 +171,11 @@ namespace ProyectoArqui.Model {
             return palabra;
         }
 
+        /// <summary>
+        /// Método que escribe una palabra en una dirección de memoria
+        /// </summary>
+        /// <param name="info">Guarda información de donde debe escribirse la palabra</param>
+        /// <param name="palabra">Palabra que se quiere escribir</param>
         public void Escribir(InformacionPalabra info, int palabra) {
 
             //Se bloquea mi cache
@@ -240,9 +227,7 @@ namespace ProyectoArqui.Model {
 
                 if (modificante == null) {  //Si no hay nadie que esté modificando en bloque
 
-                    List<CacheDatos> compartidores = info.Directorio.GetUsuariosQueComparten(this, info.Bloque);
-
-                    if (compartidores.Count != 0) {
+                    if (info.Directorio.CountUsuariosQueComparten(this, info.Bloque) > 0) {
 
                         //Se les invalida el BloqueN a todas las caches que lo tengan compartido
                         info.Directorio.InvalidarBloque(this, info.Bloque);
@@ -250,13 +235,8 @@ namespace ProyectoArqui.Model {
                     }
 
                     // Traigo el bloqueMemoria de memoria
-                    BloqueCacheDatos bloqueN = new BloqueCacheDatos(info.Bloque, controlador, this, true);
-                    this[info.Bloque.IndiceCache] = bloqueN;
-
-                    // Escribo la palabra
-                    bloqueN[info.IndicePalabra] = palabra;
-                    bloqueN.Estado = EstadosB.Modificado;
-                    info.Directorio.ModificarBloque(this, bloqueN);
+                    // El constructor pone el bloque en la cache
+                    BloqueCacheDatos.TraerBloqueCacheDatos(info.Bloque, controlador, this, true);
 
                 } else {
 
@@ -264,23 +244,25 @@ namespace ProyectoArqui.Model {
                     modificante.Bloquear(this.Nombre);
                     bloqueados.Add(modificante);
 
-                    // Traigo el dato de la cache modificante
-                    BloqueCacheDatos bloqueN = new BloqueCacheDatos(modificante[info.IndiceCache], controlador, this, false);
-                    this[info.Bloque.IndiceCache] = bloqueN;
-
                     // Se envía el bloque en la cache modificante a memoria
                     modificante[info.IndiceCache].EnviarAMemoria();
+
+                    // Se actualiza la información del bloque
+                    info.ActualizarBloque();
+                    
+                    // Traigo el dato desde la cache modificante
+                    BloqueCacheDatos.TraerBloqueCacheDatos(info.Bloque, controlador, this, false);
 
                     // Desbloqueo la cache que modificó el dato
                     modificante.Desbloquear(this.Nombre);
                     bloqueados.Remove(modificante);
 
-                    // Escribo la palabra
-                    bloqueN[info.IndicePalabra] = palabra;
-                    bloqueN.Estado = EstadosB.Modificado;
-                    info.Directorio.ModificarBloque(this, bloqueN);
-
                 }
+
+                // Escribo la palabra
+                this[info.IndiceCache][info.IndicePalabra] = palabra;
+                this[info.IndiceCache].Estado = EstadosB.Modificado;
+                this[info.IndiceCache].Directorio.ModificarBloque(this, this[info.IndiceCache]);
 
                 // Desbloqueo el directorio
                 info.Directorio.Desbloquear(this.Nombre);
@@ -324,7 +306,7 @@ namespace ProyectoArqui.Model {
                 if (modificante == null) {
 
                     // Traigo el bloqueMemoria de memoria
-                    this[info.IndiceCache] = new BloqueCacheDatos(info.Bloque, controlador, this, true);
+                    BloqueCacheDatos.TraerBloqueCacheDatos(info.Bloque, controlador, this, true);
 
                 } else {
 
@@ -332,11 +314,14 @@ namespace ProyectoArqui.Model {
                     modificante.Bloquear(this.Nombre);
                     bloqueados.Add(modificante);
 
-                    // Traigo el dato de la cache modificante
-                    this[info.IndiceCache] = new BloqueCacheDatos(modificante[info.IndiceCache], controlador, this, false);
-                    
                     // Se envía el bloque en la cache modificante a memoria
                     modificante[info.IndiceCache].EnviarAMemoria();
+
+                    // Se actualiza la información del bloque con lo último de memoria
+                    info.ActualizarBloque();
+
+                    // Traigo el dato de la cache modificante
+                    BloqueCacheDatos.TraerBloqueCacheDatos(info.Bloque, controlador, this, false);
 
                     // Desbloqueo la cache que modificó el dato
                     modificante.Desbloquear(this.Nombre);

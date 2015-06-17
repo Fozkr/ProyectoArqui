@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Windows.Forms;
 using ProyectoArqui.Controller;
 
 namespace ProyectoArqui.Model {
@@ -12,7 +13,7 @@ namespace ProyectoArqui.Model {
     /// Representa un procesador simulado. Ejecuta instrucciones hasta que llega a una instruccion Fin.
     /// Esta clase se convierte en un hilo de la simulacion!
     /// </summary>
-    class Procesador : Constantes, IModificable{
+    class Procesador : Constantes, IModificable {
 
         private Controlador controlador;
         private int programCounter;
@@ -125,13 +126,19 @@ namespace ProyectoArqui.Model {
         /// Basicamente mientras hayan instrucciones que ejecutar el hilo continua ejecutandose
         /// </summary>
         public void Procesar() {
-            while (!Finalizado) {
-                Debug.WriteLine("Procesador " + id + ": PC = " + programCounter);
-                Instruccion i = controlador.CacheInstrucciones.ObtenerInstruccion(programCounter);
-                procesarInstruccion(i);
-                Debug.Flush();
+            try {
+
+                while (!Finalizado) {
+                    Debug.WriteLine("Procesador " + id + ": PC = " + programCounter);
+                    Instruccion i = controlador.CacheInstrucciones.ObtenerInstruccion(programCounter);
+                    procesarInstruccion(i);
+                    Debug.Flush();
+                }
+                controlador.OnProcesadorTerminado();
+
+            } catch (Exception) {
+                MessageBox.Show("Ocurrió un error :/\nAsí quedó la simulación.");
             }
-            controlador.OnProcesadorTerminado();
         }
 
         /// <summary>

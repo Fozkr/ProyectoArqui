@@ -120,7 +120,7 @@ namespace ProyectoArqui.View {
             List<string> nombresProgramas = new List<string>();
             String instruccionIndividual = "";  //usada para iterar por las líneas de los archivos
             foreach (String path in pathsArchivos) {
-                nombresProgramas.Add(path.Substring(path.LastIndexOf('/') + 1));
+                nombresProgramas.Add(path.Substring(path.LastIndexOf('\\') + 1));
                 iniciosProgramas.Add(instrucciones.Count);
                 System.IO.TextReader lector = System.IO.File.OpenText(path); //abre el archivo para Leer sus líneas una por una
                 while ((instruccionIndividual = lector.ReadLine()) != null) {
@@ -143,6 +143,7 @@ namespace ProyectoArqui.View {
             crearTuplasMemoriaCompartida(); //de una vez iniciarlizar las tuplas de la memoria compartida
 
             // NO hacer join al hiloSimulacion porque sino se detienen los eventos de la interfaz grafica
+
         }
 
         public void onTickChanged(int newTick) {

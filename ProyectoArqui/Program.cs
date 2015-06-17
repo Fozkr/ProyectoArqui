@@ -21,7 +21,6 @@ namespace ProyectoArqui {
             TextWriterTraceListener twtr = new TextWriterTraceListener(System.IO.File.CreateText("Debug.txt"));
             Debug.Listeners.Add(twtr);
 #endif
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new FormPrincipal());
