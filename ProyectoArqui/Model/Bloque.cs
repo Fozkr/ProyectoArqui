@@ -17,6 +17,9 @@ namespace ProyectoArqui.Model {
         protected int indiceMemoriaPrincipal;
         protected int[] palabras = new int[PalabrasPorBloque];
 
+        // Para interfaz
+        private int[] palabrasArray = new int[PalabrasPorBloque];
+
         /// <summary>
         /// Crea un nuevo bloqueMemoria inicializado en ceros.
         /// </summary>
@@ -39,7 +42,9 @@ namespace ProyectoArqui.Model {
             this.id = bloque.id;
             this.direccionInicial = bloque.direccionInicial;
             this.indiceMemoriaPrincipal = bloque.indiceMemoriaPrincipal;
-            this.palabras = bloque.Array;
+            for (int i = 0; i < PalabrasPorBloque; i++) {
+                this.palabras[i] = bloque.palabras[i];
+            }
         }
 
         /// <summary>
@@ -62,11 +67,10 @@ namespace ProyectoArqui.Model {
         /// </summary>
         public int[] Array {
             get {
-                int[] copia = new int[PalabrasPorBloque];
                 for (int i = 0; i < PalabrasPorBloque; i++) {
-                    copia[i] = palabras[i];
+                    palabrasArray[i] = palabras[i];
                 }
-                return copia;
+                return palabrasArray;
             }
         }
 

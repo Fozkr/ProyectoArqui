@@ -30,9 +30,6 @@
         {
             this.FileChooser = new System.Windows.Forms.OpenFileDialog();
             this.BotonNuevaSimulacion = new System.Windows.Forms.Button();
-            this.TextBoxCantidadProgramas = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.BotonAgregarArchivo = new System.Windows.Forms.Button();
             this.panelIniciar = new System.Windows.Forms.Panel();
             this.BotonIniciarSimulacion = new System.Windows.Forms.Button();
@@ -93,48 +90,24 @@
             // 
             // BotonNuevaSimulacion
             // 
-            this.BotonNuevaSimulacion.Location = new System.Drawing.Point(0, 35);
+            this.BotonNuevaSimulacion.Location = new System.Drawing.Point(14, 68);
+            this.BotonNuevaSimulacion.Margin = new System.Windows.Forms.Padding(4);
             this.BotonNuevaSimulacion.Name = "BotonNuevaSimulacion";
-            this.BotonNuevaSimulacion.Size = new System.Drawing.Size(100, 30);
+            this.BotonNuevaSimulacion.Size = new System.Drawing.Size(231, 37);
             this.BotonNuevaSimulacion.TabIndex = 0;
             this.BotonNuevaSimulacion.Text = "Nueva simulación";
             this.BotonNuevaSimulacion.UseVisualStyleBackColor = true;
             this.BotonNuevaSimulacion.Click += new System.EventHandler(this.BotonNuevaSimulacion_Click);
             // 
-            // TextBoxCantidadProgramas
-            // 
-            this.TextBoxCantidadProgramas.Enabled = false;
-            this.TextBoxCantidadProgramas.Location = new System.Drawing.Point(214, 24);
-            this.TextBoxCantidadProgramas.Name = "TextBoxCantidadProgramas";
-            this.TextBoxCantidadProgramas.Size = new System.Drawing.Size(75, 20);
-            this.TextBoxCantidadProgramas.TabIndex = 1;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(117, 27);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(91, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Cantidad de hilos:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(116, 60);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(92, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Escoger archivos:";
-            // 
             // BotonAgregarArchivo
             // 
             this.BotonAgregarArchivo.Enabled = false;
-            this.BotonAgregarArchivo.Location = new System.Drawing.Point(214, 55);
+            this.BotonAgregarArchivo.Location = new System.Drawing.Point(1332, 9);
+            this.BotonAgregarArchivo.Margin = new System.Windows.Forms.Padding(4);
             this.BotonAgregarArchivo.Name = "BotonAgregarArchivo";
-            this.BotonAgregarArchivo.Size = new System.Drawing.Size(75, 23);
+            this.BotonAgregarArchivo.Size = new System.Drawing.Size(159, 28);
             this.BotonAgregarArchivo.TabIndex = 4;
-            this.BotonAgregarArchivo.Text = "Agregar";
+            this.BotonAgregarArchivo.Text = "Agregar Archivo";
             this.BotonAgregarArchivo.UseVisualStyleBackColor = true;
             this.BotonAgregarArchivo.Click += new System.EventHandler(this.BotonAgregarArchivo_Click);
             // 
@@ -143,21 +116,20 @@
             this.panelIniciar.Controls.Add(this.BotonIniciarSimulacion);
             this.panelIniciar.Controls.Add(this.BotonNuevaSimulacion);
             this.panelIniciar.Controls.Add(this.GridPaths);
-            this.panelIniciar.Controls.Add(this.label1);
             this.panelIniciar.Controls.Add(this.BotonAgregarArchivo);
-            this.panelIniciar.Controls.Add(this.TextBoxCantidadProgramas);
-            this.panelIniciar.Controls.Add(this.label2);
-            this.panelIniciar.Location = new System.Drawing.Point(18, 60);
+            this.panelIniciar.Location = new System.Drawing.Point(9, 13);
+            this.panelIniciar.Margin = new System.Windows.Forms.Padding(4);
             this.panelIniciar.Name = "panelIniciar";
-            this.panelIniciar.Size = new System.Drawing.Size(1110, 100);
+            this.panelIniciar.Size = new System.Drawing.Size(1503, 125);
             this.panelIniciar.TabIndex = 5;
             // 
             // BotonIniciarSimulacion
             // 
             this.BotonIniciarSimulacion.Enabled = false;
-            this.BotonIniciarSimulacion.Location = new System.Drawing.Point(1010, 35);
+            this.BotonIniciarSimulacion.Location = new System.Drawing.Point(1332, 68);
+            this.BotonIniciarSimulacion.Margin = new System.Windows.Forms.Padding(4);
             this.BotonIniciarSimulacion.Name = "BotonIniciarSimulacion";
-            this.BotonIniciarSimulacion.Size = new System.Drawing.Size(100, 30);
+            this.BotonIniciarSimulacion.Size = new System.Drawing.Size(159, 37);
             this.BotonIniciarSimulacion.TabIndex = 6;
             this.BotonIniciarSimulacion.Text = "Iniciar Simulación";
             this.BotonIniciarSimulacion.UseVisualStyleBackColor = true;
@@ -171,11 +143,12 @@
             this.GridPaths.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Path});
             this.GridPaths.Enabled = false;
-            this.GridPaths.Location = new System.Drawing.Point(305, 0);
+            this.GridPaths.Location = new System.Drawing.Point(345, 9);
+            this.GridPaths.Margin = new System.Windows.Forms.Padding(4);
             this.GridPaths.Name = "GridPaths";
             this.GridPaths.ReadOnly = true;
             this.GridPaths.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.GridPaths.Size = new System.Drawing.Size(690, 100);
+            this.GridPaths.Size = new System.Drawing.Size(979, 96);
             this.GridPaths.TabIndex = 5;
             // 
             // Path
@@ -189,9 +162,10 @@
             // 
             this.labelTitulo.AutoSize = true;
             this.labelTitulo.Font = new System.Drawing.Font("Microsoft Sans Serif", 18.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelTitulo.Location = new System.Drawing.Point(13, 18);
+            this.labelTitulo.Location = new System.Drawing.Point(17, 22);
+            this.labelTitulo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelTitulo.Name = "labelTitulo";
-            this.labelTitulo.Size = new System.Drawing.Size(196, 29);
+            this.labelTitulo.Size = new System.Drawing.Size(237, 35);
             this.labelTitulo.TabIndex = 6;
             this.labelTitulo.Text = "Simulador MIPS";
             // 
@@ -206,51 +180,60 @@
             this.panelProcesadores.Controls.Add(this.gridProcesador1);
             this.panelProcesadores.Controls.Add(this.gridProcesador0);
             this.panelProcesadores.Controls.Add(this.labelProcesador0);
-            this.panelProcesadores.Location = new System.Drawing.Point(18, 172);
+            this.panelProcesadores.Location = new System.Drawing.Point(9, 146);
+            this.panelProcesadores.Margin = new System.Windows.Forms.Padding(4);
             this.panelProcesadores.Name = "panelProcesadores";
-            this.panelProcesadores.Size = new System.Drawing.Size(1110, 240);
+            this.panelProcesadores.Size = new System.Drawing.Size(1503, 361);
             this.panelProcesadores.TabIndex = 7;
             this.panelProcesadores.Visible = false;
             // 
             // labelProcesador2Corriendo
             // 
             this.labelProcesador2Corriendo.AutoSize = true;
-            this.labelProcesador2Corriendo.Location = new System.Drawing.Point(809, 13);
+            this.labelProcesador2Corriendo.Location = new System.Drawing.Point(1102, 13);
+            this.labelProcesador2Corriendo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelProcesador2Corriendo.Name = "labelProcesador2Corriendo";
-            this.labelProcesador2Corriendo.Size = new System.Drawing.Size(0, 13);
+            this.labelProcesador2Corriendo.Size = new System.Drawing.Size(68, 17);
             this.labelProcesador2Corriendo.TabIndex = 8;
+            this.labelProcesador2Corriendo.Text = "corriendo";
             // 
             // labelProcesador1Corriendo
             // 
             this.labelProcesador1Corriendo.AutoSize = true;
-            this.labelProcesador1Corriendo.Location = new System.Drawing.Point(438, 13);
+            this.labelProcesador1Corriendo.Location = new System.Drawing.Point(607, 13);
+            this.labelProcesador1Corriendo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelProcesador1Corriendo.Name = "labelProcesador1Corriendo";
-            this.labelProcesador1Corriendo.Size = new System.Drawing.Size(0, 13);
+            this.labelProcesador1Corriendo.Size = new System.Drawing.Size(68, 17);
             this.labelProcesador1Corriendo.TabIndex = 7;
+            this.labelProcesador1Corriendo.Text = "corriendo";
             // 
             // labelProcesador0Corriendo
             // 
             this.labelProcesador0Corriendo.AutoSize = true;
-            this.labelProcesador0Corriendo.Location = new System.Drawing.Point(67, 12);
+            this.labelProcesador0Corriendo.Location = new System.Drawing.Point(112, 13);
+            this.labelProcesador0Corriendo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelProcesador0Corriendo.Name = "labelProcesador0Corriendo";
-            this.labelProcesador0Corriendo.Size = new System.Drawing.Size(0, 13);
+            this.labelProcesador0Corriendo.Size = new System.Drawing.Size(68, 17);
             this.labelProcesador0Corriendo.TabIndex = 6;
+            this.labelProcesador0Corriendo.Text = "corriendo";
             // 
             // labelProcesador2
             // 
             this.labelProcesador2.AutoSize = true;
-            this.labelProcesador2.Location = new System.Drawing.Point(739, 13);
+            this.labelProcesador2.Location = new System.Drawing.Point(1001, 13);
+            this.labelProcesador2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelProcesador2.Name = "labelProcesador2";
-            this.labelProcesador2.Size = new System.Drawing.Size(70, 13);
+            this.labelProcesador2.Size = new System.Drawing.Size(93, 17);
             this.labelProcesador2.TabIndex = 5;
             this.labelProcesador2.Text = "Procesador 2";
             // 
             // labelProcesador1
             // 
             this.labelProcesador1.AutoSize = true;
-            this.labelProcesador1.Location = new System.Drawing.Point(368, 13);
+            this.labelProcesador1.Location = new System.Drawing.Point(506, 13);
+            this.labelProcesador1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelProcesador1.Name = "labelProcesador1";
-            this.labelProcesador1.Size = new System.Drawing.Size(70, 13);
+            this.labelProcesador1.Size = new System.Drawing.Size(93, 17);
             this.labelProcesador1.TabIndex = 4;
             this.labelProcesador1.Text = "Procesador 1";
             // 
@@ -265,11 +248,12 @@
             this.Informacion22,
             this.Informacion23,
             this.Informacion24});
-            this.gridProcesador2.Location = new System.Drawing.Point(742, 28);
+            this.gridProcesador2.Location = new System.Drawing.Point(1004, 34);
+            this.gridProcesador2.Margin = new System.Windows.Forms.Padding(4);
             this.gridProcesador2.Name = "gridProcesador2";
             this.gridProcesador2.ReadOnly = true;
             this.gridProcesador2.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.gridProcesador2.Size = new System.Drawing.Size(365, 212);
+            this.gridProcesador2.Size = new System.Drawing.Size(487, 323);
             this.gridProcesador2.TabIndex = 3;
             // 
             // Propiedad2
@@ -317,11 +301,12 @@
             this.Informacion12,
             this.Informacion13,
             this.Informacion14});
-            this.gridProcesador1.Location = new System.Drawing.Point(371, 28);
+            this.gridProcesador1.Location = new System.Drawing.Point(509, 34);
+            this.gridProcesador1.Margin = new System.Windows.Forms.Padding(4);
             this.gridProcesador1.Name = "gridProcesador1";
             this.gridProcesador1.ReadOnly = true;
             this.gridProcesador1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.gridProcesador1.Size = new System.Drawing.Size(365, 212);
+            this.gridProcesador1.Size = new System.Drawing.Size(487, 323);
             this.gridProcesador1.TabIndex = 2;
             // 
             // Propiedad1
@@ -369,11 +354,12 @@
             this.Informacion02,
             this.Informacion03,
             this.Informacion04});
-            this.gridProcesador0.Location = new System.Drawing.Point(0, 28);
+            this.gridProcesador0.Location = new System.Drawing.Point(14, 34);
+            this.gridProcesador0.Margin = new System.Windows.Forms.Padding(4);
             this.gridProcesador0.Name = "gridProcesador0";
             this.gridProcesador0.ReadOnly = true;
             this.gridProcesador0.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.gridProcesador0.Size = new System.Drawing.Size(365, 212);
+            this.gridProcesador0.Size = new System.Drawing.Size(487, 323);
             this.gridProcesador0.TabIndex = 1;
             // 
             // Propiedad0
@@ -413,9 +399,10 @@
             // labelProcesador0
             // 
             this.labelProcesador0.AutoSize = true;
-            this.labelProcesador0.Location = new System.Drawing.Point(-3, 12);
+            this.labelProcesador0.Location = new System.Drawing.Point(11, 13);
+            this.labelProcesador0.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelProcesador0.Name = "labelProcesador0";
-            this.labelProcesador0.Size = new System.Drawing.Size(70, 13);
+            this.labelProcesador0.Size = new System.Drawing.Size(93, 17);
             this.labelProcesador0.TabIndex = 0;
             this.labelProcesador0.Text = "Procesador 0";
             // 
@@ -423,9 +410,10 @@
             // 
             this.panelMemoria.Controls.Add(this.gridMemoriaCompartida);
             this.panelMemoria.Controls.Add(this.labelMemoriaCompartida);
-            this.panelMemoria.Location = new System.Drawing.Point(18, 421);
+            this.panelMemoria.Location = new System.Drawing.Point(9, 511);
+            this.panelMemoria.Margin = new System.Windows.Forms.Padding(4);
             this.panelMemoria.Name = "panelMemoria";
-            this.panelMemoria.Size = new System.Drawing.Size(1110, 230);
+            this.panelMemoria.Size = new System.Drawing.Size(1503, 303);
             this.panelMemoria.TabIndex = 8;
             this.panelMemoria.Visible = false;
             // 
@@ -444,11 +432,12 @@
             this.Registros6,
             this.Registros7,
             this.Registros8});
-            this.gridMemoriaCompartida.Location = new System.Drawing.Point(0, 16);
+            this.gridMemoriaCompartida.Location = new System.Drawing.Point(0, 24);
+            this.gridMemoriaCompartida.Margin = new System.Windows.Forms.Padding(4);
             this.gridMemoriaCompartida.Name = "gridMemoriaCompartida";
             this.gridMemoriaCompartida.ReadOnly = true;
             this.gridMemoriaCompartida.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.gridMemoriaCompartida.Size = new System.Drawing.Size(1107, 213);
+            this.gridMemoriaCompartida.Size = new System.Drawing.Size(1491, 275);
             this.gridMemoriaCompartida.TabIndex = 6;
             // 
             // Direcciones
@@ -516,25 +505,26 @@
             // labelMemoriaCompartida
             // 
             this.labelMemoriaCompartida.AutoSize = true;
-            this.labelMemoriaCompartida.Location = new System.Drawing.Point(3, 0);
+            this.labelMemoriaCompartida.Location = new System.Drawing.Point(11, 3);
+            this.labelMemoriaCompartida.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelMemoriaCompartida.Name = "labelMemoriaCompartida";
-            this.labelMemoriaCompartida.Size = new System.Drawing.Size(151, 13);
+            this.labelMemoriaCompartida.Size = new System.Drawing.Size(203, 17);
             this.labelMemoriaCompartida.TabIndex = 6;
             this.labelMemoriaCompartida.Text = "Memoria compartida resultante";
             // 
             // FormPrincipal
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1154, 662);
+            this.ClientSize = new System.Drawing.Size(1522, 827);
             this.Controls.Add(this.panelMemoria);
             this.Controls.Add(this.panelProcesadores);
             this.Controls.Add(this.labelTitulo);
             this.Controls.Add(this.panelIniciar);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormPrincipal";
             this.Text = "Proyecto Arquitectura de computadoras - Simulador de procesadores MIPS";
             this.panelIniciar.ResumeLayout(false);
-            this.panelIniciar.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridPaths)).EndInit();
             this.panelProcesadores.ResumeLayout(false);
             this.panelProcesadores.PerformLayout();
@@ -553,9 +543,6 @@
 
         private System.Windows.Forms.OpenFileDialog FileChooser;
         private System.Windows.Forms.Button BotonNuevaSimulacion;
-        private System.Windows.Forms.TextBox TextBoxCantidadProgramas;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button BotonAgregarArchivo;
         private System.Windows.Forms.Panel panelIniciar;
         private System.Windows.Forms.DataGridView GridPaths;

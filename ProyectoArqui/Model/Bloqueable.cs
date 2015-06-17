@@ -47,14 +47,14 @@ namespace ProyectoArqui.Model {
         /// Una vez que este metodo retorna todos los llamados son seguros hasta que termine
         /// </summary>
         /// <returns></returns>
-        public void Bloquear() {
-            Debug.WriteLine("Bloqueable: Intentando obtener bloque sobre " + this.Nombre);
+        public void Bloquear(string nombreBloqueante) {
+            Debug.WriteLine(nombreBloqueante + " llama a Bloqueable: Intentando obtener bloqueo sobre " + this.Nombre);
             if (Monitor.TryEnter(candado)) {
                 // Se espera a que termine el ciclo actual
                 controlador.Esperar(1);
-                Debug.WriteLine("Bloqueable: Bloqueo obtenido en " + this.Nombre);
+                Debug.WriteLine(nombreBloqueante + " llama a Bloqueable: Bloqueo obtenido en " + this.Nombre);
             } else {
-                Debug.WriteLine("Bloqueable: Bloque NO obtenido en " + this.Nombre);
+                Debug.WriteLine(nombreBloqueante + " llama a Bloqueable: Bloque NO obtenido en " + this.Nombre);
                 throw new RebootNeededException();
             }
             // Una vez obtenido el candado este metodo puede devolver control y todos los llamados son seguros, 
@@ -64,9 +64,13 @@ namespace ProyectoArqui.Model {
         /// <summary>
         /// Este metodo se encarga de desbloquear un objeto bloqueable para que alguien mas lo pueda solicitar
         /// </summary>
-        public void Desbloquear() {
-            Debug.WriteLine("Bloqueable: Bloque quitado de " + this.Nombre);
+        public void Desbloquear(string nombreDesbloqueante) {
+            Debug.WriteLine(nombreDesbloqueante + " llama a Bloqueable: Bloqueo quitado de " + this.Nombre);
             Monitor.Exit(candado);
+        }
+
+        public bool EstaBloqueado() {
+            return Monitor.IsEntered(candado);
         }
 
     }

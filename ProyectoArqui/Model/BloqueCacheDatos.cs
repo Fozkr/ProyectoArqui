@@ -20,7 +20,7 @@ namespace ProyectoArqui.Model {
         private EstadosB estado;
 
         /// <summary>
-        /// Constructor para crear los bloques por defecto de la solicitante
+        /// Constructor para crear los bloques por defecto de la cache
         /// </summary>
         /// <param name="controlador">Controlador de la simulacion</param>
         /// <param name="solicitante">Cache dueña del bloqueMemoria</param>
@@ -42,14 +42,27 @@ namespace ProyectoArqui.Model {
         /// <param name="vieneDeMemoria">Indica si el bloqueMemoria viene de memoria (true) o de otra solicitante (false)</param>
         public BloqueCacheDatos(Bloque bloque, Controlador controlador, CacheDatos cache, bool vieneDeMemoria)
             : base(bloque) {
-            EsperarTraida(vieneDeMemoria);
+
+            // Asigna el controlador y la cache
             this.controlador = controlador;
             this.cache = cache;
+
+            Debug.Assert(cache.EstaBloqueado());
+            Debug.Assert(Directorio.EstaBloqueado());
+
+            // espera que el bloque venga de memoria
+            EsperarTraida(vieneDeMemoria);
+
+            // Se pone el bloque como compartido
             this.estado = EstadosB.Compartido;
+
+            // Se refleja el cambio en el directorio
+            // Se pone como compartido en el directorio
+            Directorio.AgregarUsuarioBloque(cache, this);
         }
 
         /// <summary>
-        /// Para obtener la solicitante de datos que contiene este bloqueMemoria
+        /// Para obtener la cache de datos que contiene este bloqueMemoria
         /// </summary>
         public CacheDatos Cache {
             get {
@@ -101,7 +114,9 @@ namespace ProyectoArqui.Model {
         /// Pone el estado en Compartido.
         /// </summary>
         public void EnviarAMemoria() {
+
             // Solo tiene sentido enviar un bloqueMemoria a memoria si está modificado
+            Debug.Assert(Cache.EstaBloqueado());
             Debug.Assert(Estado == EstadosB.Modificado);
 
             // Se espera a que se envien los datos
@@ -111,11 +126,8 @@ namespace ProyectoArqui.Model {
             int indice = MemoriaPrincipal.GetIndice(Direccion);
             MemoriaPrincipal[indice] = this;
 
-            // Se cambia el estado del bloqueMemoria a invalido
-            this.Estado = EstadosB.Invalido;
-
-            // Se refleja el cambio en el directorio
-            Directorio.EliminarUsuarioBloque(cache, this);     
+            // Se invalida el bloque
+            this.Invalidar();
         }
 
         /// <summary>
@@ -144,6 +156,24 @@ namespace ProyectoArqui.Model {
             } else {
                 controlador.Esperar(EsperaTraerCacheRemota);
             }
+        }
+
+        /// <summary>
+        /// Para poner el bloque en un estado completamente inválido.
+        /// </summary>
+        public void Invalidar() {
+
+            Debug.Assert(Directorio.EstaBloqueado());
+            Debug.Assert(Cache.EstaBloqueado());
+
+            // Quito del directorio
+            Directorio.EliminarUsuarioBloque(Cache, this);
+
+            // Invalido el bloque
+            this.id = -1;
+            this.direccionInicial = -1;
+            this.indiceMemoriaPrincipal = -1;
+            this.Estado = EstadosB.Invalido;
         }
 
     }

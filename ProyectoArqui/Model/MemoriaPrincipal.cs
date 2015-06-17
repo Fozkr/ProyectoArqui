@@ -17,6 +17,9 @@ namespace ProyectoArqui.Model {
         private bool modificado = true;
         private int id;
 
+        // Para la interfaz
+        private int[] palabrasArray = new int[PalabrasPorMemoria];
+
         /// <summary>
         /// Crea los bloques de la memoriaPrincipal memoriaPrincipal.
         /// Se inicializa en ceros
@@ -71,14 +74,13 @@ namespace ProyectoArqui.Model {
         /// </summary>
         public int[] Array {
             get {
-                int[] vector = new int[PalabrasPorMemoria];
                 int k = 0;
                 foreach (Bloque bloque in bloques) {
                     foreach (int palabra in bloque.Array) {
-                        vector[k++] = palabra;
+                        palabrasArray[k++] = palabra;
                     }
                 }
-                return vector;
+                return palabrasArray;
             }
         }
 
@@ -92,7 +94,7 @@ namespace ProyectoArqui.Model {
         public int GetIndice(int direccionInicialBloque) {
             int indice = -1;
             for (int i = 0; i < BloquesPorMemoria && indice == -1; i++) {
-                if (this[id].Direccion == direccionInicialBloque) {
+                if (this[i].Direccion == direccionInicialBloque) {
                     indice = i;
                 }
             }

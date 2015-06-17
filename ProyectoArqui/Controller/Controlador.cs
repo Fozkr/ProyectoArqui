@@ -52,7 +52,7 @@ namespace ProyectoArqui.Controller {
         /// <param name="memoriasPrincipales">MemoriasPrincipales Principales de todos los procesadores</param>
         public void Inicializar(Procesador[] procesadores, CacheDatos[] cachesDatos, CacheInstrucciones cacheInstrucciones, Directorio[] directorios, MemoriaPrincipal[] memoriasPrincipales) {
             int numeroProcesadores = procesadores.Length;
-            Debug.WriteLine("Controlador: Creando una barrera para " + numeroProcesadores + "procesadores");
+            Debug.WriteLine("Controlador: Creando una barrera para " + numeroProcesadores + " procesadores");
             this.barrier = new Barrier(numeroProcesadores, entreCiclosDeReloj);
             this.procesadores = procesadores;
             this.cachesDatos = cachesDatos;
@@ -64,6 +64,7 @@ namespace ProyectoArqui.Controller {
             // Por defecto los procesadores deben empezar en finalizado = true para que
             // el siguiente metodo les asigne un programa
             AsignarProgramasAProcesadores();
+            Debug.WriteLine("\nControlador: Nuevo Tick de Reloj " + ticksReloj + "\n");
         }
 
         /// <summary>
@@ -121,9 +122,13 @@ namespace ProyectoArqui.Controller {
         // Este metodo se ejecuta entre ciclos de controlador
         // Aqui se pueden Procesar mensajes de cachesDatos, etc
         public void entreCiclosDeReloj(Barrier b) {
-            // Se notifica a las vistas del tick de reloj que acaba de terminar
-            // Se realiza cuando el tick termine
+
+            // Se aumenta el tick de reloj
+            ++ticksReloj;
+
+            // Se notifica el cambio de tick de reloj
             fireTickChanged(ticksReloj);
+            Debug.WriteLine("\nControlador: Nuevo Tick de Reloj " + ticksReloj);
 
             // Se notifica a las vistas del cambio en el Pc
             NotificarCambioPC();
@@ -138,10 +143,6 @@ namespace ProyectoArqui.Controller {
 
             // Ver si ya se termino la simulacion
             VerificarSimulacionTerminada();
-
-            // Se aumenta el tick de reloj al final porque cuenta hasta la proxima vez que los procesadores continuen
-            // y se notifica hasta la proxima vez que se este en "medio" de 2 ciclos de reloj
-            ++ticksReloj;
         }
 
         /// <summary>
@@ -189,8 +190,8 @@ namespace ProyectoArqui.Controller {
                 // procesador.Modificado == true si las memoriasPrincipales se modificaron en el ultimo
                 // ciclo de reloj
                 if (memoriasPrincipales[i].Modificado) {
-                    memoriasPrincipales[i].Modificado = false;
                     fireMemoryChanged(memoriasPrincipales[i].Array, i);
+                    memoriasPrincipales[i].Modificado = false;
                 }
             }
         }
@@ -210,17 +211,17 @@ namespace ProyectoArqui.Controller {
                         fireProgramEnded(nombreProgramaAnterior, procesadores[i].GetRegistros(), procesadores[i].ID);
                         String nombreProgramaNuevo = cacheInstrucciones.GetNombrePrograma(procesadores[i].ProgramCounter);
                         fireProgramChanged(i, nombreProgramaNuevo, ticksReloj, procesadores[i].GetRegistros(), cachesDatos[i].Array);
-                    } else {
-                        // Cuando un procesador ya termina de ejecutarse, 
-                        // no hace falta mantenerlo vivo
-                        // Simplemente se le anuncia a la barrera que dicho "participante"
-                        // ya no esta
-                        // barrier.RemoveParticipant();
-                        // La linea anterior es la solucion pero no se puede llamar dentro de este metodo
-                        // Hay que buscar como solucionar esto para la 2da entrega
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Este método lo tienen que llamar todos los procesadores antes de finalizar, para que la barrera no se vea afectada.
+        /// </summary>
+        public void OnProcesadorTerminado() {
+            // Esto le indica a la barrera que hay un participante menos
+            barrier.RemoveParticipant();
         }
 
         /// <summary>

@@ -21,6 +21,9 @@ namespace ProyectoArqui.Model {
         private bool finalizado;
         private bool modificado = true;
 
+        // Para la interfaz
+        private int[] registrosArray = new int[32];
+
         // Diccionario que almacena un entero con el metodo que tiene que ejecutar
         private delegate void inst(Instruccion i);
         private Dictionary<int, inst> mapa = new Dictionary<int, inst>();
@@ -98,11 +101,10 @@ namespace ProyectoArqui.Model {
         /// </summary>
         /// <returns>Una copia de los registros</returns>
         public int[] GetRegistros() {
-            int[] registrosCopy = new int[32];
             for (int i = 0; i < 32; ++i) {
-                registrosCopy[i] = registros[i];
+                registrosArray[i] = registros[i];
             }
-            return registrosCopy;
+            return registrosArray;
         }
 
         /// <summary>
@@ -124,11 +126,12 @@ namespace ProyectoArqui.Model {
         /// </summary>
         public void Procesar() {
             while (!Finalizado) {
-                Debug.WriteLine("Procesador: PC = " + programCounter);
+                Debug.WriteLine("Procesador " + id + ": PC = " + programCounter);
                 Instruccion i = controlador.CacheInstrucciones.ObtenerInstruccion(programCounter);
                 procesarInstruccion(i);
                 Debug.Flush();
             }
+            controlador.OnProcesadorTerminado();
         }
 
         /// <summary>
@@ -139,7 +142,7 @@ namespace ProyectoArqui.Model {
         private void procesarInstruccion(Instruccion inst) {
             mapa[inst.GetCodigo()](inst);
             programCounter += 4; // Se modifica el pc para que la proxima instruccion arranque donde debe
-            Debug.WriteLine("Procesador: Esperando 1 tick luego de ejecutar una instruccion");
+            Debug.WriteLine("Procesador " + id + ": Esperando 1 tick luego de ejecutar una instruccion");
             controlador.Esperar(1);
         }
 
@@ -149,11 +152,11 @@ namespace ProyectoArqui.Model {
         /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
         private void Daddi(Instruccion i) {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
-            Debug.WriteLine("Procesador: DADDI R" + x + " = R" + y + " + " + n);
-            Debug.WriteLine("Procesador: DADDI R" + x + " = " + registros[y] + " + " + n);
+            Debug.WriteLine("Procesador " + id + ": DADDI R" + x + " = R" + y + " + " + n);
+            Debug.WriteLine("Procesador " + id + ": DADDI R" + x + " = " + registros[y] + " + " + n);
             registros[x] = registros[y] + n;
             this.Modificado = true; // Indica que hubo un cambio en un registro
-            Debug.WriteLine("Procesador: DADDI R" + x + " = " + registros[x]);
+            Debug.WriteLine("Procesador " + id + ": DADDI R" + x + " = " + registros[x]);
         }
 
         /// <summary>
@@ -162,11 +165,11 @@ namespace ProyectoArqui.Model {
         /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
         private void Dadd(Instruccion i) {
             int y = i.GetParametro(1), z = i.GetParametro(2), x = i.GetParametro(3);
-            Debug.WriteLine("Procesador: DADD R" + x + " = R" + y + " + R" + z);
-            Debug.WriteLine("Procesador: DADD R" + x + " = " + registros[y] + " + " + registros[z]);
+            Debug.WriteLine("Procesador " + id + ": DADD R" + x + " = R" + y + " + R" + z);
+            Debug.WriteLine("Procesador " + id + ": DADD R" + x + " = " + registros[y] + " + " + registros[z]);
             registros[x] = registros[y] + registros[z];
             this.Modificado = true; // Indica que hubo un cambio en un registro
-            Debug.WriteLine("Procesador: DADD R" + x + " = " + registros[x]);
+            Debug.WriteLine("Procesador " + id + ": DADD R" + x + " = " + registros[x]);
         }
 
         /// <summary>
@@ -175,11 +178,11 @@ namespace ProyectoArqui.Model {
         /// <param name="palabra">Instruccion de la cual se extraen los parametros necesarios</param>
         private void Dsub(Instruccion i) {
             int y = i.GetParametro(1), z = i.GetParametro(2), x = i.GetParametro(3);
-            Debug.WriteLine("Procesador: DSUB R" + x + " = R" + y + " - R" + z);
-            Debug.WriteLine("Procesador: DSUB R" + x + " = " + registros[y] + " - " + registros[z]);
+            Debug.WriteLine("Procesador " + id + ": DSUB R" + x + " = R" + y + " - R" + z);
+            Debug.WriteLine("Procesador " + id + ": DSUB R" + x + " = " + registros[y] + " - " + registros[z]);
             registros[x] = registros[y] - registros[z];
             this.Modificado = true; // Indica que hubo un cambio en un registro
-            Debug.WriteLine("Procesador: DSUB R" + x + " = " + registros[x]);
+            Debug.WriteLine("Procesador " + id + ": DSUB R" + x + " = " + registros[x]);
         }
 
         /// <summary>
@@ -190,9 +193,9 @@ namespace ProyectoArqui.Model {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
             registros[x] = controlador.CachesDatos[id].Leer(n + registros[y]);
             this.Modificado = true; // Indica que hubo un cambio en un registro
-            Debug.WriteLine("Procesador: LW R" + x + " = MEM(" + n + " + R" + y + ")");
-            Debug.WriteLine("Procesador: LW R" + x + " = MEM(" + (n + registros[y]) + ")");
-            Debug.WriteLine("Procesador: LW R" + x + " = " + registros[x]);
+            Debug.WriteLine("Procesador " + id + ": LW R" + x + " = MEM(" + n + " + R" + y + ")");
+            Debug.WriteLine("Procesador " + id + ": LW R" + x + " = MEM(" + (n + registros[y]) + ")");
+            Debug.WriteLine("Procesador " + id + ": LW R" + x + " = " + registros[x]);
         }
 
         /// <summary>
@@ -202,8 +205,8 @@ namespace ProyectoArqui.Model {
         private void Sw(Instruccion i) {
             int y = i.GetParametro(1), x = i.GetParametro(2), n = i.GetParametro(3);
             controlador.CachesDatos[id].Escribir(n + registros[y], registros[x]);
-            Debug.WriteLine("Procesador: SW MEM(" + n + " + R" + y + ") = R" + x);
-            Debug.WriteLine("Procesador: SW MEM(" + (n + registros[y]) + ") = " + registros[x]);
+            Debug.WriteLine("Procesador " + id + ": SW MEM(" + n + " + R" + y + ") = R" + x);
+            Debug.WriteLine("Procesador " + id + ": SW MEM(" + (n + registros[y]) + ") = " + registros[x]);
         }
 
         /// <summary>
@@ -214,10 +217,10 @@ namespace ProyectoArqui.Model {
             int x = i.GetParametro(1), n = i.GetParametro(3);
             if (registros[x] == 0) {
                 programCounter = (programCounter + 4) + n * 4;
-                Debug.WriteLine("Procesador: BEQZ Salto a " + programCounter);
+                Debug.WriteLine("Procesador " + id + ": BEQZ Salto a " + programCounter);
                 programCounter -= 4;
             } else {
-                Debug.WriteLine("Procesador: BEQZ No salto");
+                Debug.WriteLine("Procesador " + id + ": BEQZ No salto");
             }
             // Despues el metodo que llama a este aumenta en 4 el pc
         }
@@ -230,10 +233,10 @@ namespace ProyectoArqui.Model {
             int x = i.GetParametro(1), n = i.GetParametro(3);
             if (registros[x] != 0) {
                 programCounter = (programCounter + 4) + n * 4;
-                Debug.WriteLine("Procesador: BNEZ Salto a " + programCounter);
+                Debug.WriteLine("Procesador " + id + ": BNEZ Salto a " + programCounter);
                 programCounter -= 4;
             } else {
-                Debug.WriteLine("Procesador: BNEZ No salto");
+                Debug.WriteLine("Procesador " + id + ": BNEZ No salto");
             }
             // Despues el metodo que llama a este aumenta en 4 el pc
         }
@@ -247,7 +250,7 @@ namespace ProyectoArqui.Model {
             // El controlador revisa entre ciclos de reloj si hay un siguiente programa
             // Si lo hay entonces modifica Finalizado a false para que el procesador no deje de hacer su procesamiento
             Finalizado = true;
-            Debug.WriteLine("Procesador: Un programa ha finalizado");
+            Debug.WriteLine("Procesador " + id + ": Un programa ha finalizado");
         }
 
     }

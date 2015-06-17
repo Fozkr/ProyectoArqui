@@ -18,6 +18,12 @@ namespace ProyectoArqui.Model {
         private int id;
         private bool modificado = true;
         private BloqueCacheDatos[] bloques = new BloqueCacheDatos[BloquesPorCache];
+        private List<Bloqueable> bloqueados = new List<Bloqueable>();
+
+        // Para la interfaz
+        private int[] palabrasArray = new int[PalabrasPorCache];
+        private int[] direccionesArray = new int[BloquesPorCache];
+        private char[] estadosArray = new char[BloquesPorCache];
 
         /// <summary>
         /// Crea una nueva cacheDatos de datos. Utiliza el controlador 
@@ -43,6 +49,7 @@ namespace ProyectoArqui.Model {
                 return bloques[index];
             }
             set {
+                Debug.Assert(EstaBloqueado());
                 bloques[index] = value;
                 this.Modificado = true;
             }
@@ -75,11 +82,10 @@ namespace ProyectoArqui.Model {
         /// </summary>
         public int[] DireccionesArray {
             get {
-                int[] tmp = new int[BloquesPorCache];
                 for (int i = 0; i < BloquesPorCache; i++) {
-                    tmp[i] = bloques[i].Direccion;
+                    direccionesArray[i] = bloques[i].Direccion;
                 }
-                return tmp;
+                return direccionesArray;
             }
         }
 
@@ -89,21 +95,20 @@ namespace ProyectoArqui.Model {
         /// </summary>
         public char[] EstadosArray {
             get {
-                char[] tmp = new char[BloquesPorCache];
                 for (int i = 0; i < BloquesPorCache; i++) {
                     switch (bloques[i].Estado) {
                     case EstadosB.Invalido:
-                    tmp[i] = 'I';
+                    estadosArray[i] = 'I';
                     break;
                     case EstadosB.Compartido:
-                    tmp[i] = 'C';
+                    estadosArray[i] = 'C';
                     break;
                     case EstadosB.Modificado:
-                    tmp[i] = 'M';
+                    estadosArray[i] = 'M';
                     break;
                     }
                 }
-                return tmp;
+                return estadosArray;
             }
         }
 
@@ -131,14 +136,13 @@ namespace ProyectoArqui.Model {
         /// </summary>
         public int[] Array {
             get {
-                int[] vector = new int[PalabrasPorCache];
                 int k = 0;
                 foreach (Bloque bloque in bloques) {
                     foreach (int palabra in bloque.Array) {
-                        vector[k++] = palabra;
+                        palabrasArray[k++] = palabra;
                     }
                 }
-                return vector;
+                return palabrasArray;
             }
         }
 
@@ -154,14 +158,42 @@ namespace ProyectoArqui.Model {
                     Escribir(new InformacionPalabra(controlador, this, direccionPalabra), palabra);
                     palabraEscrita = true;
                 } catch (RebootNeededException) {
+                    DesbloquearTodo();
+                    Debug.WriteLine("Cache " + id + ": Reiniciando SW");
+                    // Reintentando proximo ciclo
+                    controlador.Esperar(1);
                 }
             }
+        }
+
+        /// <summary>
+        /// Metodo para que el procesador lea una palabra en una direccion de memoriaPrincipal
+        /// Si ocurre una excepción del tipo RebootNeededException, entonces se reinicia el proceso de leer el dato.
+        /// </summary>
+        /// <param name="direccionPalabra">Direccion de memoriaPrincipal donde se quiere leer una palabra</param>
+        /// <returns>Devuelve la palabra que se encuentra en la direccion de memoriaPrincipal</returns>
+        public int Leer(int direccionPalabra) {
+            int palabra = -1;
+            bool palabraLeida = false;
+            while (!palabraLeida) {
+                try {
+                    palabra = Leer(new InformacionPalabra(controlador, this, direccionPalabra));
+                    palabraLeida = true;
+                } catch (RebootNeededException) {
+                    DesbloquearTodo();
+                    Debug.WriteLine("Cache " + id + ": Reiniciando LW");
+                    // Reintentando proximo ciclo
+                    controlador.Esperar(1);
+                }
+            }
+            return palabra;
         }
 
         public void Escribir(InformacionPalabra info, int palabra) {
 
             //Se bloquea mi cache
-            this.Bloquear();
+            this.Bloquear(this.Nombre);
+            bloqueados.Add(this);
 
             // Si es hit
             if (info.EsHit()) {
@@ -171,14 +203,14 @@ namespace ProyectoArqui.Model {
                 if (bloqueN.Estado == EstadosB.Modificado) {
 
                     // Si está en mi cache modificado nada más lo escribo
-                    bloqueN[info.IndicePalabra] = palabra;  
+                    bloqueN[info.IndicePalabra] = palabra;
                     bloqueN.Estado = EstadosB.Modificado;
-                    info.Directorio.ModificarBloque(this, bloqueN);
 
                 } else {
 
                     // Si lo tengo compartido, bloqueo el directorio correspondiente
-                    info.Directorio.Bloquear();
+                    info.Directorio.Bloquear(this.Nombre);
+                    bloqueados.Add(info.Directorio);
 
                     // Invalido a todos quienes compartan el bloque
                     info.Directorio.InvalidarBloque(this, info.Bloque);
@@ -189,29 +221,18 @@ namespace ProyectoArqui.Model {
                     info.Directorio.ModificarBloque(this, bloqueN);
 
                     // Desbloqueo el directorio
-                    info.Directorio.Desbloquear();
+                    info.Directorio.Desbloquear(this.Nombre);
+                    bloqueados.Remove(info.Directorio);
                 }
 
             } else {
 
-                BloqueCacheDatos bloqueV = this[info.IndiceCache];
-
-                // Se pregunta si el bloque a reemplazar en mi cache está modificado
-                if (bloqueV.Estado == EstadosB.Modificado) {
-
-                    // Bloqueo directorio de BloqueV
-                    bloqueV.Directorio.Bloquear();
-
-                    // Envio el bloque a memoria
-                    // Este método modifica tanto la cache como el directorio (U en directorio e I en Cache)
-                    bloqueV.EnviarAMemoria();
-
-                    // Desbloqueo el directorio del BloqueV
-                    bloqueV.Directorio.Desbloquear();
-                }
+                // Se envia el bloqueV a memoria si está modificado
+                EnviarAMemoriaBloqueVSiModificado(this[info.IndiceCache]);
 
                 // Bloqueo el directorio que contiene la palabra que busco
-                info.Directorio.Bloquear();
+                info.Directorio.Bloquear(this.Nombre);
+                bloqueados.Add(info.Directorio);
 
                 // Consulto el directorio del bloqueMemoria que contiene la palabra que busco
                 // para ver si alguna cache lo tiene modificado
@@ -240,17 +261,19 @@ namespace ProyectoArqui.Model {
                 } else {
 
                     // Bloqueo la cache que modificó el dato
-                    modificante.Bloquear();
+                    modificante.Bloquear(this.Nombre);
+                    bloqueados.Add(modificante);
+
+                    // Traigo el dato de la cache modificante
+                    BloqueCacheDatos bloqueN = new BloqueCacheDatos(modificante[info.IndiceCache], controlador, this, false);
+                    this[info.Bloque.IndiceCache] = bloqueN;
 
                     // Se envía el bloque en la cache modificante a memoria
                     modificante[info.IndiceCache].EnviarAMemoria();
 
                     // Desbloqueo la cache que modificó el dato
-                    modificante.Desbloquear();
-
-                    // Traigo el dato de la cache modificante
-                    BloqueCacheDatos bloqueN = new BloqueCacheDatos(modificante[info.IndiceCache], controlador, this, false);
-                    this[info.Bloque.IndiceCache] = bloqueN;
+                    modificante.Desbloquear(this.Nombre);
+                    bloqueados.Remove(modificante);
 
                     // Escribo la palabra
                     bloqueN[info.IndicePalabra] = palabra;
@@ -260,32 +283,16 @@ namespace ProyectoArqui.Model {
                 }
 
                 // Desbloqueo el directorio
-                info.Directorio.Desbloquear();
+                info.Directorio.Desbloquear(this.Nombre);
+                bloqueados.Remove(info.Directorio);
 
             }
 
             // Desbloqueo mi cache
-            Desbloquear();
+            this.Desbloquear(this.Nombre);
+            bloqueados.Remove(this);
         }
 
-        /// <summary>
-        /// Metodo para que el procesador lea una palabra en una direccion de memoriaPrincipal
-        /// Si ocurre una excepción del tipo RebootNeededException, entonces se reinicia el proceso de leer el dato.
-        /// </summary>
-        /// <param name="direccionPalabra">Direccion de memoriaPrincipal donde se quiere leer una palabra</param>
-        /// <returns>Devuelve la palabra que se encuentra en la direccion de memoriaPrincipal</returns>
-        public int Leer(int direccionPalabra) {
-            int palabra = -1;
-            bool palabraLeida = false;
-            while (!palabraLeida) {
-                try {
-                    palabra = Leer(new InformacionPalabra(controlador, this, direccionPalabra));
-                    palabraLeida = true;
-                } catch (RebootNeededException) {
-                }
-            }
-            return palabra;
-        }
 
         /// <summary>
         /// Método que realmente se encarga de ejecutar la lógica de leer una palabra.
@@ -297,29 +304,18 @@ namespace ProyectoArqui.Model {
             int palabraLeida = -1;
 
             // Se bloquea la cache
-            this.Bloquear();
+            this.Bloquear(this.Nombre);
+            bloqueados.Add(this);
 
             // Se pregunta si es Hit
             if (!info.EsHit()) {
 
-                BloqueCacheDatos bloqueV = this[info.IndiceCache];
-
-                // Se pregunta si el bloque a reemplazar en mi cache está modificado
-                if (bloqueV.Estado == EstadosB.Modificado) {
-
-                    // Bloqueo directorio de BloqueV
-                    bloqueV.Directorio.Bloquear();
-
-                    // Envio el bloque a memoria
-                    // Este método modifica tanto la cache como el directorio (U en directorio e I en Cache)
-                    bloqueV.EnviarAMemoria();
-
-                    // Desbloqueo el directorio del BloqueV
-                    bloqueV.Directorio.Desbloquear();
-                }
+                // Se envia el bloqueV a memoria si está modificado
+                EnviarAMemoriaBloqueVSiModificado(this[info.IndiceCache]);
 
                 // Bloqueo el directorio que contiene la palabra que busco
-                info.Directorio.Bloquear();
+                info.Directorio.Bloquear(this.Nombre);
+                bloqueados.Add(info.Directorio);
 
                 // Consulto el directorio del bloqueMemoria que contiene la palabra que busco
                 // para ver si alguna cache lo tiene modificado
@@ -333,31 +329,63 @@ namespace ProyectoArqui.Model {
                 } else {
 
                     // Bloqueo la cache que modificó el dato
-                    modificante.Bloquear();
-
-                    // Se envía el bloque en la cache modificante a memoria
-                    modificante[info.IndiceCache].EnviarAMemoria();
+                    modificante.Bloquear(this.Nombre);
+                    bloqueados.Add(modificante);
 
                     // Traigo el dato de la cache modificante
                     this[info.IndiceCache] = new BloqueCacheDatos(modificante[info.IndiceCache], controlador, this, false);
+                    
+                    // Se envía el bloque en la cache modificante a memoria
+                    modificante[info.IndiceCache].EnviarAMemoria();
 
                     // Desbloqueo la cache que modificó el dato
-                    modificante.Desbloquear();
+                    modificante.Desbloquear(this.Nombre);
+                    bloqueados.Remove(modificante);
                 }
 
                 // Desbloqueo el directorio
-                info.Directorio.Desbloquear();
-
+                info.Directorio.Desbloquear(this.Nombre);
+                bloqueados.Remove(info.Directorio);
             }
 
             // Leo la palabra
             palabraLeida = this[info.IndiceCache][info.IndicePalabra];
 
             // Desbloqueo la cache
-            this.Desbloquear();
+            this.Desbloquear(this.Nombre);
+            bloqueados.Remove(this);
 
             // Devuelvo la palabra leída
             return palabraLeida;
+        }
+
+        private void EnviarAMemoriaBloqueVSiModificado(BloqueCacheDatos bloqueV) {
+
+            // Se pregunta si el bloque a reemplazar en mi cache está modificado
+            if (bloqueV.Estado == EstadosB.Modificado) {
+
+                Directorio directorioBloqueV = bloqueV.Directorio;
+
+                // Bloqueo directorio de BloqueV
+                directorioBloqueV.Bloquear(this.Nombre);
+                bloqueados.Add(directorioBloqueV);
+
+                // Envio el bloque a memoria
+                // Este método modifica tanto la cache como el directorio (U en directorio e I en Cache)
+                bloqueV.EnviarAMemoria();
+
+                // Desbloqueo el directorio del BloqueV
+                directorioBloqueV.Desbloquear(this.Nombre);
+                bloqueados.Remove(directorioBloqueV);
+            }
+        }
+
+        public void DesbloquearTodo() {
+            Debug.WriteLine("Cache " + id + ": Llamado a desbloquear todo");
+            foreach (Bloqueable bloqueado in bloqueados) {
+                bloqueado.Desbloquear(this.Nombre);
+            }
+            bloqueados.Clear();
         }
 
     }

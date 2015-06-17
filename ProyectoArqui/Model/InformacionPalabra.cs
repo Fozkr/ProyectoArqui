@@ -34,7 +34,7 @@ namespace ProyectoArqui.Model {
             this.id = direccionPalabra / BytesPorMemoria;
             int direccionPalabraLocal = direccionPalabra % BytesPorMemoria;
             int indiceBloqueMemoria = direccionPalabraLocal / BytesPorBloque;
-            this.indicePalabra = direccionPalabraLocal % BytesPorBloque;
+            this.indicePalabra = (direccionPalabraLocal % BytesPorBloque) / BytesPorPalabra;
             this.bloqueMemoria = controlador.MemoriasPrincipales[id][indiceBloqueMemoria];
         }
 
