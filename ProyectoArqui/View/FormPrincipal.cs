@@ -324,15 +324,15 @@ namespace ProyectoArqui.View {
                     grid.Rows[i + 11 + tuplaInicial].Cells[4].Value = palabrasCache[i + 12];
                 }
                 //actualizar los números de bloques
-                grid.Rows[15].Cells[1].Value = numerosBloquesCaches[0];
-                grid.Rows[15].Cells[2].Value = numerosBloquesCaches[1];
-                grid.Rows[15].Cells[3].Value = numerosBloquesCaches[2];
-                grid.Rows[15].Cells[4].Value = numerosBloquesCaches[3];
+                grid.Rows[15 + tuplaInicial].Cells[1].Value = numerosBloquesCaches[0];
+                grid.Rows[15 + tuplaInicial].Cells[2].Value = numerosBloquesCaches[1];
+                grid.Rows[15 + tuplaInicial].Cells[3].Value = numerosBloquesCaches[2];
+                grid.Rows[15 + tuplaInicial].Cells[4].Value = numerosBloquesCaches[3];
                 //actualizar los estados de los bloques
-                grid.Rows[16].Cells[1].Value = estadosBloquesCaches[0];
-                grid.Rows[16].Cells[2].Value = estadosBloquesCaches[1];
-                grid.Rows[16].Cells[3].Value = estadosBloquesCaches[2];
-                grid.Rows[16].Cells[4].Value = estadosBloquesCaches[3];
+                grid.Rows[16 + tuplaInicial].Cells[1].Value = estadosBloquesCaches[0];
+                grid.Rows[16 + tuplaInicial].Cells[2].Value = estadosBloquesCaches[1];
+                grid.Rows[16 + tuplaInicial].Cells[3].Value = estadosBloquesCaches[2];
+                grid.Rows[16 + tuplaInicial].Cells[4].Value = estadosBloquesCaches[3];
             }
         }
 
