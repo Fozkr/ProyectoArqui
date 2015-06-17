@@ -249,7 +249,7 @@ namespace ProyectoArqui.Model {
 
                     // Se actualiza la información del bloque
                     info.ActualizarBloque();
-                    
+
                     // Traigo el dato desde la cache modificante
                     BloqueCacheDatos.TraerBloqueCacheDatos(info.Bloque, controlador, this, false);
 
@@ -274,7 +274,6 @@ namespace ProyectoArqui.Model {
             this.Desbloquear(this.Nombre);
             bloqueados.Remove(this);
         }
-
 
         /// <summary>
         /// Método que realmente se encarga de ejecutar la lógica de leer una palabra.
@@ -346,8 +345,7 @@ namespace ProyectoArqui.Model {
 
         private void EnviarAMemoriaBloqueVSiModificado(BloqueCacheDatos bloqueV) {
 
-            // Se pregunta si el bloque a reemplazar en mi cache está modificado
-            if (bloqueV.Estado == EstadosB.Modificado) {
+            if (bloqueV.Estado != EstadosB.Invalido) {
 
                 Directorio directorioBloqueV = bloqueV.Directorio;
 
@@ -355,9 +353,17 @@ namespace ProyectoArqui.Model {
                 directorioBloqueV.Bloquear(this.Nombre);
                 bloqueados.Add(directorioBloqueV);
 
-                // Envio el bloque a memoria
-                // Este método modifica tanto la cache como el directorio (U en directorio e I en Cache)
-                bloqueV.EnviarAMemoria();
+                // Se pregunta si el bloque a reemplazar en mi cache está modificado
+                if (bloqueV.Estado == EstadosB.Modificado) {
+
+                    // Envio el bloque a memoria
+                    // Este método modifica tanto la cache como el directorio (U en directorio e I en Cache)
+                    bloqueV.EnviarAMemoria();
+
+                } else {
+
+                    bloqueV.Invalidar();
+                }
 
                 // Desbloqueo el directorio del BloqueV
                 directorioBloqueV.Desbloquear(this.Nombre);

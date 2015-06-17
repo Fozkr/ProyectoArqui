@@ -137,7 +137,9 @@ namespace ProyectoArqui.Model {
                 controlador.OnProcesadorTerminado();
 
             } catch (Exception) {
+#if !DEBUG
                 MessageBox.Show("Ocurrió un error :/\nAsí quedó la simulación.");
+#endif
             }
         }
 
